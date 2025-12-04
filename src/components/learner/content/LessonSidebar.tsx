@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useContent } from '@/contexts/ContentContext';
 
 interface LessonItem {
   id: string;
@@ -27,6 +28,7 @@ interface CourseSection {
  */
 export default function LessonSidebar() {
   const pathname = usePathname();
+  const { sidebarOpen } = useContent();
   const [searchQuery, setSearchQuery] = useState('');
   
   // Parse courseId and lessonId from pathname
@@ -166,7 +168,7 @@ export default function LessonSidebar() {
   };
 
   return (
-    <div className="rbt-lesson-leftsidebar">
+    <div className={`rbt-lesson-leftsidebar ${!sidebarOpen ? 'sibebar-none' : ''}`}>
       <div className="rbt-course-feature-inner rbt-search-activation">
         <div className="section-title">
           <h4 className="rbt-title-style-3">Course Content</h4>

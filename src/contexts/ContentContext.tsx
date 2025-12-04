@@ -5,8 +5,11 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 interface ContentContextType {
   currentContent: any | null;
   contentProgress: number;
+  sidebarOpen: boolean;
   setCurrentContent: (content: any) => void;
   updateProgress: (progress: number) => void;
+  setSidebarOpen: (open: boolean) => void;
+  toggleSidebar: () => void;
 }
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
@@ -14,6 +17,7 @@ const ContentContext = createContext<ContentContextType | undefined>(undefined);
 export function ContentProvider({ children }: { children: React.ReactNode }) {
   const [currentContent, setCurrentContent] = useState<any | null>(null);
   const [contentProgress, setContentProgress] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Restore content state from localStorage on mount
   useEffect(() => {
@@ -56,11 +60,18 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
     setContentProgress(progress);
   };
 
+  const toggleSidebar = () => {
+    setSidebarOpen(prev => !prev);
+  };
+
   const value: ContentContextType = {
     currentContent,
     contentProgress,
+    sidebarOpen,
     setCurrentContent: handleSetCurrentContent,
     updateProgress: handleUpdateProgress,
+    setSidebarOpen,
+    toggleSidebar,
   };
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;

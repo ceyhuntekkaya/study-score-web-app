@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useContent } from '@/contexts/ContentContext';
 
 /**
  * Lesson Content Component
@@ -11,7 +12,7 @@ import { usePathname } from 'next/navigation';
  */
 export default function LessonContent() {
   const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { sidebarOpen, toggleSidebar } = useContent();
   
   // Parse courseId and lessonId from pathname
   // Path format: /learner/content/[courseId]/[lessonId]
@@ -90,7 +91,7 @@ export default function LessonContent() {
             <button
               className="lesson-toggle-active btn-round-white-opacity"
               title="Toggle Sidebar"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
+              onClick={toggleSidebar}
             >
               <i className={`feather-arrow-${sidebarOpen ? 'left' : 'right'}`}></i>
             </button>
@@ -99,7 +100,7 @@ export default function LessonContent() {
         </div>
         <div className="lesson-top-right">
           <div className="rbt-btn-close">
-            <Link href={`/learner/content/${courseId}`} title="Go Back to Course" className="rbt-round-btn">
+            <Link href="/learner/dashboard" title="Go Back to Dashboard" className="rbt-round-btn">
               <i className="feather-x"></i>
             </Link>
           </div>
@@ -111,7 +112,7 @@ export default function LessonContent() {
             src={lessonData.videoUrl}
             allowFullScreen
             allow="autoplay"
-            style={{ width: '100%', height: '500px', border: 'none' }}
+            style={{ width: '100%', border: 'none' }}
           ></iframe>
         </div>
         <div className="content">
