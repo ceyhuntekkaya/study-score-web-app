@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="rbt-header-sticky">
+    <html lang="en" className="rbt-header-sticky" suppressHydrationWarning>
       <head>
         {/* Template CSS Files */}
         <link rel="stylesheet" href="/assets/css/vendor/bootstrap.min.css" />

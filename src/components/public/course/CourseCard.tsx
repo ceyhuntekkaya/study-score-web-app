@@ -23,6 +23,7 @@ interface CourseCardProps {
   discount?: string;
   showAddToCart?: boolean;
   viewMode?: 'grid' | 'list';
+  href?: string;
 }
 
 /**
@@ -44,6 +45,7 @@ export default function CourseCard({
   discount,
   showAddToCart = false,
   viewMode = 'grid',
+  href,
 }: CourseCardProps) {
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, i) => (
@@ -55,7 +57,7 @@ export default function CourseCard({
     <div className={viewMode === 'grid' ? 'course-grid-3' : 'course-list-item'}>
       <div className="rbt-card variation-01 rbt-hover">
         <div className="rbt-card-img">
-          <Link href="/course-details">
+          <Link href={href || "/course-details"}>
             <Image
               src={image}
               alt={title}
@@ -85,7 +87,7 @@ export default function CourseCard({
           </div>
 
           <h4 className="rbt-card-title">
-            <Link href="/course-details">{title}</Link>
+            <Link href={href || "/course-details"}>{title}</Link>
           </h4>
 
           <ul className="rbt-meta">
@@ -124,11 +126,11 @@ export default function CourseCard({
               {oldPrice && <span className="off-price">{oldPrice}</span>}
             </div>
             {showAddToCart ? (
-              <Link className="rbt-btn-link left-icon" href="/course-details">
+              <Link className="rbt-btn-link left-icon" href={href || "/course-details"}>
                 <i className="feather-shopping-cart"></i> Add To Cart
               </Link>
             ) : (
-              <Link className="rbt-btn-link" href="/course-details">
+              <Link className="rbt-btn-link" href={href || "/course-details"}>
                 Learn More<i className="feather-arrow-right"></i>
               </Link>
             )}

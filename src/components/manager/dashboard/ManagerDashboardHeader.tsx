@@ -1,0 +1,328 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import LanguageSwitcher from '@/components/common/LanguageSwitcher';
+import { useAuth } from '@/contexts/AuthContext';
+
+/**
+ * Manager Dashboard Header Component
+ * Converted from instructor-dashboard.html template (same as tutor)
+ */
+export default function ManagerDashboardHeader() {
+  const { user, clearAuth } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    clearAuth();
+  };
+
+  return (
+    <header className="rbt-header rbt-header-10">
+      <div className="rbt-sticky-placeholder"></div>
+
+      {/* Header Top */}
+      <div className="rbt-header-top rbt-header-top-1 header-space-betwween bg-not-transparent bg-color-darker top-expended-activation">
+        <div className="container-fluid">
+          <div className="top-expended-wrapper">
+            <div className="top-expended-inner rbt-header-sec align-items-center">
+              <div className="rbt-header-sec-col rbt-header-left d-none d-xl-block">
+                <div className="rbt-header-content">
+                  <div className="header-info">
+                    <ul className="rbt-information-list">
+                      <li>
+                        <a href="#">
+                          <i className="fab fa-instagram"></i>100k <span className="d-none d-xxl-block">Followers</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i className="fab fa-facebook-square"></i>500k <span className="d-none d-xxl-block">Followers</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i className="feather-phone"></i>+1-202-555-0174
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div className="rbt-header-sec-col rbt-header-center">
+                <div className="rbt-header-content justify-content-start justify-content-xl-center">
+                  <div className="header-info">
+                    <div className="rbt-header-top-news">
+                      <div className="inner">
+                        <div className="content">
+                          <span className="rbt-badge variation-02 bg-color-primary color-white radius-round">Hot</span>
+                          <span className="news-text">
+                            <Image
+                              src="/assets/images/icons/hand-emojji.svg"
+                              alt="Hand Emojji"
+                              width={20}
+                              height={20}
+                            />{' '}
+                            Intro price. Get Histudy for Big Sale -95% off.
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="rbt-header-sec-col rbt-header-right mt_md--10 mt_sm--10">
+                <div className="rbt-header-content justify-content-start justify-content-lg-end">
+                  <div className="header-info d-none d-xl-block">
+                    <ul className="social-share-transparent">
+                      <li>
+                        <a href="#">
+                          <i className="fab fa-facebook-f"></i>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i className="fab fa-twitter"></i>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i className="fab fa-linkedin-in"></i>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i className="fab fa-instagram"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="rbt-separator d-none d-xl-block"></div>
+
+                  <div className="header-info">
+                    <LanguageSwitcher />
+                  </div>
+
+                  <div className="header-info">
+                    <ul className="rbt-dropdown-menu currency-menu">
+                      <li className="has-child-menu">
+                        <a href="#">
+                          <span className="menu-item">USD</span>
+                          <i className="right-icon feather-chevron-down"></i>
+                        </a>
+                        <ul className="sub-menu hover-reverse">
+                          <li>
+                            <a href="#">
+                              <span className="menu-item">EUR</span>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <span className="menu-item">GBP</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="header-info">
+              <div className="top-bar-expended d-block d-lg-none">
+                <button
+                  className="topbar-expend-button rbt-round-btn"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                >
+                  <i className="feather-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Header */}
+      <div className="rbt-header-wrapper header-space-betwween header-sticky">
+        <div className="container-fluid">
+          <div className="mainbar-row rbt-navigation-center align-items-center">
+            <div className="header-left rbt-header-content">
+              <div className="header-info">
+                <div className="logo logo-dark">
+                  <Link href="/">
+                    <Image
+                      src="/assets/images/logo/logo.png"
+                      alt="Education Logo"
+                      width={150}
+                      height={50}
+                    />
+                  </Link>
+                </div>
+                <div className="logo d-none logo-light">
+                  <Link href="/">
+                    <Image
+                      src="/assets/images/dark/logo/logo-light.png"
+                      alt="Education Logo"
+                      width={150}
+                      height={50}
+                    />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Navigation */}
+            <div className="rbt-main-navigation d-none d-xl-block">
+              <nav className="mainmenu-nav">
+                <ul className="mainmenu">
+                  <li className="has-menu-child-item">
+                    <Link href="/">Home <i className="feather-chevron-down"></i></Link>
+                  </li>
+                  <li className="has-menu-child-item">
+                    <Link href="/courses">Courses <i className="feather-chevron-down"></i></Link>
+                  </li>
+                  <li className="has-dropdown has-menu-child-item">
+                    <Link href="/manager/dashboard">
+                      Dashboard <i className="feather-chevron-down"></i>
+                    </Link>
+                    <ul className="submenu">
+                      <li>
+                        <Link href="/manager/dashboard">My Dashboard</Link>
+                      </li>
+                      <li>
+                        <Link href="/manager/dashboard/profile">Profile</Link>
+                      </li>
+                      <li>
+                        <Link href="/manager/dashboard/courses">My Courses</Link>
+                      </li>
+                      <li>
+                        <Link href="/manager/dashboard/announcements">Announcements</Link>
+                      </li>
+                      <li>
+                        <Link href="/manager/dashboard/settings">Settings</Link>
+                      </li>
+                    </ul>
+                  </li>
+                  <li className="has-menu-child-item">
+                    <Link href="/blog">Blog <i className="feather-chevron-down"></i></Link>
+                  </li>
+                  <li>
+                    <Link href="/about">About</Link>
+                  </li>
+                  <li>
+                    <Link href="/contact">Contact</Link>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+
+            <div className="header-right rbt-header-content">
+              {/* Navbar Icons */}
+              <ul className="quick-access">
+                <li className="access-icon">
+                  <a className="search-trigger-active rbt-round-btn" href="#">
+                    <i className="feather-search"></i>
+                  </a>
+                </li>
+
+                <li className="access-icon rbt-mini-cart">
+                  <a className="rbt-cart-sidenav-activation rbt-round-btn" href="#">
+                    <i className="feather-shopping-cart"></i>
+                    <span className="rbt-cart-count">0</span>
+                  </a>
+                </li>
+
+                {user ? (
+                  <li className="account-access rbt-user-wrapper d-none d-xl-block">
+                    <a href="#">
+                      <i className="feather-user"></i>
+                      {user.name}
+                    </a>
+                    <div className="rbt-user-menu-list-wrapper">
+                      <div className="inner">
+                        <div className="rbt-admin-profile">
+                          <div className="admin-thumbnail">
+                            <Image
+                              src="/assets/images/team/avatar.jpg"
+                              alt={user.name}
+                              width={60}
+                              height={60}
+                            />
+                          </div>
+                          <div className="admin-info">
+                            <span className="name">{user.name}</span>
+                            <Link className="rbt-btn-link color-primary" href="/manager/dashboard/profile">
+                              View Profile
+                            </Link>
+                          </div>
+                        </div>
+                        <ul className="user-list-wrapper">
+                          <li>
+                            <Link href="/manager/dashboard">
+                              <i className="feather-home"></i>
+                              <span>My Dashboard</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/manager/dashboard/courses">
+                              <i className="feather-monitor"></i>
+                              <span>My Courses</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/manager/dashboard/announcements">
+                              <i className="feather-volume-2"></i>
+                              <span>Announcements</span>
+                            </Link>
+                          </li>
+                        </ul>
+                        <hr className="mt--10 mb--10" />
+                        <ul className="user-list-wrapper">
+                          <li>
+                            <Link href="/manager/dashboard/settings">
+                              <i className="feather-settings"></i>
+                              <span>Settings</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }}>
+                              <i className="feather-log-out"></i>
+                              <span>Logout</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </li>
+                ) : (
+                  <li>
+                    <div className="rbt-btn-wrapper d-none d-xl-block">
+                      <Link className="rbt-btn btn-sm btn-border-gradient" href="/login">
+                        <span className="btn-text">Login</span>
+                      </Link>
+                    </div>
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="mobile-menu-bar d-block d-xl-none">
+              <div className="hamberger">
+                <button
+                  className="hamberger-button rbt-round-btn"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                >
+                  <i className="feather-menu"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+

@@ -21,6 +21,7 @@ interface Course {
   oldPrice?: string;
   discount?: string;
   showAddToCart?: boolean;
+  href?: string;
 }
 
 interface CourseGridSectionProps {
