@@ -110,7 +110,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
       'Have a portfolio of various data analysis projects.',
       'Use the numpy library to create and manipulate arrays.',
     ],
-    description: [
+    detailsDescription: [
       'Use the Jupyter Notebook Environment. JavaScript developer from scratch.',
       'Use the pandas module with Python to create and structure data.',
       'Have a portfolio of various data analysis projects.',
@@ -275,7 +275,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                 {/* Details Section */}
                 <CourseDetailsInfoSection
                   requirements={course.requirements}
-                  description={course.description}
+                  description={course.detailsDescription}
                 />
 
                 {/* Instructor Section */}

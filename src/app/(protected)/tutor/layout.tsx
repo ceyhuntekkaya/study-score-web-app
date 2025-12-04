@@ -2,78 +2,59 @@
 
 import { TutorProvider } from '@/contexts/TutorContext';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import LanguageSwitcher from '@/components/common/LanguageSwitcher';
-import { useAuth } from '@/contexts/AuthContext';
-import Link from 'next/link';
+import TutorDashboardHeader from '@/components/tutor/dashboard/TutorDashboardHeader';
+import TutorDashboardSidebar from '@/components/tutor/dashboard/TutorDashboardSidebar';
+import TutorDashboardTop from '@/components/tutor/dashboard/TutorDashboardTop';
+import TutorDashboardFooter from '@/components/tutor/dashboard/TutorDashboardFooter';
 
+/**
+ * Tutor Dashboard Layout
+ * Converted from instructor-dashboard.html template
+ */
 function TutorLayoutContent({ children }: { children: React.ReactNode }) {
-  const { user, clearAuth } = useAuth();
-
-  const handleLogout = () => {
-    clearAuth();
-  };
-
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside style={{
-        width: '250px',
-        backgroundColor: '#e3f2fd',
-        padding: '20px',
-        borderRight: '1px solid #ddd'
-      }}>
-        <div style={{ marginBottom: '30px' }}>
-          <h2 style={{ margin: 0, fontSize: '20px' }}>Tutor Panel</h2>
-          {user && (
-            <p style={{ margin: '10px 0 0 0', color: '#666', fontSize: '14px' }}>
-              {user.name}
-            </p>
-          )}
+    <div className="rbt-main-wrapper">
+      {/* Header */}
+      <TutorDashboardHeader />
+
+      {/* Banner Area */}
+      <div className="rbt-page-banner-wrapper">
+        <div className="rbt-banner-image"></div>
+      </div>
+
+      {/* Dashboard Area */}
+      <div className="rbt-dashboard-area rbt-section-overlayping-top rbt-section-gapBottom">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-12">
+              {/* Dashboard Top Section */}
+              <TutorDashboardTop />
+
+              <div className="row g-5">
+                {/* Sidebar */}
+                <TutorDashboardSidebar />
+
+                {/* Main Content */}
+                <div className="col-lg-9">
+                  <div className="rbt-dashboard-content bg-color-white rbt-shadow-box mb--60">
+                    <div className="content">{children}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <Link 
-            href="/tutor/dashboard"
-            style={{ padding: '10px', textDecoration: 'none', color: '#000', borderRadius: '4px' }}
-          >
-            Dashboard
-          </Link>
-          <Link 
-            href="/tutor/students"
-            style={{ padding: '10px', textDecoration: 'none', color: '#000', borderRadius: '4px' }}
-          >
-            Students
-          </Link>
-          <Link 
-            href="/tutor/courses"
-            style={{ padding: '10px', textDecoration: 'none', color: '#000', borderRadius: '4px' }}
-          >
-            Courses
-          </Link>
-        </nav>
-
-        <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-          <LanguageSwitcher />
-          <button
-            onClick={handleLogout}
-            style={{
-              marginTop: '20px',
-              width: '100%',
-              padding: '10px',
-              backgroundColor: '#dc3545',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            Logout
-          </button>
+      {/* Separator */}
+      <div className="rbt-separator-mid">
+        <div className="container">
+          <hr className="rbt-separator m-0" />
         </div>
-      </aside>
+      </div>
 
-      <main style={{ flex: 1, padding: '20px' }}>
-        {children}
-      </main>
+      {/* Footer */}
+      <TutorDashboardFooter />
     </div>
   );
 }
