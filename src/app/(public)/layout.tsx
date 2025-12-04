@@ -1,38 +1,29 @@
-import LanguageSwitcher from '@/components/common/LanguageSwitcher';
-import Link from 'next/link';
+'use client';
 
+import PublicHeader from '@/components/public/header/PublicHeader';
+import PublicFooter from '@/components/public/footer/PublicFooter';
+
+/**
+ * Public Layout
+ * Uses template structure with React components (no jQuery)
+ */
 export default function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div style={{ minHeight: '100vh' }}>
-      <header style={{ 
-        padding: '20px', 
-        borderBottom: '1px solid #ddd',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <Link href="/" style={{ textDecoration: 'none', color: '#000', fontSize: '24px', fontWeight: 'bold' }}>
-          Study Score App
-        </Link>
-        <nav style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-          <Link href="/" style={{ textDecoration: 'none', color: '#000' }}>Home</Link>
-          <Link href="/login" style={{ textDecoration: 'none', color: '#000' }}>Login</Link>
-          <LanguageSwitcher />
-        </nav>
-      </header>
+    <div className="rbt-main-wrapper">
+      <PublicHeader />
       <main>{children}</main>
-      <footer style={{ 
-        padding: '20px', 
-        borderTop: '1px solid #ddd',
-        textAlign: 'center',
-        marginTop: 'auto'
-      }}>
-        <p>© 2024 Study Score App. All rights reserved.</p>
-      </footer>
+      <PublicFooter />
+      
+      {/* Progress Circle */}
+      <div className="rbt-progress-parent">
+        <svg className="rbt-back-circle svg-inner" width="100%" height="100%" viewBox="-1 -1 102 102">
+          <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+        </svg>
+      </div>
     </div>
   );
 }

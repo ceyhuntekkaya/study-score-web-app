@@ -1,45 +1,51 @@
 'use client';
 
-import { DashboardProvider, useDashboard } from '@/contexts/DashboardContext';
-import { useTranslation } from '@/i18n';
+import DashboardStatsCard from '@/components/learner/dashboard/DashboardStatsCard';
 
-function DashboardContent() {
-  const { dashboardData, refreshDashboard } = useDashboard();
-  const { t } = useTranslation();
-
+/**
+ * Learner Dashboard Page
+ * Template content converted to React components
+ */
+export default function DashboardPage() {
   return (
-    <div>
-      <h1>Learner Dashboard</h1>
-      <p>This is the learner dashboard page. Content type: Dashboard</p>
-      <p>F5 yapıldığında bu sayfadan devam edeceksiniz.</p>
-      
-      <div style={{ marginTop: '20px', padding: '20px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
-        <h3>Dashboard Data</h3>
-        <pre>{JSON.stringify(dashboardData || { message: 'No data yet' }, null, 2)}</pre>
-        <button 
-          onClick={refreshDashboard}
-          style={{
-            marginTop: '10px',
-            padding: '10px 20px',
-            backgroundColor: '#0070f3',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Refresh Dashboard
-        </button>
+    <>
+      <div className="section-title">
+        <h4 className="rbt-title-style-3">Dashboard</h4>
       </div>
-    </div>
+      <div className="row g-5">
+        {/* Enrolled Courses */}
+        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+          <DashboardStatsCard
+            icon="feather-book-open"
+            iconBg="bg-primary-opacity"
+            count={30}
+            label="Enrolled Courses"
+            color="color-primary"
+          />
+        </div>
+
+        {/* Active Courses */}
+        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+          <DashboardStatsCard
+            icon="feather-monitor"
+            iconBg="bg-secondary-opacity"
+            count={10}
+            label="ACTIVE COURSES"
+            color="color-secondary"
+          />
+        </div>
+
+        {/* Completed Courses */}
+        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+          <DashboardStatsCard
+            icon="feather-award"
+            iconBg="bg-violet-opacity"
+            count={7}
+            label="Completed Courses"
+            color="color-violet"
+          />
+        </div>
+      </div>
+    </>
   );
 }
-
-export default function LearnerDashboardPage() {
-  return (
-    <DashboardProvider>
-      <DashboardContent />
-    </DashboardProvider>
-  );
-}
-

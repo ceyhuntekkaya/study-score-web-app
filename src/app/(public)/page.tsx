@@ -1,27 +1,39 @@
-import Link from 'next/link';
+import HeroBanner from '@/components/public/hero/HeroBanner';
+import AboutSection from '@/components/public/about/AboutSection';
+import CategorySection from '@/components/public/category/CategorySection';
+import CourseSection from '@/components/public/course/CourseSection';
+import EventSection from '@/components/public/event/EventSection';
+import TestimonialSection from '@/components/public/testimonial/TestimonialSection';
+import BlogSection from '@/components/public/blog/BlogSection';
 
+/**
+ * Public Home Page
+ * Template content converted to React components
+ */
 export default function PublicHomePage() {
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
-      <h1>Welcome to Study Score App</h1>
-      <p style={{ margin: '20px 0', fontSize: '18px' }}>
-        This is a public page. Anyone can access this.
-      </p>
-      <Link 
-        href="/login" 
-        style={{
-          display: 'inline-block',
-          padding: '12px 24px',
-          backgroundColor: '#0070f3',
-          color: 'white',
-          textDecoration: 'none',
-          borderRadius: '4px',
-          marginTop: '20px'
-        }}
-      >
-        Go to Login
-      </Link>
-    </div>
+    <>
+      {/* Hero Banner Section */}
+      <HeroBanner />
+
+      {/* About Section */}
+      <AboutSection />
+
+      {/* Category Section */}
+      <CategorySection />
+
+      {/* Course Section */}
+      <CourseSection />
+
+      {/* Event Section */}
+      <EventSection />
+
+      {/* Testimonial Section */}
+      <TestimonialSection />
+
+      {/* Blog Section */}
+      <BlogSection />
+    </>
   );
 }
 
