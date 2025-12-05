@@ -7,6 +7,7 @@ import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import { useAuth } from '@/contexts/AuthContext';
 import { getHeaderMenu } from '@/lib/menus';
 import { useTranslation } from '@/i18n';
+import { getPrimaryPhone } from '@/lib/contact';
 
 /**
  * Tutor Dashboard Header Component
@@ -17,6 +18,7 @@ export default function TutorDashboardHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
   const menu = getHeaderMenu('tutor');
+  const phone = getPrimaryPhone();
 
   const handleLogout = () => {
     clearAuth();
@@ -46,8 +48,8 @@ export default function TutorDashboardHeader() {
                         </a>
                       </li>
                       <li>
-                        <a href="#">
-                          <i className="feather-phone"></i>+1-202-555-0174
+                        <a href={phone.href}>
+                          <i className="feather-phone"></i>{phone.display}
                         </a>
                       </li>
                     </ul>

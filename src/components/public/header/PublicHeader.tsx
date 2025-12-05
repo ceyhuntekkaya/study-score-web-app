@@ -6,6 +6,7 @@ import Image from 'next/image';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import { getHeaderMenu } from '@/lib/menus';
 import { useTranslation } from '@/i18n';
+import { getPrimaryPhone } from '@/lib/contact';
 
 /**
  * Public Header Component
@@ -16,6 +17,7 @@ export default function PublicHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
   const menu = getHeaderMenu('public');
+  const phone = getPrimaryPhone();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,14 +40,12 @@ export default function PublicHeader() {
               <div className="rbt-header-content">
                 <div className="header-info">
                   <ul className="rbt-information-list">
-                    {menu.topMenu?.left?.map((item, index) => (
-                      <li key={index}>
-                        <a href={item.href}>
-                          {item.icon && <i className={item.icon}></i>}
-                          {item.text}
-                        </a>
-                      </li>
-                    ))}
+                    <li>
+                      <a href={phone.href}>
+                        <i className="feather-phone"></i>
+                        {phone.display}
+                      </a>
+                    </li>
                   </ul>
                 </div>
                 <div className="rbt-separator"></div>

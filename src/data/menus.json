@@ -263,13 +263,7 @@
         }
       ],
       "topMenu": {
-        "left": [
-          {
-            "icon": "feather-phone",
-            "text": "+1-202-555-0174",
-            "href": "tel:+1-202-555-0174"
-          }
-        ],
+        "left": [],
         "right": [
           {
             "labelKey": "menu.myAccount",

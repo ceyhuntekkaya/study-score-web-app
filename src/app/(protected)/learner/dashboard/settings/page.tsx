@@ -3,6 +3,7 @@
 import { useState, FormEvent } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
+import { getPrimaryPhone } from '@/lib/contact';
 
 /**
  * Learner Settings Page
@@ -11,12 +12,13 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function SettingsPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
+  const defaultPhone = getPrimaryPhone();
 
   const [profileData, setProfileData] = useState({
     firstName: user?.name?.split(' ')[0] || 'John',
     lastName: user?.name?.split(' ')[1] || 'Due',
     username: user?.email?.split('@')[0] || 'johndue',
-    phone: '+1-202-555-0174',
+    phone: defaultPhone.display,
     skill: 'Full Stack Developer',
     displayName: 'Emily Hannah',
     bio: "I'm the Front-End Developer for #Rainbow IT in Bangladesh, OR. I have serious passion for UI effects, animations and creating intuitive, dynamic user experiences.",

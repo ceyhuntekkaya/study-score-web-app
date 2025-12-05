@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getPrimaryPhone, getPrimaryEmail, getPrimaryAddress, getSocialLinks, getCompanyInfo } from '@/lib/contact';
 
 /**
  * Public Footer Component
@@ -10,6 +11,11 @@ import Image from 'next/image';
  */
 export default function PublicFooter() {
   const [email, setEmail] = useState('');
+  const phone = getPrimaryPhone();
+  const emailInfo = getPrimaryEmail();
+  const address = getPrimaryAddress();
+  const social = getSocialLinks();
+  const company = getCompanyInfo();
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,22 +60,22 @@ export default function PublicFooter() {
 
                 <ul className="social-icon social-default justify-content-start">
                   <li>
-                    <a href="https://www.facebook.com/" aria-label="Facebook">
+                    <a href={social.facebook.url} aria-label={social.facebook.label}>
                       <i className="feather-facebook"></i>
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.twitter.com" aria-label="Twitter">
+                    <a href={social.twitter.url} aria-label={social.twitter.label}>
                       <i className="feather-twitter"></i>
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.instagram.com/" aria-label="Instagram">
+                    <a href={social.instagram.url} aria-label={social.instagram.label}>
                       <i className="feather-instagram"></i>
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.linkdin.com/" aria-label="LinkedIn">
+                    <a href={social.linkedin.url} aria-label={social.linkedin.label}>
                       <i className="feather-linkedin"></i>
                     </a>
                   </li>
@@ -123,13 +129,13 @@ export default function PublicFooter() {
                 <h5 className="ft-title">Get Contact</h5>
                 <ul className="ft-link">
                   <li>
-                    <span>Phone:</span> <a href="tel:+1-406-555-0120">(406) 555-0120</a>
+                    <span>Phone:</span> <a href={phone.href}>{phone.display}</a>
                   </li>
                   <li>
-                    <span>E-mail:</span> <a href="mailto:admin@example.com">admin@example.com</a>
+                    <span>E-mail:</span> <a href={emailInfo.href}>{emailInfo.display}</a>
                   </li>
                   <li>
-                    <span>Address:</span> <a href="#">15205 North Kierland Blvd.</a>
+                    <span>Address:</span> <a href="#">{address.display}</a>
                   </li>
                 </ul>
 
@@ -171,7 +177,7 @@ export default function PublicFooter() {
           <div className="row align-items-center">
             <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-12 col-12">
               <p className="rbt-link-hover text-center text-lg-start">
-                Copyright © 2025 <a href="#">Study Score App.</a> All Rights Reserved
+                Copyright © 2025 <a href="#">{company.name}</a>. All Rights Reserved
               </p>
             </div>
             <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-12 col-12">

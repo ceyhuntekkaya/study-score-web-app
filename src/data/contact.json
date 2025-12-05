@@ -1,0 +1,86 @@
+{
+  "phone": {
+    "primary": {
+      "number": "+1-202-555-0174",
+      "display": "+1-202-555-0174",
+      "href": "tel:+1-202-555-0174"
+    },
+    "secondary": {
+      "number": "+444 555 666 777",
+      "display": "+444 555 666 777",
+      "href": "tel:+444555666777"
+    },
+    "tertiary": {
+      "number": "+222 222 222 333",
+      "display": "+222 222 222 333",
+      "href": "tel:+222222222333"
+    },
+    "footer": {
+      "number": "(406) 555-0120",
+      "display": "(406) 555-0120",
+      "href": "tel:+1-406-555-0120"
+    }
+  },
+  "email": {
+    "primary": {
+      "address": "admin@gmail.com",
+      "display": "admin@gmail.com",
+      "href": "mailto:admin@gmail.com"
+    },
+    "secondary": {
+      "address": "example@gmail.com",
+      "display": "example@gmail.com",
+      "href": "mailto:example@gmail.com"
+    },
+    "footer": {
+      "address": "admin@example.com",
+      "display": "admin@example.com",
+      "href": "mailto:admin@example.com"
+    }
+  },
+  "address": {
+    "primary": {
+      "line1": "5678 Bangla Main Road, cities 580",
+      "line2": "GBnagla, example 54786",
+      "full": "5678 Bangla Main Road, cities 580, GBnagla, example 54786",
+      "display": "5678 Bangla Main Road, cities 580, GBnagla, example 54786"
+    },
+    "footer": {
+      "line1": "15205 North Kierland Blvd.",
+      "line2": "",
+      "full": "15205 North Kierland Blvd.",
+      "display": "15205 North Kierland Blvd."
+    }
+  },
+  "social": {
+    "facebook": {
+      "url": "https://www.facebook.com/",
+      "label": "Facebook"
+    },
+    "twitter": {
+      "url": "https://www.twitter.com",
+      "label": "Twitter"
+    },
+    "instagram": {
+      "url": "https://www.instagram.com/",
+      "label": "Instagram"
+    },
+    "linkedin": {
+      "url": "https://www.linkedin.com/",
+      "label": "LinkedIn"
+    },
+    "youtube": {
+      "url": "https://www.youtube.com/",
+      "label": "YouTube"
+    }
+  },
+  "map": {
+    "embedUrl": "https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d2965.0824050173574!2d-93.63905729999999!3d41.998507000000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sWebFilings%2C+University+Boulevard%2C+Ames%2C+IA!5e0!3m2!1sen!2sus!4v1390839289319",
+    "height": 600
+  },
+  "company": {
+    "name": "Study Score App",
+    "copyright": "Copyright © 2025 Study Score App. All Rights Reserved"
+  }
+}
+

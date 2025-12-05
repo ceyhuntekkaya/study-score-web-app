@@ -1,33 +1,46 @@
 'use client';
 
+import { getAllPhones, getAllEmails, getPrimaryAddress } from '@/lib/contact';
+
 /**
  * Contact Address Section Component
  * Converted from template
  */
 export default function ContactAddressSection() {
+  const phones = getAllPhones();
+  const emails = getAllEmails();
+  const address = getPrimaryAddress();
+
   const addresses = [
     {
       icon: 'feather-headphones',
       title: 'Contact Phone Number',
-      content: [
-        <a key="phone1" href="tel:+444555666777">+444 555 666 777</a>,
-        <a key="phone2" href="tel:+222222222333">+222 222 222 333</a>,
-      ],
+      content: phones.map((phone, index) => (
+        <a key={`phone${index}`} href={phone.href}>
+          {phone.display}
+        </a>
+      )),
     },
     {
       icon: 'feather-mail',
       title: 'Our Email Address',
-      content: [
-        <a key="email1" href="mailto:admin@gmail.com">admin@gmail.com</a>,
-        <a key="email2" href="mailto:example@gmail.com">example@gmail.com</a>,
-      ],
+      content: emails.map((email, index) => (
+        <a key={`email${index}`} href={email.href}>
+          {email.display}
+        </a>
+      )),
     },
     {
       icon: 'feather-map-pin',
       title: 'Our Location',
       content: [
         <p key="location">
-          5678 Bangla Main Road, cities 580 <br /> GBnagla, example 54786
+          {address.line1}
+          {address.line2 && (
+            <>
+              <br /> {address.line2}
+            </>
+          )}
         </p>,
       ],
     },

@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { getPrimaryPhone, getPrimaryEmail } from '@/lib/contact';
 
 /**
  * Tutor Profile Page
@@ -8,14 +9,16 @@ import { useAuth } from '@/contexts/AuthContext';
  */
 export default function TutorProfilePage() {
   const { user } = useAuth();
+  const defaultPhone = getPrimaryPhone();
+  const defaultEmail = getPrimaryEmail();
 
   const profileData = [
     { label: 'Registration Date', value: 'February 25, 2025 6:01 am' },
     { label: 'First Name', value: user?.name?.split(' ')[0] || 'John' },
     { label: 'Last Name', value: user?.name?.split(' ')[1] || 'Due' },
     { label: 'Username', value: user?.email?.split('@')[0] || 'instructor' },
-    { label: 'Email', value: user?.email || 'example@gmail.com' },
-    { label: 'Phone Number', value: '+1-202-555-0174' },
+    { label: 'Email', value: user?.email || defaultEmail.display },
+    { label: 'Phone Number', value: defaultPhone.display },
     { label: 'Skill/Occupation', value: 'Full Stack Developer' },
     { label: 'Biography', value: "I'm the Front-End Developer for #Rainbow IT in Bangladesh, OR. I have serious passion for UI effects, animations and creating intuitive, dynamic user experiences." },
   ];

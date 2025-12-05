@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getPrimaryPhone, getSocialLinks } from '@/lib/contact';
 
 interface CourseSidebarProps {
   currentPrice: string;
@@ -34,6 +35,8 @@ export default function CourseSidebar({
   onBuyNow,
 }: CourseSidebarProps) {
   const [showMore, setShowMore] = useState(false);
+  const phone = getPrimaryPhone();
+  const social = getSocialLinks();
 
   return (
     <div className="col-lg-4">
@@ -135,22 +138,22 @@ export default function CourseSidebar({
               <div className="rbt-post-share d-flex align-items-center justify-content-center">
                 <ul className="social-icon social-default transparent-with-border justify-content-center">
                   <li>
-                    <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+                    <a href={social.facebook.url} target="_blank" rel="noopener noreferrer" aria-label={social.facebook.label}>
                       <i className="feather-facebook"></i>
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer">
+                    <a href={social.twitter.url} target="_blank" rel="noopener noreferrer" aria-label={social.twitter.label}>
                       <i className="feather-twitter"></i>
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+                    <a href={social.instagram.url} target="_blank" rel="noopener noreferrer" aria-label={social.instagram.label}>
                       <i className="feather-instagram"></i>
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.linkdin.com/" target="_blank" rel="noopener noreferrer">
+                    <a href={social.linkedin.url} target="_blank" rel="noopener noreferrer" aria-label={social.linkedin.label}>
                       <i className="feather-linkedin"></i>
                     </a>
                   </li>
@@ -161,8 +164,8 @@ export default function CourseSidebar({
                 <p>For details about the course</p>
                 <p className="rbt-badge-2 mt--10 justify-content-center w-100">
                   <i className="feather-phone mr--5"></i> Call Us:{' '}
-                  <a href="tel:+444555666777">
-                    <strong>+444 555 666 777</strong>
+                  <a href={phone.href}>
+                    <strong>{phone.display}</strong>
                   </a>
                 </p>
               </div>
