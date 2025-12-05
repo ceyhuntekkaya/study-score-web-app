@@ -1,0 +1,669 @@
+{
+  "sidebars": {
+    "learner": {
+      "sections": [
+        {
+          "titleKey": "menu.welcome",
+          "items": [
+            {
+              "icon": "feather-home",
+              "labelKey": "menu.dashboard",
+              "href": "/learner/dashboard"
+            },
+            {
+              "icon": "feather-user",
+              "labelKey": "menu.myProfile",
+              "href": "/learner/dashboard/profile"
+            },
+            {
+              "icon": "feather-book-open",
+              "labelKey": "menu.enrolledCourses",
+              "href": "/learner/dashboard/courses"
+            },
+            {
+              "icon": "feather-bookmark",
+              "labelKey": "menu.wishlist",
+              "href": "/learner/dashboard/wishlist"
+            },
+            {
+              "icon": "feather-star",
+              "labelKey": "menu.reviews",
+              "href": "/learner/dashboard/reviews"
+            },
+            {
+              "icon": "feather-help-circle",
+              "labelKey": "menu.myQuizAttempts",
+              "href": "/learner/dashboard/quiz-attempts"
+            },
+            {
+              "icon": "feather-shopping-bag",
+              "labelKey": "menu.orderHistory",
+              "href": "/learner/dashboard/orders"
+            },
+            {
+              "icon": "feather-book",
+              "labelKey": "menu.content",
+              "href": "/learner/content/dummy-course-1"
+            }
+          ]
+        },
+        {
+          "titleKey": "menu.user",
+          "items": [
+            {
+              "icon": "feather-settings",
+              "labelKey": "nav.settings",
+              "href": "/learner/dashboard/settings"
+            },
+            {
+              "icon": "feather-log-out",
+              "labelKey": "common.logout",
+              "href": "#",
+              "action": "logout"
+            }
+          ]
+        }
+      ]
+    },
+    "tutor": {
+      "sections": [
+        {
+          "titleKey": "menu.welcome",
+          "items": [
+            {
+              "icon": "feather-home",
+              "labelKey": "menu.dashboard",
+              "href": "/tutor/dashboard"
+            },
+            {
+              "icon": "feather-user",
+              "labelKey": "menu.myProfile",
+              "href": "/tutor/dashboard/profile"
+            },
+            {
+              "icon": "feather-book-open",
+              "labelKey": "menu.enrolledCourses",
+              "href": "/tutor/dashboard/enrolled-courses"
+            },
+            {
+              "icon": "feather-bookmark",
+              "labelKey": "menu.wishlist",
+              "href": "/tutor/dashboard/wishlist"
+            },
+            {
+              "icon": "feather-star",
+              "labelKey": "menu.reviews",
+              "href": "/tutor/dashboard/reviews"
+            },
+            {
+              "icon": "feather-help-circle",
+              "labelKey": "menu.myQuizAttempts",
+              "href": "/tutor/dashboard/my-quiz-attempts"
+            },
+            {
+              "icon": "feather-shopping-bag",
+              "labelKey": "menu.orderHistory",
+              "href": "/tutor/dashboard/order-history"
+            }
+          ]
+        },
+        {
+          "titleKey": "menu.instructor",
+          "items": [
+            {
+              "icon": "feather-monitor",
+              "labelKey": "menu.myCourses",
+              "href": "/tutor/dashboard/courses"
+            },
+            {
+              "icon": "feather-volume-2",
+              "labelKey": "menu.announcements",
+              "href": "/tutor/dashboard/announcements"
+            },
+            {
+              "icon": "feather-message-square",
+              "labelKey": "menu.quizAttempts",
+              "href": "/tutor/dashboard/quiz-attempts"
+            },
+            {
+              "icon": "feather-list",
+              "labelKey": "menu.assignments",
+              "href": "/tutor/dashboard/assignments"
+            }
+          ]
+        },
+        {
+          "titleKey": "menu.user",
+          "items": [
+            {
+              "icon": "feather-settings",
+              "labelKey": "nav.settings",
+              "href": "/tutor/dashboard/settings"
+            },
+            {
+              "icon": "feather-log-out",
+              "labelKey": "common.logout",
+              "href": "#",
+              "action": "logout"
+            }
+          ]
+        }
+      ]
+    },
+    "manager": {
+      "sections": [
+        {
+          "titleKey": "menu.welcome",
+          "items": [
+            {
+              "icon": "feather-home",
+              "labelKey": "menu.dashboard",
+              "href": "/manager/dashboard"
+            },
+            {
+              "icon": "feather-user",
+              "labelKey": "menu.myProfile",
+              "href": "/manager/dashboard/profile"
+            },
+            {
+              "icon": "feather-book-open",
+              "labelKey": "menu.enrolledCourses",
+              "href": "/manager/dashboard/enrolled-courses"
+            },
+            {
+              "icon": "feather-bookmark",
+              "labelKey": "menu.wishlist",
+              "href": "/manager/dashboard/wishlist"
+            },
+            {
+              "icon": "feather-star",
+              "labelKey": "menu.reviews",
+              "href": "/manager/dashboard/reviews"
+            },
+            {
+              "icon": "feather-help-circle",
+              "labelKey": "menu.myQuizAttempts",
+              "href": "/manager/dashboard/my-quiz-attempts"
+            },
+            {
+              "icon": "feather-shopping-bag",
+              "labelKey": "menu.orderHistory",
+              "href": "/manager/dashboard/order-history"
+            }
+          ]
+        },
+        {
+          "titleKey": "menu.instructor",
+          "items": [
+            {
+              "icon": "feather-monitor",
+              "labelKey": "menu.myCourses",
+              "href": "/manager/dashboard/courses"
+            },
+            {
+              "icon": "feather-volume-2",
+              "labelKey": "menu.announcements",
+              "href": "/manager/dashboard/announcements"
+            },
+            {
+              "icon": "feather-message-square",
+              "labelKey": "menu.quizAttempts",
+              "href": "/manager/dashboard/quiz-attempts"
+            },
+            {
+              "icon": "feather-list",
+              "labelKey": "menu.assignments",
+              "href": "/manager/dashboard/assignments"
+            }
+          ]
+        },
+        {
+          "titleKey": "menu.user",
+          "items": [
+            {
+              "icon": "feather-settings",
+              "labelKey": "nav.settings",
+              "href": "/manager/dashboard/settings"
+            },
+            {
+              "icon": "feather-log-out",
+              "labelKey": "common.logout",
+              "href": "#",
+              "action": "logout"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "headers": {
+    "public": {
+      "mainMenu": [
+        {
+          "labelKey": "nav.home",
+          "href": "/",
+          "hasDropdown": true
+        },
+        {
+          "labelKey": "nav.courses",
+          "href": "/courses",
+          "hasDropdown": true
+        },
+        {
+          "labelKey": "nav.about",
+          "href": "/about"
+        },
+        {
+          "labelKey": "nav.blog",
+          "href": "/blog"
+        },
+        {
+          "labelKey": "nav.contact",
+          "href": "/contact"
+        }
+      ],
+      "topMenu": {
+        "left": [
+          {
+            "icon": "feather-phone",
+            "text": "+1-202-555-0174",
+            "href": "tel:+1-202-555-0174"
+          }
+        ],
+        "right": [
+          {
+            "labelKey": "menu.myAccount",
+            "href": "/my-account"
+          },
+          {
+            "labelKey": "menu.faq",
+            "href": "/faq"
+          },
+          {
+            "labelKey": "menu.contactUs",
+            "href": "/contact"
+          },
+          {
+            "labelKey": "menu.privacyPolicy",
+            "href": "/privacy-policy"
+          },
+          {
+            "labelKey": "menu.termsCondition",
+            "href": "/terms"
+          }
+        ]
+      }
+    },
+    "learner": {
+      "mainMenu": [
+        {
+          "labelKey": "nav.home",
+          "href": "/",
+          "hasDropdown": true
+        },
+        {
+          "labelKey": "nav.courses",
+          "href": "/courses",
+          "hasDropdown": true
+        },
+        {
+          "labelKey": "nav.dashboard",
+          "href": "/learner/dashboard",
+          "hasDropdown": true,
+          "submenu": [
+            {
+              "labelKey": "menu.myDashboard",
+              "href": "/learner/dashboard"
+            },
+            {
+              "labelKey": "menu.myProfile",
+              "href": "/learner/dashboard/profile"
+            },
+            {
+              "labelKey": "menu.enrolledCourses",
+              "href": "/learner/dashboard/courses"
+            },
+            {
+              "labelKey": "menu.wishlist",
+              "href": "/learner/dashboard/wishlist"
+            },
+            {
+              "labelKey": "menu.reviews",
+              "href": "/learner/dashboard/reviews"
+            },
+            {
+              "labelKey": "menu.myQuizAttempts",
+              "href": "/learner/dashboard/quiz-attempts"
+            },
+            {
+              "labelKey": "menu.orderHistory",
+              "href": "/learner/dashboard/orders"
+            },
+            {
+              "labelKey": "nav.settings",
+              "href": "/learner/dashboard/settings"
+            }
+          ]
+        },
+        {
+          "labelKey": "nav.blog",
+          "href": "/blog",
+          "hasDropdown": true
+        },
+        {
+          "labelKey": "nav.about",
+          "href": "/about"
+        },
+        {
+          "labelKey": "nav.contact",
+          "href": "/contact"
+        }
+      ],
+      "userMenu": {
+        "main": [
+          {
+            "icon": "feather-home",
+            "labelKey": "menu.myDashboard",
+            "href": "/learner/dashboard"
+          },
+          {
+            "icon": "feather-bookmark",
+            "labelKey": "menu.bookmark",
+            "href": "/learner/dashboard/wishlist"
+          },
+          {
+            "icon": "feather-shopping-bag",
+            "labelKey": "menu.enrolledCourses",
+            "href": "/learner/dashboard/courses"
+          },
+          {
+            "icon": "feather-heart",
+            "labelKey": "menu.wishlist",
+            "href": "/learner/dashboard/wishlist"
+          },
+          {
+            "icon": "feather-star",
+            "labelKey": "menu.reviews",
+            "href": "/learner/dashboard/reviews"
+          }
+        ],
+        "secondary": [
+          {
+            "icon": "feather-settings",
+            "labelKey": "nav.settings",
+            "href": "/learner/dashboard/settings"
+          },
+          {
+            "icon": "feather-log-out",
+            "labelKey": "common.logout",
+            "action": "logout"
+          }
+        ]
+      }
+    },
+    "tutor": {
+      "mainMenu": [
+        {
+          "labelKey": "nav.home",
+          "href": "/",
+          "hasDropdown": true
+        },
+        {
+          "labelKey": "nav.courses",
+          "href": "/courses",
+          "hasDropdown": true
+        },
+        {
+          "labelKey": "nav.dashboard",
+          "href": "/tutor/dashboard",
+          "hasDropdown": true,
+          "submenu": [
+            {
+              "labelKey": "menu.myDashboard",
+              "href": "/tutor/dashboard"
+            },
+            {
+              "labelKey": "menu.myProfile",
+              "href": "/tutor/dashboard/profile"
+            },
+            {
+              "labelKey": "menu.myCourses",
+              "href": "/tutor/dashboard/courses"
+            },
+            {
+              "labelKey": "menu.announcements",
+              "href": "/tutor/dashboard/announcements"
+            },
+            {
+              "labelKey": "nav.settings",
+              "href": "/tutor/dashboard/settings"
+            }
+          ]
+        },
+        {
+          "labelKey": "nav.blog",
+          "href": "/blog",
+          "hasDropdown": true
+        },
+        {
+          "labelKey": "nav.about",
+          "href": "/about"
+        },
+        {
+          "labelKey": "nav.contact",
+          "href": "/contact"
+        }
+      ],
+      "userMenu": {
+        "main": [
+          {
+            "icon": "feather-home",
+            "labelKey": "menu.myDashboard",
+            "href": "/tutor/dashboard"
+          },
+          {
+            "icon": "feather-monitor",
+            "labelKey": "menu.myCourses",
+            "href": "/tutor/dashboard/courses"
+          },
+          {
+            "icon": "feather-volume-2",
+            "labelKey": "menu.announcements",
+            "href": "/tutor/dashboard/announcements"
+          }
+        ],
+        "secondary": [
+          {
+            "icon": "feather-settings",
+            "labelKey": "nav.settings",
+            "href": "/tutor/dashboard/settings"
+          },
+          {
+            "icon": "feather-log-out",
+            "labelKey": "common.logout",
+            "action": "logout"
+          }
+        ]
+      }
+    },
+    "manager": {
+      "mainMenu": [
+        {
+          "labelKey": "nav.home",
+          "href": "/",
+          "hasDropdown": true
+        },
+        {
+          "labelKey": "nav.courses",
+          "href": "/courses",
+          "hasDropdown": true
+        },
+        {
+          "labelKey": "nav.dashboard",
+          "href": "/manager/dashboard",
+          "hasDropdown": true,
+          "submenu": [
+            {
+              "labelKey": "menu.myDashboard",
+              "href": "/manager/dashboard"
+            },
+            {
+              "labelKey": "menu.myProfile",
+              "href": "/manager/dashboard/profile"
+            },
+            {
+              "labelKey": "menu.myCourses",
+              "href": "/manager/dashboard/courses"
+            },
+            {
+              "labelKey": "menu.announcements",
+              "href": "/manager/dashboard/announcements"
+            },
+            {
+              "labelKey": "nav.settings",
+              "href": "/manager/dashboard/settings"
+            }
+          ]
+        },
+        {
+          "labelKey": "nav.blog",
+          "href": "/blog",
+          "hasDropdown": true
+        },
+        {
+          "labelKey": "nav.about",
+          "href": "/about"
+        },
+        {
+          "labelKey": "nav.contact",
+          "href": "/contact"
+        }
+      ],
+      "userMenu": {
+        "main": [
+          {
+            "icon": "feather-home",
+            "labelKey": "menu.myDashboard",
+            "href": "/manager/dashboard"
+          },
+          {
+            "icon": "feather-monitor",
+            "labelKey": "menu.myCourses",
+            "href": "/manager/dashboard/courses"
+          },
+          {
+            "icon": "feather-volume-2",
+            "labelKey": "menu.announcements",
+            "href": "/manager/dashboard/announcements"
+          }
+        ],
+        "secondary": [
+          {
+            "icon": "feather-settings",
+            "labelKey": "nav.settings",
+            "href": "/manager/dashboard/settings"
+          },
+          {
+            "icon": "feather-log-out",
+            "labelKey": "common.logout",
+            "action": "logout"
+          }
+        ]
+      }
+    }
+  },
+  "lessonSidebar": {
+    "sections": [
+      {
+        "id": "section-1",
+        "title": "Welcome Histudy",
+        "completedCount": 1,
+        "totalCount": 2,
+        "lessons": [
+          {
+            "id": "dummy-1",
+            "title": "Course Intro",
+            "type": "video",
+            "duration": "30 min",
+            "completed": true
+          },
+          {
+            "id": "dummy-2",
+            "title": "Introduction",
+            "type": "text",
+            "completed": true
+          }
+        ]
+      },
+      {
+        "id": "section-2",
+        "title": "Welcome Lessons",
+        "completedCount": 1,
+        "totalCount": 3,
+        "lessons": [
+          {
+            "id": "dummy-3",
+            "title": "Hello World!",
+            "type": "video",
+            "duration": "0.37",
+            "completed": true
+          },
+          {
+            "id": "dummy-4",
+            "title": "Values and Variables",
+            "type": "video",
+            "duration": "20 min",
+            "completed": false
+          },
+          {
+            "id": "dummy-5",
+            "title": "Basic Operators",
+            "type": "video",
+            "duration": "15 min",
+            "completed": false
+          }
+        ]
+      },
+      {
+        "id": "section-3",
+        "title": "Histudy Quiz",
+        "completedCount": 0,
+        "totalCount": 8,
+        "lessons": [
+          {
+            "id": "dummy-6",
+            "title": "Questions Types",
+            "type": "quiz",
+            "completed": false
+          },
+          {
+            "id": "dummy-7",
+            "title": "All Questions",
+            "type": "quiz",
+            "completed": false
+          }
+        ]
+      },
+      {
+        "id": "section-4",
+        "title": "Histudy Assignments",
+        "completedCount": 0,
+        "totalCount": 2,
+        "lessons": [
+          {
+            "id": "dummy-8",
+            "title": "Histudy Assignments",
+            "type": "assignment",
+            "completed": false
+          },
+          {
+            "id": "dummy-9",
+            "title": "Histudy Assignments Submit",
+            "type": "assignment",
+            "completed": false
+          }
+        ]
+      }
+    ]
+  }
+}

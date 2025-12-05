@@ -57,6 +57,44 @@ const translations: Record<Language, Translations> = {
     'nav.dashboard': 'Dashboard',
     'nav.profile': 'Profile',
     'nav.settings': 'Settings',
+    'nav.courses': 'Courses',
+    'nav.about': 'About',
+    'nav.blog': 'Blog',
+    'nav.contact': 'Contact',
+    
+    // Menu Sections
+    'menu.welcome': 'Welcome',
+    'menu.instructor': 'Instructor',
+    'menu.user': 'User',
+    
+    // Sidebar Menu Items
+    'menu.dashboard': 'Dashboard',
+    'menu.myProfile': 'My Profile',
+    'menu.enrolledCourses': 'Enrolled Courses',
+    'menu.wishlist': 'Wishlist',
+    'menu.reviews': 'Reviews',
+    'menu.myQuizAttempts': 'My Quiz Attempts',
+    'menu.orderHistory': 'Order History',
+    'menu.content': 'Content',
+    'menu.myCourses': 'My Courses',
+    'menu.announcements': 'Announcements',
+    'menu.quizAttempts': 'Quiz Attempts',
+    'menu.assignments': 'Assignments',
+    
+    // Header Menu Items
+    'menu.myDashboard': 'My Dashboard',
+    
+    // User Menu Items
+    'menu.bookmark': 'Bookmark',
+    'menu.viewProfile': 'View Profile',
+    
+    // Top Menu Items
+    'menu.myAccount': 'My Account',
+    'menu.faq': 'FAQ',
+    'menu.contactUs': 'Contact Us',
+    'menu.privacyPolicy': 'Privacy Policy',
+    'menu.termsCondition': 'Terms & Condition',
+    'menu.registerNow': 'Register Now',
     
     // Errors
     'error.network': 'Network error. Please check your connection.',
@@ -114,6 +152,44 @@ const translations: Record<Language, Translations> = {
     'nav.dashboard': 'Kontrol Paneli',
     'nav.profile': 'Profil',
     'nav.settings': 'Ayarlar',
+    'nav.courses': 'Kurslar',
+    'nav.about': 'Hakkımızda',
+    'nav.blog': 'Blog',
+    'nav.contact': 'İletişim',
+    
+    // Menu Sections
+    'menu.welcome': 'Hoş Geldiniz',
+    'menu.instructor': 'Eğitmen',
+    'menu.user': 'Kullanıcı',
+    
+    // Sidebar Menu Items
+    'menu.dashboard': 'Kontrol Paneli',
+    'menu.myProfile': 'Profilim',
+    'menu.enrolledCourses': 'Kayıtlı Kurslar',
+    'menu.wishlist': 'İstek Listesi',
+    'menu.reviews': 'Değerlendirmeler',
+    'menu.myQuizAttempts': 'Quiz Denemelerim',
+    'menu.orderHistory': 'Sipariş Geçmişi',
+    'menu.content': 'İçerik',
+    'menu.myCourses': 'Kurslarım',
+    'menu.announcements': 'Duyurular',
+    'menu.quizAttempts': 'Quiz Denemeleri',
+    'menu.assignments': 'Ödevler',
+    
+    // Header Menu Items
+    'menu.myDashboard': 'Kontrol Panelim',
+    
+    // User Menu Items
+    'menu.bookmark': 'Yer İşareti',
+    'menu.viewProfile': 'Profili Görüntüle',
+    
+    // Top Menu Items
+    'menu.myAccount': 'Hesabım',
+    'menu.faq': 'SSS',
+    'menu.contactUs': 'Bize Ulaşın',
+    'menu.privacyPolicy': 'Gizlilik Politikası',
+    'menu.termsCondition': 'Şartlar ve Koşullar',
+    'menu.registerNow': 'Şimdi Kayıt Ol',
     
     // Errors
     'error.network': 'Ağ hatası. Lütfen bağlantınızı kontrol edin.',

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
+import { getHeaderMenu } from '@/lib/menus';
+import { useTranslation } from '@/i18n';
 
 /**
  * Public Header Component
@@ -12,6 +14,8 @@ import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 export default function PublicHeader() {
   const [isSticky, setIsSticky] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t } = useTranslation();
+  const menu = getHeaderMenu('public');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,11 +38,14 @@ export default function PublicHeader() {
               <div className="rbt-header-content">
                 <div className="header-info">
                   <ul className="rbt-information-list">
-                    <li>
-                      <a href="tel:+1-202-555-0174">
-                        <i className="feather-phone"></i>+1-202-555-0174
-                      </a>
-                    </li>
+                    {menu.topMenu?.left?.map((item, index) => (
+                      <li key={index}>
+                        <a href={item.href}>
+                          {item.icon && <i className={item.icon}></i>}
+                          {item.text}
+                        </a>
+                      </li>
+                    ))}
                   </ul>
                 </div>
                 <div className="rbt-separator"></div>
@@ -78,18 +85,21 @@ export default function PublicHeader() {
               <div className="rbt-header-content">
                 <div className="header-info">
                   <ul className="rbt-secondary-menu">
-                    <li><Link href="/my-account">My Account</Link></li>
-                    <li><Link href="/faq">FAQ</Link></li>
-                    <li><Link href="/contact">Contact Us</Link></li>
-                    <li><Link href="/privacy-policy">Privacy Policy</Link></li>
-                    <li><Link href="/terms">Terms & Condition</Link></li>
+                    {menu.topMenu?.right?.map((item) => {
+                      const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
+                      return (
+                        <li key={item.href}>
+                          <Link href={item.href}>{itemLabel}</Link>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
                 <div className="rbt-separator"></div>
                 <div className="header-info">
                   <div className="header-right-btn d-flex">
                     <Link className="rbt-btn rbt-switch-btn btn-gradient btn-xs" href="/register">
-                      <span data-text="Register Now">Register Now</span>
+                      <span data-text={t('menu.registerNow')}>{t('menu.registerNow')}</span>
                     </Link>
                   </div>
                 </div>
@@ -132,21 +142,17 @@ export default function PublicHeader() {
             <div className="rbt-main-navigation d-none d-xl-block">
               <nav className="mainmenu-nav">
                 <ul className="mainmenu">
-                  <li className="has-menu-child-item">
-                    <Link href="/">Home <i className="feather-chevron-down"></i></Link>
-                  </li>
-                  <li className="has-menu-child-item">
-                    <Link href="/courses">Courses <i className="feather-chevron-down"></i></Link>
-                  </li>
-                  <li>
-                    <Link href="/about">About</Link>
-                  </li>
-                  <li>
-                    <Link href="/blog">Blog</Link>
-                  </li>
-                  <li>
-                    <Link href="/contact">Contact</Link>
-                  </li>
+                  {menu.mainMenu.map((item) => {
+                    const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
+                    return (
+                      <li key={item.href} className={item.hasDropdown ? 'has-menu-child-item' : ''}>
+                        <Link href={item.href}>
+                          {itemLabel}
+                          {item.hasDropdown && <i className="feather-chevron-down"></i>}
+                        </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
               </nav>
             </div>
@@ -194,11 +200,14 @@ export default function PublicHeader() {
         <div className="rbt-mobile-menu d-block d-xl-none">
           <nav className="mobile-menu-nav">
             <ul className="mainmenu">
-              <li><Link href="/">Home</Link></li>
-              <li><Link href="/courses">Courses</Link></li>
-              <li><Link href="/about">About</Link></li>
-              <li><Link href="/blog">Blog</Link></li>
-              <li><Link href="/contact">Contact</Link></li>
+              {menu.mainMenu.map((item) => {
+                const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
+                return (
+                  <li key={item.href}>
+                    <Link href={item.href}>{itemLabel}</Link>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
         </div>

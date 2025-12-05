@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import { useAuth } from '@/contexts/AuthContext';
+import { getHeaderMenu } from '@/lib/menus';
 
 /**
  * Manager Dashboard Header Component
@@ -13,6 +14,8 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function ManagerDashboardHeader() {
   const { user, clearAuth } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useTranslation();
+  const menu = getHeaderMenu('manager');
 
   const handleLogout = () => {
     clearAuth();
@@ -177,43 +180,32 @@ export default function ManagerDashboardHeader() {
             <div className="rbt-main-navigation d-none d-xl-block">
               <nav className="mainmenu-nav">
                 <ul className="mainmenu">
-                  <li className="has-menu-child-item">
-                    <Link href="/">Home <i className="feather-chevron-down"></i></Link>
-                  </li>
-                  <li className="has-menu-child-item">
-                    <Link href="/courses">Courses <i className="feather-chevron-down"></i></Link>
-                  </li>
-                  <li className="has-dropdown has-menu-child-item">
-                    <Link href="/manager/dashboard">
-                      Dashboard <i className="feather-chevron-down"></i>
-                    </Link>
-                    <ul className="submenu">
-                      <li>
-                        <Link href="/manager/dashboard">My Dashboard</Link>
+                  {menu.mainMenu.map((item) => {
+                    const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
+                    return (
+                      <li 
+                        key={item.href} 
+                        className={`${item.hasDropdown ? 'has-menu-child-item' : ''} ${item.submenu ? 'has-dropdown' : ''}`}
+                      >
+                        <Link href={item.href}>
+                          {itemLabel}
+                          {item.hasDropdown && <i className="feather-chevron-down"></i>}
+                        </Link>
+                        {item.submenu && (
+                          <ul className="submenu">
+                            {item.submenu.map((subItem) => {
+                              const subItemLabel = subItem.labelKey ? t(subItem.labelKey) : (subItem.label || '');
+                              return (
+                                <li key={subItem.href}>
+                                  <Link href={subItem.href}>{subItemLabel}</Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
                       </li>
-                      <li>
-                        <Link href="/manager/dashboard/profile">Profile</Link>
-                      </li>
-                      <li>
-                        <Link href="/manager/dashboard/courses">My Courses</Link>
-                      </li>
-                      <li>
-                        <Link href="/manager/dashboard/announcements">Announcements</Link>
-                      </li>
-                      <li>
-                        <Link href="/manager/dashboard/settings">Settings</Link>
-                      </li>
-                    </ul>
-                  </li>
-                  <li className="has-menu-child-item">
-                    <Link href="/blog">Blog <i className="feather-chevron-down"></i></Link>
-                  </li>
-                  <li>
-                    <Link href="/about">About</Link>
-                  </li>
-                  <li>
-                    <Link href="/contact">Contact</Link>
-                  </li>
+                    );
+                  })}
                 </ul>
               </nav>
             </div>
@@ -254,45 +246,48 @@ export default function ManagerDashboardHeader() {
                           <div className="admin-info">
                             <span className="name">{user.name}</span>
                             <Link className="rbt-btn-link color-primary" href="/manager/dashboard/profile">
-                              View Profile
+                              {t('menu.viewProfile')}
                             </Link>
                           </div>
                         </div>
-                        <ul className="user-list-wrapper">
-                          <li>
-                            <Link href="/manager/dashboard">
-                              <i className="feather-home"></i>
-                              <span>My Dashboard</span>
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="/manager/dashboard/courses">
-                              <i className="feather-monitor"></i>
-                              <span>My Courses</span>
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="/manager/dashboard/announcements">
-                              <i className="feather-volume-2"></i>
-                              <span>Announcements</span>
-                            </Link>
-                          </li>
-                        </ul>
-                        <hr className="mt--10 mb--10" />
-                        <ul className="user-list-wrapper">
-                          <li>
-                            <Link href="/manager/dashboard/settings">
-                              <i className="feather-settings"></i>
-                              <span>Settings</span>
-                            </Link>
-                          </li>
-                          <li>
-                            <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }}>
-                              <i className="feather-log-out"></i>
-                              <span>Logout</span>
-                            </a>
-                          </li>
-                        </ul>
+                        {menu.userMenu && (
+                          <>
+                            <ul className="user-list-wrapper">
+                              {menu.userMenu.main.map((item) => {
+                                const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
+                                return (
+                                  <li key={item.href}>
+                                    <Link href={item.href}>
+                                      {item.icon && <i className={item.icon}></i>}
+                                      <span>{itemLabel}</span>
+                                    </Link>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                            <hr className="mt--10 mb--10" />
+                            <ul className="user-list-wrapper">
+                              {menu.userMenu.secondary.map((item) => {
+                                const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
+                                return (
+                                  <li key={item.href || item.action}>
+                                    {item.action === 'logout' ? (
+                                      <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }}>
+                                        {item.icon && <i className={item.icon}></i>}
+                                        <span>{itemLabel}</span>
+                                      </a>
+                                    ) : (
+                                      <Link href={item.href}>
+                                        {item.icon && <i className={item.icon}></i>}
+                                        <span>{itemLabel}</span>
+                                      </Link>
+                                    )}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </>
+                        )}
                       </div>
                     </div>
                   </li>

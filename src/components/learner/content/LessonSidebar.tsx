@@ -4,22 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContent } from '@/contexts/ContentContext';
-
-interface LessonItem {
-  id: string;
-  title: string;
-  type: 'video' | 'text' | 'quiz' | 'assignment';
-  duration?: string;
-  completed: boolean;
-}
-
-interface CourseSection {
-  id: string;
-  title: string;
-  lessons: LessonItem[];
-  completedCount: number;
-  totalCount: number;
-}
+import { getLessonSidebarMenu, LessonSection } from '@/lib/menus';
 
 /**
  * Lesson Sidebar Component
@@ -59,98 +44,7 @@ export default function LessonSidebar() {
     }
   }, [openSections]);
 
-  const sections: CourseSection[] = [
-    {
-      id: 'section-1',
-      title: 'Welcome Histudy',
-      completedCount: 1,
-      totalCount: 2,
-      lessons: [
-        {
-          id: 'dummy-1',
-          title: 'Course Intro',
-          type: 'video',
-          duration: '30 min',
-          completed: true,
-        },
-        {
-          id: 'dummy-2',
-          title: 'Introduction',
-          type: 'text',
-          completed: true,
-        },
-      ],
-    },
-    {
-      id: 'section-2',
-      title: 'Welcome Lessons',
-      completedCount: 1,
-      totalCount: 3,
-      lessons: [
-        {
-          id: 'dummy-3',
-          title: 'Hello World!',
-          type: 'video',
-          duration: '0.37',
-          completed: true,
-        },
-        {
-          id: 'dummy-4',
-          title: 'Values and Variables',
-          type: 'video',
-          duration: '20 min',
-          completed: false,
-        },
-        {
-          id: 'dummy-5',
-          title: 'Basic Operators',
-          type: 'video',
-          duration: '15 min',
-          completed: false,
-        },
-      ],
-    },
-    {
-      id: 'section-3',
-      title: 'Histudy Quiz',
-      completedCount: 0,
-      totalCount: 8,
-      lessons: [
-        {
-          id: 'dummy-6',
-          title: 'Questions Types',
-          type: 'quiz',
-          completed: false,
-        },
-        {
-          id: 'dummy-7',
-          title: 'All Questions',
-          type: 'quiz',
-          completed: false,
-        },
-      ],
-    },
-    {
-      id: 'section-4',
-      title: 'Histudy Assignments',
-      completedCount: 0,
-      totalCount: 2,
-      lessons: [
-        {
-          id: 'dummy-8',
-          title: 'Histudy Assignments',
-          type: 'assignment',
-          completed: false,
-        },
-        {
-          id: 'dummy-9',
-          title: 'Histudy Assignments Submit',
-          type: 'assignment',
-          completed: false,
-        },
-      ],
-    },
-  ];
+  const { sections } = getLessonSidebarMenu();
 
   const getLessonIcon = (type: string) => {
     switch (type) {
