@@ -24,6 +24,11 @@ export interface SocialInfo {
   label: string;
 }
 
+export interface CopyrightLink {
+  label: string;
+  href: string;
+}
+
 export interface ContactData {
   phone: {
     primary: PhoneInfo;
@@ -54,7 +59,9 @@ export interface ContactData {
   company: {
     name: string;
     copyright: string;
+    website: string;
   };
+  copyrightLinks: CopyrightLink[];
 }
 
 /**
@@ -123,5 +130,12 @@ export function getMapEmbedUrl(): string {
  */
 export function getCompanyInfo() {
   return contactData.company;
+}
+
+/**
+ * Get copyright links
+ */
+export function getCopyrightLinks(): CopyrightLink[] {
+  return contactData.copyrightLinks || [];
 }
 

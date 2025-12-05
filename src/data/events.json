@@ -1,0 +1,308 @@
+{
+  "events": [
+    {
+      "id": "event-1",
+      "title": "International Education Fair 2024",
+      "slug": "international-education-fair-2024",
+      "image": "/assets/images/event/grid-type-01.jpg",
+      "date": "11 Jan, 2024",
+      "time": "8:00 am - 5:00 pm",
+      "location": "IAC Building",
+      "address": "123 Education Street, New York, NY 10001",
+      "category": "Education Fair",
+      "description": "Join us for the largest education fair of the year! Meet with top universities, colleges, and educational institutions from around the world. Discover new learning opportunities, scholarship programs, and career paths.",
+      "fullDescription": "The International Education Fair 2024 is a premier event bringing together students, educators, and institutions from across the globe. This comprehensive fair offers:\n\n- Direct access to admissions officers from top universities\n- Information sessions on study abroad programs\n- Scholarship and financial aid consultations\n- Career counseling and guidance\n- Interactive workshops and seminars\n\nWhether you're looking to pursue undergraduate, graduate, or professional development programs, this event provides the perfect platform to explore your educational options.",
+      "content": [
+        "Over 50 participating institutions from 20+ countries",
+        "Live presentations and Q&A sessions with university representatives",
+        "Scholarship opportunities worth over $1 million",
+        "Career counseling and guidance from industry experts",
+        "Networking opportunities with fellow students and educators",
+        "Interactive workshops on study abroad preparation"
+      ],
+      "faqs": [
+        {
+          "question": "Is registration required for this event?",
+          "answer": "Yes, registration is required and free of charge. You can register online through our website or at the event entrance."
+        },
+        {
+          "question": "What should I bring to the event?",
+          "answer": "Please bring a valid ID, copies of your academic transcripts, and any questions you have for the institutions. We also recommend bringing a notebook and pen."
+        },
+        {
+          "question": "Are there any age restrictions?",
+          "answer": "The event is open to all students, parents, and educators. There are no age restrictions, and we welcome participants of all educational levels."
+        },
+        {
+          "question": "Will food and beverages be available?",
+          "answer": "Yes, there will be food vendors and refreshment stations available throughout the venue."
+        }
+      ],
+      "participants": [
+        {
+          "name": "Dr. Sarah Johnson",
+          "role": "Event Coordinator",
+          "image": "/assets/images/team/team-01.jpg",
+          "location": "New York, USA",
+          "bio": "Dr. Johnson has over 15 years of experience in international education and has organized numerous successful education fairs worldwide."
+        },
+        {
+          "name": "Prof. Michael Chen",
+          "role": "Education Consultant",
+          "image": "/assets/images/team/team-02.jpg",
+          "location": "San Francisco, USA",
+          "bio": "Prof. Chen specializes in study abroad programs and has helped thousands of students find their perfect educational path."
+        }
+      ],
+      "price": 0,
+      "isFree": true,
+      "availableTickets": 500,
+      "registeredCount": 342
+    },
+    {
+      "id": "event-2",
+      "title": "Painting Art Contest 2024",
+      "slug": "painting-art-contest-2024",
+      "image": "/assets/images/event/grid-type-02.jpg",
+      "date": "15 Feb, 2024",
+      "time": "9:00 am - 6:00 pm",
+      "location": "Vancouver Art Gallery",
+      "address": "750 Hornby Street, Vancouver, BC V6Z 2H7",
+      "category": "Art Competition",
+      "description": "Showcase your artistic talent in our annual painting contest. Open to artists of all skill levels, from beginners to professionals.",
+      "fullDescription": "The Painting Art Contest 2024 celebrates creativity and artistic expression. This prestigious competition brings together artists from diverse backgrounds to showcase their unique perspectives through the medium of painting.\n\nKey highlights:\n\n- Multiple categories: Abstract, Realism, Landscape, Portrait, and Mixed Media\n- Professional judging panel featuring renowned artists and critics\n- Cash prizes totaling $10,000\n- Exhibition of winning artworks\n- Networking opportunities with fellow artists and gallery owners\n- Workshops and masterclasses by award-winning artists",
+      "content": [
+        "Open to artists of all ages and skill levels",
+        "Multiple categories and prize divisions",
+        "Professional judging by renowned artists",
+        "Cash prizes and recognition certificates",
+        "Public exhibition of selected artworks",
+        "Networking with gallery owners and collectors"
+      ],
+      "faqs": [
+        {
+          "question": "What are the contest categories?",
+          "answer": "We have five main categories: Abstract, Realism, Landscape, Portrait, and Mixed Media. Each category has separate prizes and judging criteria."
+        },
+        {
+          "question": "Is there an entry fee?",
+          "answer": "Yes, there is a registration fee of $25 per artwork. This helps cover event costs and prize money."
+        },
+        {
+          "question": "What are the size requirements for paintings?",
+          "answer": "Paintings should be between 12x16 inches and 48x60 inches. All works must be properly framed and ready for display."
+        },
+        {
+          "question": "When will winners be announced?",
+          "answer": "Winners will be announced at the closing ceremony on the final day of the event. Results will also be posted on our website."
+        }
+      ],
+      "participants": [
+        {
+          "name": "Emma Rodriguez",
+          "role": "Contest Director",
+          "image": "/assets/images/team/team-01.jpg",
+          "location": "Vancouver, Canada",
+          "bio": "Emma is a celebrated artist and curator with over 20 years of experience in organizing art competitions and exhibitions."
+        }
+      ],
+      "price": 25,
+      "isFree": false,
+      "availableTickets": 200,
+      "registeredCount": 156
+    },
+    {
+      "id": "event-3",
+      "title": "Study Score Education Fair 2024",
+      "slug": "study-score-education-fair-2024",
+      "image": "/assets/images/event/grid-type-03.jpg",
+      "date": "20 Mar, 2024",
+      "time": "10:00 am - 4:00 pm",
+      "location": "Paris Convention Center",
+      "address": "Place de la Porte de Versailles, 75015 Paris, France",
+      "category": "Education Fair",
+      "description": "Discover the best educational opportunities at our comprehensive education fair. Connect with leading institutions and explore your academic future.",
+      "fullDescription": "The Study Score Education Fair 2024 is designed to help students and parents make informed decisions about their educational journey. This event features:\n\n- Presentations from top universities and colleges\n- Information about online learning programs\n- Career guidance and counseling services\n- Scholarship and financial aid information\n- Interactive demonstrations of educational technology\n- Networking opportunities with educators and students",
+      "content": [
+        "Access to 30+ educational institutions",
+        "Free career counseling sessions",
+        "Scholarship information and applications",
+        "Educational technology demonstrations",
+        "Student success stories and testimonials",
+        "Parent information sessions"
+      ],
+      "faqs": [
+        {
+          "question": "Do I need to register in advance?",
+          "answer": "While walk-ins are welcome, we highly recommend pre-registering online to ensure you receive all event materials and updates."
+        },
+        {
+          "question": "Is parking available?",
+          "answer": "Yes, there is ample parking available at the convention center. Parking fees apply."
+        },
+        {
+          "question": "Can parents attend with their children?",
+          "answer": "Absolutely! We encourage parents to attend and participate in our special parent information sessions."
+        }
+      ],
+      "participants": [
+        {
+          "name": "Jean-Pierre Dubois",
+          "role": "Fair Organizer",
+          "image": "/assets/images/team/team-02.jpg",
+          "location": "Paris, France",
+          "bio": "Jean-Pierre has been organizing education fairs across Europe for over a decade, helping thousands of students find their path."
+        }
+      ],
+      "price": 0,
+      "isFree": true,
+      "availableTickets": 1000,
+      "registeredCount": 678
+    },
+    {
+      "id": "event-4",
+      "title": "Elegant Light Box Paper Cut Dioramas",
+      "slug": "elegant-light-box-paper-cut-dioramas",
+      "image": "/assets/images/event/grid-type-04.jpg",
+      "date": "25 Apr, 2024",
+      "time": "2:00 pm - 8:00 pm",
+      "location": "IAC Building",
+      "address": "555 West 18th Street, New York, NY 10011",
+      "category": "Art Workshop",
+      "description": "Learn the beautiful art of creating light box paper cut dioramas in this hands-on workshop. Perfect for beginners and experienced artists alike.",
+      "fullDescription": "Join us for an immersive workshop on creating stunning light box paper cut dioramas. This unique art form combines paper cutting, layering, and LED lighting to create breathtaking three-dimensional scenes.\n\nWorkshop includes:\n\n- Introduction to paper cutting techniques\n- Design principles for dioramas\n- Hands-on creation of your own light box\n- LED lighting installation and wiring\n- Finishing techniques and presentation\n- Take home your completed artwork",
+      "content": [
+        "All materials and tools provided",
+        "Step-by-step instruction from expert artists",
+        "Create your own unique light box diorama",
+        "Learn professional techniques and tips",
+        "Take home your completed artwork",
+        "Certificate of completion"
+      ],
+      "faqs": [
+        {
+          "question": "Do I need any prior experience?",
+          "answer": "No prior experience is necessary! This workshop is designed for beginners, though experienced artists will also find it valuable."
+        },
+        {
+          "question": "What materials are included?",
+          "answer": "All materials including paper, cutting tools, LED lights, and frames are provided. You just need to bring your creativity!"
+        },
+        {
+          "question": "How long is the workshop?",
+          "answer": "The workshop runs for 6 hours with breaks. You'll complete your light box during the session."
+        },
+        {
+          "question": "Can I bring a friend?",
+          "answer": "Yes! We offer a 10% discount for groups of 2 or more. Please register together to receive the discount."
+        }
+      ],
+      "participants": [
+        {
+          "name": "Lisa Anderson",
+          "role": "Workshop Instructor",
+          "image": "/assets/images/team/team-01.jpg",
+          "location": "New York, USA",
+          "bio": "Lisa is a renowned paper artist whose work has been exhibited in galleries worldwide. She specializes in light box dioramas and has taught hundreds of students."
+        }
+      ],
+      "price": 89,
+      "isFree": false,
+      "availableTickets": 30,
+      "registeredCount": 18
+    },
+    {
+      "id": "event-5",
+      "title": "Most Effective Ways Education's Problem",
+      "slug": "most-effective-ways-education-problem",
+      "image": "/assets/images/event/grid-type-05.jpg",
+      "date": "10 May, 2024",
+      "time": "9:00 am - 5:00 pm",
+      "location": "Vancouver",
+      "address": "Vancouver Public Library, 350 West Georgia Street, Vancouver, BC",
+      "category": "Conference",
+      "description": "Join educators, researchers, and policymakers for a comprehensive conference on addressing current challenges in education.",
+      "fullDescription": "This conference brings together thought leaders in education to discuss innovative solutions to pressing educational challenges. Topics include:\n\n- Technology integration in classrooms\n- Addressing learning gaps\n- Student mental health and wellbeing\n- Inclusive education practices\n- Teacher professional development\n- Educational policy and reform",
+      "content": [
+        "Keynote presentations from education leaders",
+        "Panel discussions and Q&A sessions",
+        "Workshop sessions on practical solutions",
+        "Networking opportunities with peers",
+        "Resource fair with educational tools",
+        "Certificate of attendance"
+      ],
+      "faqs": [
+        {
+          "question": "Who should attend this conference?",
+          "answer": "This conference is ideal for teachers, administrators, education researchers, policymakers, and anyone interested in improving education."
+        },
+        {
+          "question": "Will sessions be recorded?",
+          "answer": "Keynote sessions will be recorded and made available to registered attendees after the event."
+        },
+        {
+          "question": "Is there a group discount?",
+          "answer": "Yes, groups of 5 or more receive a 15% discount. Please contact us for group registration."
+        }
+      ],
+      "participants": [
+        {
+          "name": "Dr. Robert Kim",
+          "role": "Conference Chair",
+          "image": "/assets/images/team/team-02.jpg",
+          "location": "Vancouver, Canada",
+          "bio": "Dr. Kim is a leading education researcher with over 25 years of experience in educational policy and reform."
+        }
+      ],
+      "price": 149,
+      "isFree": false,
+      "availableTickets": 300,
+      "registeredCount": 234
+    },
+    {
+      "id": "event-6",
+      "title": "Top 7 Common About Education",
+      "slug": "top-7-common-about-education",
+      "image": "/assets/images/event/grid-type-06.jpg",
+      "date": "5 Jun, 2024",
+      "time": "1:00 pm - 5:00 pm",
+      "location": "Paris",
+      "address": "Sorbonne University, 1 Rue Victor Cousin, 75005 Paris, France",
+      "category": "Seminar",
+      "description": "An informative seminar exploring the seven most common questions and misconceptions about modern education.",
+      "fullDescription": "This engaging seminar addresses the most frequently asked questions about education today. Our expert panel will discuss:\n\n- Common myths about learning styles\n- The truth about standardized testing\n- Technology's role in education\n- The importance of soft skills\n- Career preparation in schools\n- Parent involvement strategies\n- Future of education trends",
+      "content": [
+        "Expert panel discussions",
+        "Interactive Q&A sessions",
+        "Practical takeaway resources",
+        "Networking coffee breaks",
+        "Resource materials provided",
+        "Follow-up online resources"
+      ],
+      "faqs": [
+        {
+          "question": "Is this suitable for parents?",
+          "answer": "Absolutely! This seminar is designed for parents, teachers, and anyone interested in understanding modern education better."
+        },
+        {
+          "question": "Will there be materials to take home?",
+          "answer": "Yes, all attendees will receive a comprehensive resource packet with key information and additional reading materials."
+        }
+      ],
+      "participants": [
+        {
+          "name": "Dr. Marie Leclerc",
+          "role": "Seminar Moderator",
+          "image": "/assets/images/team/team-01.jpg",
+          "location": "Paris, France",
+          "bio": "Dr. Leclerc is a professor of education at Sorbonne University and a leading voice in educational research."
+        }
+      ],
+      "price": 45,
+      "isFree": false,
+      "availableTickets": 150,
+      "registeredCount": 98
+    }
+  ]
+}
+

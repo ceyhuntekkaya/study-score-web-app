@@ -59,6 +59,7 @@ const translations: Record<Language, Translations> = {
     'nav.settings': 'Settings',
     'nav.courses': 'Courses',
     'nav.about': 'About',
+    'nav.events': 'Events',
     'nav.blog': 'Blog',
     'nav.contact': 'Contact',
     
@@ -154,6 +155,7 @@ const translations: Record<Language, Translations> = {
     'nav.settings': 'Ayarlar',
     'nav.courses': 'Kurslar',
     'nav.about': 'Hakkımızda',
+    'nav.events': 'Etkinlikler',
     'nav.blog': 'Blog',
     'nav.contact': 'İletişim',
     

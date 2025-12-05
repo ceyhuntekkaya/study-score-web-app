@@ -80,7 +80,26 @@
   },
   "company": {
     "name": "Study Score App",
-    "copyright": "Copyright © 2025 Study Score App. All Rights Reserved"
-  }
+    "copyright": "Copyright © 2025 Study Score App. All Rights Reserved",
+    "website": "#"
+  },
+  "copyrightLinks": [
+    {
+      "label": "Terms of service",
+      "href": "/terms"
+    },
+    {
+      "label": "Privacy policy",
+      "href": "/privacy-policy"
+    },
+    {
+      "label": "Subscription",
+      "href": "/subscription"
+    },
+    {
+      "label": "Login & Register",
+      "href": "/login"
+    }
+  ]
 }
 

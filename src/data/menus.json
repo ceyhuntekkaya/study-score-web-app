@@ -254,6 +254,10 @@
           "href": "/about"
         },
         {
+          "labelKey": "nav.events",
+          "href": "/events"
+        },
+        {
           "labelKey": "nav.blog",
           "href": "/blog"
         },
