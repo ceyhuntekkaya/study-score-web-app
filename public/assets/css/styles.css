@@ -26421,7 +26421,7 @@ blockquote.has-text-align-right cite,
 	Template Styles
 ***************************************/
 /*------------------------------
- * HiStudy Banner Styles
+ * Banner Styles
 ---------------------------------*/
 .active-header-transparent .rbt-banner-area {
   padding-top: 100px;
@@ -27058,17 +27058,7 @@ blockquote.has-text-align-right cite,
     margin-left: 0;
   }
 }
-.rbt-banner-3 .edumarque {
-  position: absolute;
-  z-index: -1;
-  bottom: 0;
-  right: 0;
-  background-image: url(../images/banner/histudy-text.png);
-  background-repeat: repeat-x;
-  background-size: auto;
-  height: 206px;
-  width: 52%;
-}
+
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
   .rbt-banner-3 .edumarque {
     height: 275px;

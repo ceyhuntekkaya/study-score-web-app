@@ -7,42 +7,38 @@ import Image from 'next/image';
 export default function PrivacyPolicyPage() {
   return (
     <>
-      {/* Breadcrumb Section */}
-      <div className="rbt-breadcrumb-default ptb--100 ptb_md--50 ptb_sm--30 bg-gradient-1">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="breadcrumb-inner text-center">
-                <div className="breadcrumb-dark">
-                  <Image
-                    src="/assets/images/bg/bg-image-10.jpg"
-                    alt="Education Images"
-                    width={1920}
-                    height={400}
-                    className="w-100"
-                  />
-                </div>
-                <div className="breadcrumb-content-top text-center">
-                  <h1 className="title">Privacy Policy</h1>
-                  <p className="mb--20">Study Score App Privacy Policy Here.</p>
-                  <ul className="page-list">
-                    <li className="rbt-breadcrumb-item">
-                      <a href="/">Home</a>
-                    </li>
-                    <li>
-                      <div className="icon-right"><i className="feather-chevron-right"></i></div>
-                    </li>
-                    <li className="rbt-breadcrumb-item active">Privacy Policy</li>
-                  </ul>
-                </div>
-              </div>
+      <div className="rbt-overlay-page-wrapper">
+        {/* Breadcrumb Section */}
+        <div className="breadcrumb-image-container breadcrumb-style-max-width">
+          <div className="breadcrumb-image-wrapper">
+            <div className="breadcrumb-dark">
+              <Image
+                src="/assets/images/bg/bg-image-10.jpg"
+                alt="Education Images"
+                width={1920}
+                height={600}
+                className="w-100"
+                style={{ objectFit: 'cover' }}
+              />
             </div>
           </div>
+          <div className="breadcrumb-content-top text-center">
+            <h1 className="title">Privacy Policy</h1>
+            <p className="mb--20">Study Score App Privacy Policy Here.</p>
+            <ul className="page-list">
+              <li className="rbt-breadcrumb-item">
+                <a href="/">Home</a>
+              </li>
+              <li>
+                <div className="icon-right"><i className="feather-chevron-right"></i></div>
+              </li>
+              <li className="rbt-breadcrumb-item active">Privacy Policy</li>
+            </ul>
+          </div>
         </div>
-      </div>
 
-      {/* Privacy Policy Content */}
-      <div className="rbt-putchase-guide-area breadcrumb-style-max-width rbt-section-gapBottom">
+        {/* Privacy Policy Content */}
+        <div className="rbt-putchase-guide-area breadcrumb-style-max-width rbt-section-gapBottom">
         <div className="rbt-article-content-wrapper">
           <div className="post-thumbnail mb--30 position-relative wp-block-image alignwide">
             <Image
@@ -170,6 +166,7 @@ export default function PrivacyPolicyPage() {
               Address: [Your Company Address]
             </p>
           </div>
+        </div>
         </div>
       </div>
     </>
