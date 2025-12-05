@@ -38,7 +38,7 @@ export default function AboutPageContent() {
               <div className="thumbnail image-1">
                 <Image 
                   src="/assets/images/about/about-07.jpg" 
-                  alt="Education Images" 
+                  alt="Study Score" 
                   width={500} 
                   height={600}
                   style={{ objectFit: 'cover' }}
@@ -47,7 +47,7 @@ export default function AboutPageContent() {
               <div className="thumbnail image-2 d-none d-xl-block">
                 <Image 
                   src="/assets/images/about/about-09.jpg" 
-                  alt="Education Images" 
+                  alt="Study Score" 
                   width={300} 
                   height={400}
                   style={{ objectFit: 'cover' }}
@@ -56,7 +56,7 @@ export default function AboutPageContent() {
               <div className="thumbnail image-3 d-none d-md-block">
                 <Image 
                   src="/assets/images/about/about-08.jpg" 
-                  alt="Education Images" 
+                  alt="Study Score" 
                   width={250} 
                   height={300}
                   style={{ objectFit: 'cover' }}

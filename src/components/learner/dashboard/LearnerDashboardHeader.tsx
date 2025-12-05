@@ -160,8 +160,8 @@ export default function LearnerDashboardHeader() {
                   <Link href="/">
                     <Image
                       src="/assets/images/logo/logo.png"
-                      alt="Education Logo"
-                      width={150}
+                      alt="Study Score Logo"
+                      width={200}
                       height={50}
                     />
                   </Link>
@@ -170,8 +170,8 @@ export default function LearnerDashboardHeader() {
                   <Link href="/">
                     <Image
                       src="/assets/images/dark/logo/logo-light.png"
-                      alt="Education Logo"
-                      width={150}
+                      alt="Study Score Logo"
+                      width={200}
                       height={50}
                     />
                   </Link>

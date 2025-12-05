@@ -37,7 +37,7 @@ export default function PublicFooter() {
                     <Image 
                       src="/assets/images/logo/logo.png" 
                       alt="Study Score App" 
-                      width={150} 
+                      width={200} 
                       height={40}
                     />
                   </Link>
@@ -47,7 +47,7 @@ export default function PublicFooter() {
                     <Image 
                       src="/assets/images/dark/logo/logo-light.png" 
                       alt="Study Score App" 
-                      width={150} 
+                      width={200} 
                       height={40}
                     />
                   </Link>

@@ -56,7 +56,7 @@ export default function CourseDetailsBanner({
       <div className="breadcrumb-inner breadcrumb-dark">
         <Image
           src="/assets/images/bg/bg-image-10.jpg"
-          alt="Education Images"
+          alt="Study Score"
           width={1920}
           height={400}
           style={{ objectFit: 'cover', width: '100%', height: '100%' }}

@@ -122,7 +122,7 @@ export default function HeroBanner() {
                               <a href="#" className="avatar" data-tooltip="Mark Jordan" tabIndex={0}>
                                 <Image 
                                   src="/assets/images/shape/art-stu-1.png" 
-                                  alt="education" 
+                                  alt="Study Score" 
                                   width={40} 
                                   height={40}
                                 />
@@ -130,7 +130,7 @@ export default function HeroBanner() {
                               <a href="#" className="avatar" data-tooltip="Jordan" tabIndex={0}>
                                 <Image 
                                   src="/assets/images/shape/art-stu-3.png" 
-                                  alt="education" 
+                                  alt="Study Score" 
                                   width={40} 
                                   height={40}
                                 />
@@ -138,7 +138,7 @@ export default function HeroBanner() {
                               <a href="#" className="avatar" data-tooltip="Ava Miller" tabIndex={0}>
                                 <Image 
                                   src="/assets/images/shape/art-stu-2.png" 
-                                  alt="education" 
+                                  alt="Study Score" 
                                   width={40} 
                                   height={40}
                                 />

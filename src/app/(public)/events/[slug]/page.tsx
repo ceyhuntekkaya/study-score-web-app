@@ -51,7 +51,7 @@ export default function EventDetailsPage({ params }: { params: Promise<{ slug: s
         <div className="breadcrumb-inner breadcrumb-dark">
           <Image
             src="/assets/images/bg/bg-image-10.jpg"
-            alt="Education Images"
+            alt="Study Score"
             width={1920}
             height={400}
             className="w-100"

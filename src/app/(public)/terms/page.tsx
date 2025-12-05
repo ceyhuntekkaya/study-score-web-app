@@ -14,7 +14,7 @@ export default function TermsOfServicePage() {
             <div className="breadcrumb-dark">
               <Image
                 src="/assets/images/bg/bg-image-10.jpg"
-                alt="Education Images"
+                alt="Study Score"
                 width={1920}
                 height={600}
                 className="w-100"

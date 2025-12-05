@@ -30,8 +30,8 @@ export default function TutorDashboardFooter() {
                   <Link href="/">
                     <Image
                       src="/assets/images/logo/logo.png"
-                      alt="Edu-cause"
-                      width={150}
+                      alt="Study Score"
+                      width={200}
                       height={50}
                     />
                   </Link>
@@ -40,8 +40,8 @@ export default function TutorDashboardFooter() {
                   <Link href="/">
                     <Image
                       src="/assets/images/dark/logo/logo-light.png"
-                      alt="Edu-cause"
-                      width={150}
+                      alt="Study Score"
+                      width={200}
                       height={50}
                     />
                   </Link>

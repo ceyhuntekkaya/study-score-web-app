@@ -123,7 +123,7 @@ export default function PublicHeader() {
                 <Link href="/">
                   <Image 
                     src="/assets/images/logo/logo-black.png" 
-                    alt="Education Logo" 
+                    alt="Study Score Logo" 
                     width={150} 
                     height={40}
                     priority
@@ -134,7 +134,7 @@ export default function PublicHeader() {
                 <Link href="/">
                   <Image 
                     src="/assets/images/dark/logo/logo-light.png" 
-                    alt="Education Logo" 
+                    alt="Study Score Logo" 
                     width={150} 
                     height={40}
                   />
