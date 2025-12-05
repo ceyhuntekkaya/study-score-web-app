@@ -26,7 +26,7 @@ export default function EventSection() {
     {
       id: 3,
       image: '/assets/images/event/grid-type-03.jpg',
-      title: 'Histudy Education Fair 2024',
+      title: 'Study Score Education Fair 2024',
       location: 'Paris',
       time: '8:00 am - 5:00 pm',
     },

@@ -58,7 +58,7 @@ export default function WriterCreateCoursePage() {
       title: 'Lesson One',
       summary: 'Introduction to the course fundamentals',
       lessons: [
-        { id: 'lesson-1', title: 'The Complete Histudy 2024: From Zero to Expert!', summary: 'Course introduction and overview', type: 'video', duration: '30 min', isPreview: true },
+        { id: 'lesson-1', title: 'The Complete Study Score 20246 From Zero to Expert!', summary: 'Course introduction and overview', type: 'video', duration: '30 min', isPreview: true },
         { id: 'lesson-2', title: 'Difficult Things About Education.', summary: 'Understanding educational challenges', type: 'video', duration: '25 min' },
         { id: 'lesson-3', title: 'Five Things You Should Do In Education.', summary: 'Best practices in education', type: 'text' },
         { id: 'lesson-4', title: 'Course Fundamentals Quiz', summary: 'Test your knowledge', type: 'quiz', duration: '15 min' },
@@ -69,7 +69,7 @@ export default function WriterCreateCoursePage() {
       title: 'Lesson two',
       summary: 'Advanced concepts and practical applications',
       lessons: [
-        { id: 'lesson-5', title: 'The Complete Histudy 2024: From Zero to Expert!', summary: 'Deep dive into advanced topics', type: 'video', duration: '45 min' },
+        { id: 'lesson-5', title: 'The Complete Study Score 2026: From Zero to Expert!', summary: 'Deep dive into advanced topics', type: 'video', duration: '45 min' },
         { id: 'lesson-6', title: 'Difficult Things About Education.', summary: 'Advanced educational concepts', type: 'video', duration: '35 min' },
         { id: 'lesson-7', title: 'Five Things You Should Do In Education.', summary: 'Practical implementation guide', type: 'text' },
         { id: 'lesson-8', title: 'Final Assignment', summary: 'Complete the final project', type: 'assignment' },

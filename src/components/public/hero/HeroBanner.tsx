@@ -54,7 +54,7 @@ export default function HeroBanner() {
 
   return (
     <div className="rbt-banner-area rbt-banner-19">
-      <div className="wrapper">
+      <div className="wrapper rbt-arrow-between">
         <Swiper
           modules={[Navigation, Autoplay, EffectFade]}
           spaceBetween={0}
@@ -69,7 +69,7 @@ export default function HeroBanner() {
             nextEl: '.rbt-arrow-right',
           }}
           loop={true}
-          className="rbt-banner-activation-2 rbt-slider-animation rbt-arrow-between"
+          className="rbt-banner-activation-2 rbt-slider-animation"
           onSwiper={(swiper) => {
             swiperRef.current = swiper;
           }}

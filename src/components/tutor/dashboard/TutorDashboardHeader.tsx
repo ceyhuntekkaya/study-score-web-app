@@ -6,6 +6,7 @@ import Image from 'next/image';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import { useAuth } from '@/contexts/AuthContext';
 import { getHeaderMenu } from '@/lib/menus';
+import { useTranslation } from '@/i18n';
 
 /**
  * Tutor Dashboard Header Component
@@ -67,7 +68,7 @@ export default function TutorDashboardHeader() {
                               width={20}
                               height={20}
                             />{' '}
-                            Intro price. Get Histudy for Big Sale -95% off.
+                            Intro price. Get Study Score for Big Sale -95% off.
                           </span>
                         </div>
                       </div>

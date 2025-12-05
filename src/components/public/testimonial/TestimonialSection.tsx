@@ -23,7 +23,7 @@ export default function TestimonialSection() {
       name: 'Michael D. Lovelady',
       position: 'CEO',
       company: '@ Google',
-      text: 'Histudy education, vulputate at sapien sit amet, auctor iaculis lorem. In vel hend rerit nisi. Vestibulum eget.',
+      text: 'Study Score education, vulputate at sapien sit amet, auctor iaculis lorem. In vel hend rerit nisi. Vestibulum eget.',
       rating: 5,
     },
     {

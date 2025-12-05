@@ -27,9 +27,7 @@ export default function DashboardStatsCard({
         </div>
         <div className="content">
           <h3 className={`counter without-icon ${color}`}>
-            <span className="odometer" data-count={count}>
-              {count}
-            </span>
+            {count}
           </h3>
           <span className="rbt-title-style-2 d-block">{label}</span>
         </div>

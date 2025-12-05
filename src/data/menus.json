@@ -576,7 +576,7 @@
     "sections": [
       {
         "id": "section-1",
-        "title": "Welcome Histudy",
+        "title": "Welcome Study Score",
         "completedCount": 1,
         "totalCount": 2,
         "lessons": [
@@ -626,7 +626,7 @@
       },
       {
         "id": "section-3",
-        "title": "Histudy Quiz",
+        "title": "Study Score Quiz",
         "completedCount": 0,
         "totalCount": 8,
         "lessons": [
@@ -646,19 +646,19 @@
       },
       {
         "id": "section-4",
-        "title": "Histudy Assignments",
+        "title": "Study Score Assignments",
         "completedCount": 0,
         "totalCount": 2,
         "lessons": [
           {
             "id": "dummy-8",
-            "title": "Histudy Assignments",
+            "title": "Study Score Assignments",
             "type": "assignment",
             "completed": false
           },
           {
             "id": "dummy-9",
-            "title": "Histudy Assignments Submit",
+            "title": "Study Score Assignments Submit",
             "type": "assignment",
             "completed": false
           }

@@ -69,7 +69,7 @@ export default function AboutPageContent() {
               <div className="section-title text-start">
                 <span className="subtitle bg-coral-opacity">Know About Us</span>
                 <h2 className="title">
-                  Know About Histudy <br /> Learning Platform
+                  Know About Study Score <br /> Learning Platform
                 </h2>
               </div>
               <p className="description mt--30">

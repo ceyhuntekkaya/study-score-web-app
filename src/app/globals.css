@@ -44,7 +44,7 @@ a {
 }
 
 /* Lesson Video Player Styles */
-.plyr__video-embed.rbtplayer {
+.rbt-video-player {
   position: relative;
   width: 100%;
   padding-bottom: 56.25%; /* 16:9 aspect ratio */
@@ -52,7 +52,7 @@ a {
   overflow: hidden;
 }
 
-.plyr__video-embed.rbtplayer iframe {
+.rbt-video-player iframe {
   position: absolute;
   top: 0;
   left: 0;

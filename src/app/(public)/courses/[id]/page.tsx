@@ -22,7 +22,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
   // Dummy course data - will be replaced with API call
   const course = {
     id,
-    title: 'The Complete Histudy 2024: From Zero to Expert!',
+    title: 'The Complete Study Score 2026: From Zero to Expert!',
     description: 'Master Python by building 100 projects in 100 days. Learn data science, automation, build websites, games and apps!',
     rating: 4.8,
     totalRatings: 215475,
@@ -59,7 +59,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
     sections: [
       {
         id: 'intro',
-        title: 'Intro to Course and Histudy',
+        title: 'Intro to Course and Study Score',
         duration: '1hr 30min',
         lessons: [
           {

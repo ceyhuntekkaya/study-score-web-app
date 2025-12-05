@@ -60,12 +60,12 @@ export default function LessonContent() {
         description: 'Review all questions and their formats.',
       },
       'dummy-8': {
-        title: 'Histudy Assignments',
+        title: 'Study Score Assignments',
         videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE',
         description: 'Complete your assignments and submit them.',
       },
       'dummy-9': {
-        title: 'Histudy Assignments Submit',
+        title: 'Study Score Assignments Submit',
         videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE',
         description: 'Learn how to submit your assignments properly.',
       },
@@ -74,7 +74,7 @@ export default function LessonContent() {
     return {
       id: lessonId,
       ...(lessons[lessonId] || lessons['dummy-1']),
-      courseTitle: 'The Complete Histudy 2024: From Zero to Expert!',
+      courseTitle: 'The Complete Study Score 2026: From Zero to Expert!',
     };
   }, [lessonId]);
 
@@ -107,7 +107,7 @@ export default function LessonContent() {
         </div>
       </div>
       <div className="inner">
-        <div className="plyr__video-embed rbtplayer">
+        <div className="rbt-video-player">
           <iframe
             src={lessonData.videoUrl}
             allowFullScreen

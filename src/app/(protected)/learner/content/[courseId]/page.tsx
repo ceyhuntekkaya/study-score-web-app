@@ -14,7 +14,7 @@ export default function CoursePage() {
   const courseId = params?.courseId as string;
   const [isRedirecting, setIsRedirecting] = useState(false);
   
-  // İlk ders ID'sini belirle (sidebar'daki ilk ders - Welcome Histudy > Course Intro)
+  // İlk ders ID'sini belirle (sidebar'daki ilk ders - Welcome Study Score > Course Intro)
   const firstLessonId = 'dummy-1';
 
   useEffect(() => {

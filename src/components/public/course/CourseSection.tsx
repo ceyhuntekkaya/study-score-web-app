@@ -76,7 +76,7 @@ export default function CourseSection() {
               </h6>
               <h2 className="title w-600">
                 Academic Programs <br />{' '}
-                <span className="theme-gradient">At Histudy</span>
+                <span className="theme-gradient">At Study Score</span>
               </h2>
             </div>
           </div>

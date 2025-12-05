@@ -24,7 +24,7 @@ export default function AboutTestimonialSection() {
       name: 'Michael D. Lovelady',
       position: 'CEO',
       company: '@ Google',
-      text: 'Histudy education, vulputate at sapien sit amet, auctor iaculis lorem. In vel hend rerit nisi. Vestibulum eget risus velit.',
+      text: 'Study Score education, vulputate at sapien sit amet, auctor iaculis lorem. In vel hend rerit nisi. Vestibulum eget risus velit.',
       rating: 5,
     },
     {
@@ -51,7 +51,7 @@ export default function AboutTestimonialSection() {
       name: 'Pearl B. Hill',
       position: 'Chairman SR',
       company: '@ Facebook',
-      text: 'Like this histudy, vulputate at sapien sit amet, auctor iaculis lorem. In vel hend rerit nisi. Vestibulum eget risus velit.',
+      text: 'Like this Study Score, vulputate at sapien sit amet, auctor iaculis lorem. In vel hend rerit nisi. Vestibulum eget risus velit.',
       rating: 5,
     },
   ];
@@ -73,7 +73,7 @@ export default function AboutTestimonialSection() {
               <span className="subtitle bg-pink-opacity">Learners Feedback</span>
               <h2 className="title">What Our Learners Say</h2>
               <p className="description mt--20">
-                Learning communicate to global world and build a bright future with our histudy.
+                Learning communicate to global world and build a bright future with our Study Score.
               </p>
               <div className="veiw-more-btn mt--20">
                 <Link className="rbt-btn btn-gradient rbt-marquee-btn marquee-text-y" href="/contact">

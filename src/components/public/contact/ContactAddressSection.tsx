@@ -41,7 +41,7 @@ export default function ContactAddressSection() {
             <div className="section-title text-center mb--60">
               <span className="subtitle bg-secondary-opacity">Contact Us</span>
               <h2 className="title">
-                Histudy Course Contact <br /> can join with us.
+              Study Score Course Contact <br /> can join with us.
               </h2>
             </div>
           </div>
@@ -50,10 +50,7 @@ export default function ContactAddressSection() {
           {addresses.map((address, index) => (
             <div 
               key={index} 
-              className="col-lg-4 col-md-6 col-sm-6 col-12 sal-animate" 
-              data-sal="slide-up" 
-              data-sal-delay={150 + (index * 50)} 
-              data-sal-duration="800"
+              className="col-lg-4 col-md-6 col-sm-6 col-12"
             >
               <div className="rbt-address">
                 <div className="icon">

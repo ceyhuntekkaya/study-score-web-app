@@ -17,7 +17,7 @@ export default function AboutSection() {
               <div className="content">
                 <div className="section-title">
                   <h6 className="b2 mb--15">
-                    <span className="theme-gradient">Welcome To Histudy</span>
+                    <span className="theme-gradient">Welcome To Study Score</span>
                   </h6>
                   <h2 className="title w-600">
                     Your Goals Are Within <br />
@@ -42,7 +42,7 @@ export default function AboutSection() {
                     </svg> Reach.
                   </h2>
                   <p className="mt--20">
-                    At Histudy University, we are moving boldly - and concertedly - to expand tomorrow's frontiers. 
+                    At Study Score, we are moving boldly - and concertedly - to expand tomorrow's frontiers. 
                     We believe that we have the power to shape the future, for the better
                   </p>
                   <ul className="mt--30 mb--25">
@@ -107,8 +107,8 @@ export default function AboutSection() {
                     />
                   </span>
                   <div className="title-wrap">
-                    <h4 className="number">
-                      <span className="odometer rbt-font-primary" data-count="1890">1890</span>
+                    <h4 className="number rbt-font-primary">
+                      1890
                     </h4>
                     <h6 className="subtitle">Since</h6>
                   </div>
