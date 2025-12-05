@@ -4,8 +4,8 @@ export interface MenuItem {
   icon?: string;
   label?: string; // Fallback if labelKey is not provided
   labelKey?: string; // Translation key
-  href: string;
-  action?: string;
+  href?: string; // Optional if action is provided
+  action?: string; // Optional if href is provided
   hasDropdown?: boolean;
   submenu?: Array<{ label?: string; labelKey?: string; href: string }>;
   text?: string; // For top menu items
@@ -67,6 +67,6 @@ export function getHeaderMenu(role: 'public' | 'learner' | 'tutor' | 'manager'):
  * Get lesson sidebar menu
  */
 export function getLessonSidebarMenu(): { sections: LessonSection[] } {
-  return menusData.lessonSidebar;
+  return menusData.lessonSidebar as { sections: LessonSection[] };
 }
 

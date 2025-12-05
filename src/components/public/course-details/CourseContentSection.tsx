@@ -6,7 +6,7 @@ import Link from 'next/link';
 interface Lesson {
   id: string;
   title: string;
-  duration: string;
+  duration?: string;
   type: 'video' | 'text';
   isPreview?: boolean;
   isLocked?: boolean;
@@ -81,7 +81,9 @@ export default function CourseContentSection({ sections }: CourseContentSectionP
                                 </span>
                               ) : (
                                 <>
-                                  <span className="min-lable">{lesson.duration}</span>
+                                  {lesson.duration && (
+                                    <span className="min-lable">{lesson.duration}</span>
+                                  )}
                                   {lesson.isPreview && (
                                     <span className="rbt-badge variation-03 bg-primary-opacity">
                                       <i className="feather-eye"></i> Preview

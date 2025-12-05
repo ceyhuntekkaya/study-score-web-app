@@ -89,7 +89,11 @@ export default function PublicHeader() {
                       const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
                       return (
                         <li key={item.href}>
-                          <Link href={item.href}>{itemLabel}</Link>
+                          {item.href ? (
+                            <Link href={item.href}>{itemLabel}</Link>
+                          ) : (
+                            <span>{itemLabel}</span>
+                          )}
                         </li>
                       );
                     })}
@@ -145,11 +149,18 @@ export default function PublicHeader() {
                   {menu.mainMenu.map((item) => {
                     const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
                     return (
-                      <li key={item.href} className={item.hasDropdown ? 'has-menu-child-item' : ''}>
-                        <Link href={item.href}>
-                          {itemLabel}
-                          {item.hasDropdown && <i className="feather-chevron-down"></i>}
-                        </Link>
+                      <li key={item.href || item.labelKey || item.label} className={item.hasDropdown ? 'has-menu-child-item' : ''}>
+                        {item.href ? (
+                          <Link href={item.href}>
+                            {itemLabel}
+                            {item.hasDropdown && <i className="feather-chevron-down"></i>}
+                          </Link>
+                        ) : (
+                          <span>
+                            {itemLabel}
+                            {item.hasDropdown && <i className="feather-chevron-down"></i>}
+                          </span>
+                        )}
                       </li>
                     );
                   })}
@@ -203,8 +214,12 @@ export default function PublicHeader() {
               {menu.mainMenu.map((item) => {
                 const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
                 return (
-                  <li key={item.href}>
-                    <Link href={item.href}>{itemLabel}</Link>
+                  <li key={item.href || item.labelKey || item.label}>
+                    {item.href ? (
+                      <Link href={item.href}>{itemLabel}</Link>
+                    ) : (
+                      <span>{itemLabel}</span>
+                    )}
                   </li>
                 );
               })}

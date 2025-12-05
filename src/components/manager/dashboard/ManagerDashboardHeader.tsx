@@ -187,20 +187,31 @@ export default function ManagerDashboardHeader() {
                     const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
                     return (
                       <li 
-                        key={item.href} 
+                        key={item.href || item.labelKey || item.label} 
                         className={`${item.hasDropdown ? 'has-menu-child-item' : ''} ${item.submenu ? 'has-dropdown' : ''}`}
                       >
-                        <Link href={item.href}>
-                          {itemLabel}
-                          {item.hasDropdown && <i className="feather-chevron-down"></i>}
-                        </Link>
+                        {item.href ? (
+                          <Link href={item.href}>
+                            {itemLabel}
+                            {item.hasDropdown && <i className="feather-chevron-down"></i>}
+                          </Link>
+                        ) : (
+                          <span>
+                            {itemLabel}
+                            {item.hasDropdown && <i className="feather-chevron-down"></i>}
+                          </span>
+                        )}
                         {item.submenu && (
                           <ul className="submenu">
                             {item.submenu.map((subItem) => {
                               const subItemLabel = subItem.labelKey ? t(subItem.labelKey) : (subItem.label || '');
                               return (
                                 <li key={subItem.href}>
-                                  <Link href={subItem.href}>{subItemLabel}</Link>
+                                  {subItem.href ? (
+                                    <Link href={subItem.href}>{subItemLabel}</Link>
+                                  ) : (
+                                    <span>{subItemLabel}</span>
+                                  )}
                                 </li>
                               );
                             })}
@@ -259,11 +270,18 @@ export default function ManagerDashboardHeader() {
                               {menu.userMenu.main.map((item) => {
                                 const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
                                 return (
-                                  <li key={item.href}>
-                                    <Link href={item.href}>
-                                      {item.icon && <i className={item.icon}></i>}
-                                      <span>{itemLabel}</span>
-                                    </Link>
+                                  <li key={item.href || item.labelKey || item.label}>
+                                    {item.href ? (
+                                      <Link href={item.href}>
+                                        {item.icon && <i className={item.icon}></i>}
+                                        <span>{itemLabel}</span>
+                                      </Link>
+                                    ) : (
+                                      <span>
+                                        {item.icon && <i className={item.icon}></i>}
+                                        <span>{itemLabel}</span>
+                                      </span>
+                                    )}
                                   </li>
                                 );
                               })}
@@ -279,11 +297,16 @@ export default function ManagerDashboardHeader() {
                                         {item.icon && <i className={item.icon}></i>}
                                         <span>{itemLabel}</span>
                                       </a>
-                                    ) : (
+                                    ) : item.href ? (
                                       <Link href={item.href}>
                                         {item.icon && <i className={item.icon}></i>}
                                         <span>{itemLabel}</span>
                                       </Link>
+                                    ) : (
+                                      <span>
+                                        {item.icon && <i className={item.icon}></i>}
+                                        <span>{itemLabel}</span>
+                                      </span>
                                     )}
                                   </li>
                                 );

@@ -54,7 +54,7 @@ export default function TutorDashboardSidebar() {
                         {section.items.map((item) => {
                           const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
                           return (
-                            <li key={item.href}>
+                            <li key={item.href || item.labelKey || item.label}>
                               {item.action === 'logout' ? (
                                 <a
                                   href="#"
@@ -62,12 +62,12 @@ export default function TutorDashboardSidebar() {
                                     e.preventDefault();
                                     handleLogout();
                                   }}
-                                  className={isActive(item.href) ? 'active' : ''}
+                                  className=""
                                 >
                                   {item.icon && <i className={item.icon}></i>}
                                   <span>{itemLabel}</span>
                                 </a>
-                              ) : (
+                              ) : item.href ? (
                                 <Link
                                   href={item.href}
                                   className={isActive(item.href) ? 'active' : ''}
@@ -75,6 +75,11 @@ export default function TutorDashboardSidebar() {
                                   {item.icon && <i className={item.icon}></i>}
                                   <span>{itemLabel}</span>
                                 </Link>
+                              ) : (
+                                <span>
+                                  {item.icon && <i className={item.icon}></i>}
+                                  <span>{itemLabel}</span>
+                                </span>
                               )}
                             </li>
                           );

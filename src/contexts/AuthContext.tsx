@@ -19,6 +19,8 @@ interface AuthContextType {
   clearAuth: () => void;
   updateAccessToken: (token: string) => void;
   updateUser: (user: User) => void;
+  setTokens: (tokens: TokenPair) => void;
+  clearTokens: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -112,6 +114,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     userStorage.setUser(newUser);
   }, []);
 
+  const handleSetTokens = useCallback((tokens: TokenPair) => {
+    setAccessToken(tokens.accessToken);
+    setRefreshToken(tokens.refreshToken);
+    tokenStorage.setTokens(tokens);
+  }, []);
+
+  const handleClearTokens = useCallback(() => {
+    setAccessToken(null);
+    setRefreshToken(null);
+    tokenStorage.clearTokens();
+  }, []);
+
   const value: AuthContextType = {
     accessToken,
     refreshToken,
@@ -123,6 +137,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     clearAuth: handleClearAuth,
     updateAccessToken: handleUpdateAccessToken,
     updateUser: handleUpdateUser,
+    setTokens: handleSetTokens,
+    clearTokens: handleClearTokens,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
