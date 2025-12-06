@@ -241,8 +241,7 @@
       "mainMenu": [
         {
           "labelKey": "nav.home",
-          "href": "/",
-          "hasDropdown": true
+          "href": "/"
         },
         {
           "labelKey": "nav.courses",
@@ -296,8 +295,7 @@
       "mainMenu": [
         {
           "labelKey": "nav.home",
-          "href": "/",
-          "hasDropdown": true
+          "href": "/"
         },
         {
           "labelKey": "nav.courses",
@@ -403,8 +401,7 @@
       "mainMenu": [
         {
           "labelKey": "nav.home",
-          "href": "/",
-          "hasDropdown": true
+          "href": "/"
         },
         {
           "labelKey": "nav.courses",
@@ -488,8 +485,7 @@
       "mainMenu": [
         {
           "labelKey": "nav.home",
-          "href": "/",
-          "hasDropdown": true
+          "href": "/"
         },
         {
           "labelKey": "nav.courses",

@@ -100,7 +100,7 @@ export default function PublicFooter() {
                 <ul className="ft-link">
                   <li><Link href="/courses">Courses</Link></li>
                   <li><Link href="/about">About Us</Link></li>
-                  <li><Link href="/instructors">Instructors</Link></li>
+                  <li><Link href="/login">Instructors</Link></li>
                   <li><Link href="/events">Events</Link></li>
                   <li><Link href="/faq">FAQ</Link></li>
                   <li><Link href="/privacy-policy">Privacy Policy</Link></li>
@@ -116,7 +116,7 @@ export default function PublicFooter() {
                   <li><Link href="/contact">Contact Us</Link></li>
                   <li><Link href="/become-teacher">Become Teacher</Link></li>
                   <li><Link href="/blog">Blog</Link></li>
-                  <li><Link href="/instructors">Instructor</Link></li>
+                  <li><Link href="/login">Instructor</Link></li>
                   <li><Link href="/events">Events</Link></li>
                   <li><Link href="/courses">Course</Link></li>
                 </ul>

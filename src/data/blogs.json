@@ -1,0 +1,183 @@
+[
+  {
+    "id": "1",
+    "title": "React",
+    "slug": "react",
+    "image": "/assets/images/blog/blog-card-01.jpg",
+    "excerpt": "It is a long established fact that a reader.",
+    "content": "There are many variations of passages of Lorem Ipsum available, but the majority have suffered strike out text alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum.",
+    "author": {
+      "name": "Jone Song",
+      "avatar": "/assets/images/testimonial/client-06.png",
+      "role": "Sr. UX Designer"
+    },
+    "category": "Design",
+    "date": "20 Aug 2021",
+    "readTime": "5 min read",
+    "tags": ["Education", "Life Style", "React", "Javascript", "Web App", "Application"],
+    "featured": true
+  },
+  {
+    "id": "2",
+    "title": "Why Is Education So Famous?",
+    "slug": "why-is-education-so-famous",
+    "image": "/assets/images/blog/blog-card-02.jpg",
+    "excerpt": "Discover the reasons behind education's popularity and impact.",
+    "content": "Education has become one of the most important aspects of modern society. It shapes our understanding of the world and provides us with the tools we need to succeed. In this article, we explore why education has gained such prominence and how it continues to evolve.",
+    "author": {
+      "name": "Angela",
+      "avatar": "/assets/images/client/avatar-02.png",
+      "role": "Education Specialist"
+    },
+    "category": "Education",
+    "date": "15 Sep 2021",
+    "readTime": "7 min read",
+    "tags": ["Education", "Learning", "Development"],
+    "featured": false
+  },
+  {
+    "id": "3",
+    "title": "Difficult Things About Education",
+    "slug": "difficult-things-about-education",
+    "image": "/assets/images/blog/blog-card-03.jpg",
+    "excerpt": "Exploring the challenges students and educators face in modern education.",
+    "content": "Education is not without its challenges. From adapting to new technologies to addressing diverse learning needs, educators and students face numerous obstacles. This article delves into the most significant difficulties in today's educational landscape.",
+    "author": {
+      "name": "David Lee",
+      "avatar": "/assets/images/team/team-04.jpg",
+      "role": "Education Consultant"
+    },
+    "category": "Education",
+    "date": "10 Oct 2021",
+    "readTime": "6 min read",
+    "tags": ["Education", "Challenges", "Teaching"],
+    "featured": false
+  },
+  {
+    "id": "4",
+    "title": "Education Is So Famous, But Why?",
+    "slug": "education-is-so-famous-but-why",
+    "image": "/assets/images/blog/blog-card-04.jpg",
+    "excerpt": "Understanding the factors that make education a cornerstone of society.",
+    "content": "Education's prominence in society is undeniable. It serves as the foundation for personal growth, career development, and social progress. This article examines the key factors that contribute to education's essential role in our lives.",
+    "author": {
+      "name": "Sarah Johnson",
+      "avatar": "/assets/images/testimonial/testimonial-4.jpg",
+      "role": "Academic Researcher"
+    },
+    "category": "Education",
+    "date": "5 Nov 2021",
+    "readTime": "8 min read",
+    "tags": ["Education", "Society", "Growth"],
+    "featured": false
+  },
+  {
+    "id": "5",
+    "title": "The Latest Trend In Education",
+    "slug": "the-latest-trend-in-education",
+    "image": "/assets/images/blog/blog-grid-01.jpg",
+    "excerpt": "It is a long established fact that a reader.",
+    "content": "The educational landscape is constantly evolving. New technologies, teaching methods, and learning approaches are reshaping how we educate and learn. This article explores the latest trends that are transforming education today.",
+    "author": {
+      "name": "Michael Chen",
+      "avatar": "/assets/images/team/team-01.jpg",
+      "role": "Tech Educator"
+    },
+    "category": "Technology",
+    "date": "1 Dec 2021",
+    "readTime": "5 min read",
+    "tags": ["Technology", "Education", "Innovation"],
+    "featured": false
+  },
+  {
+    "id": "6",
+    "title": "The Modern Rules Of Education",
+    "slug": "the-modern-rules-of-education",
+    "image": "/assets/images/blog/blog-grid-02.jpg",
+    "excerpt": "It is a long established fact that a reader.",
+    "content": "Modern education follows new principles and methodologies that differ significantly from traditional approaches. This article outlines the key rules and guidelines that define contemporary educational practices.",
+    "author": {
+      "name": "Emily Brown",
+      "avatar": "/assets/images/team/team-02.jpg",
+      "role": "Curriculum Designer"
+    },
+    "category": "Education",
+    "date": "20 Dec 2021",
+    "readTime": "6 min read",
+    "tags": ["Education", "Modern", "Methodology"],
+    "featured": false
+  },
+  {
+    "id": "7",
+    "title": "Why Is Education So Famous?",
+    "slug": "why-is-education-so-famous-2",
+    "image": "/assets/images/blog/blog-grid-03.jpg",
+    "excerpt": "It is a long established fact that a reader.",
+    "content": "Education's importance cannot be overstated. It empowers individuals, drives economic growth, and fosters social cohesion. This article explores why education remains one of the most valued aspects of human development.",
+    "author": {
+      "name": "James Wilson",
+      "avatar": "/assets/images/team/team-03.jpg",
+      "role": "Education Policy Expert"
+    },
+    "category": "Education",
+    "date": "15 Jan 2022",
+    "readTime": "7 min read",
+    "tags": ["Education", "Policy", "Development"],
+    "featured": false
+  },
+  {
+    "id": "8",
+    "title": "Industry Insiders Say Education",
+    "slug": "industry-insiders-say-education",
+    "image": "/assets/images/blog/blog-grid-04.jpg",
+    "excerpt": "Industry a long established that a reader.",
+    "content": "Industry professionals share their insights on the current state of education. From corporate training to academic institutions, experts weigh in on what makes education effective and how it can be improved.",
+    "author": {
+      "name": "Lisa Anderson",
+      "avatar": "/assets/images/client/avatar-03.png",
+      "role": "Corporate Trainer"
+    },
+    "category": "Business",
+    "date": "10 Feb 2022",
+    "readTime": "5 min read",
+    "tags": ["Business", "Education", "Training"],
+    "featured": false
+  },
+  {
+    "id": "9",
+    "title": "Make You Love And Hate Education",
+    "slug": "make-you-love-and-hate-education",
+    "image": "/assets/images/blog/blog-grid-05.jpg",
+    "excerpt": "Make a long established fact a reader.",
+    "content": "Education is a complex journey that evokes both passion and frustration. This article explores the dual nature of our relationship with education - the love for learning and the challenges that come with it.",
+    "author": {
+      "name": "Robert Taylor",
+      "avatar": "/assets/images/client/avatar-04.png",
+      "role": "Educational Psychologist"
+    },
+    "category": "Psychology",
+    "date": "5 Mar 2022",
+    "readTime": "6 min read",
+    "tags": ["Psychology", "Education", "Learning"],
+    "featured": false
+  },
+  {
+    "id": "10",
+    "title": "Education Only A Handful Of People",
+    "slug": "education-only-a-handful-of-people",
+    "image": "/assets/images/blog/blog-grid-06.jpg",
+    "excerpt": "Education established fact that a reader.",
+    "content": "Access to quality education remains limited for many people around the world. This article examines the barriers to education and discusses initiatives aimed at making learning accessible to everyone.",
+    "author": {
+      "name": "Maria Garcia",
+      "avatar": "/assets/images/testimonial/testimonial-4.jpg",
+      "role": "Education Advocate"
+    },
+    "category": "Social",
+    "date": "1 Apr 2022",
+    "readTime": "8 min read",
+    "tags": ["Social", "Education", "Accessibility"],
+    "featured": false
+  }
+]
+

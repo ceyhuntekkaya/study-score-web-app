@@ -126,7 +126,7 @@ export default function ManagerDashboardFooter() {
                     <Link href="/blog">Blog</Link>
                   </li>
                   <li>
-                    <Link href="/instructors">Instructor</Link>
+                    <Link href="/login">Instructor</Link>
                   </li>
                   <li>
                     <Link href="/events">Events</Link>

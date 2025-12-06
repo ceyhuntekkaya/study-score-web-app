@@ -1,55 +1,55 @@
 {
   "phone": {
     "primary": {
-      "number": "+1-202-555-0174",
-      "display": "+1-202-555-0174",
-      "href": "tel:+1-202-555-0174"
+      "number": "+90 532 207 67 30",
+      "display": "+90 532 207 67 30",
+      "href": "tel:+90 532 207 67 30"
     },
     "secondary": {
-      "number": "+444 555 666 777",
-      "display": "+444 555 666 777",
-      "href": "tel:+444555666777"
+      "number": "+90 532 207 67 30",
+      "display": "+90 532 207 67 30",
+      "href": "tel:+90 532 207 67 30"
     },
     "tertiary": {
-      "number": "+222 222 222 333",
-      "display": "+222 222 222 333",
-      "href": "tel:+222222222333"
+      "number": "+90 532 207 67 30",
+      "display": "+90 532 207 67 30",
+      "href": "tel:+90 532 207 67 30"
     },
     "footer": {
-      "number": "(406) 555-0120",
-      "display": "(406) 555-0120",
-      "href": "tel:+1-406-555-0120"
+      "number": "+90 532 207 67 30",
+      "display": "+90 532 207 67 30",
+      "href": "tel:+90 532 207 67 30"
     }
   },
   "email": {
     "primary": {
-      "address": "admin@gmail.com",
-      "display": "admin@gmail.com",
-      "href": "mailto:admin@gmail.com"
+      "address": "hello@studyscore.ai",
+      "display": "hello@studyscore.ai",
+      "href": "mailto:hello@studyscore.ai"
     },
     "secondary": {
-      "address": "example@gmail.com",
-      "display": "example@gmail.com",
-      "href": "mailto:example@gmail.com"
+      "address": "hello@studyscore.ai",
+      "display": "hello@studyscore.ai",
+      "href": "mailto:hello@studyscore.ai"
     },
     "footer": {
-      "address": "admin@example.com",
-      "display": "admin@example.com",
-      "href": "mailto:admin@example.com"
+      "address": "hello@studyscore.ai",
+      "display": "hello@studyscore.ai",
+      "href": "mailto:hello@studyscore.ai"
     }
   },
   "address": {
     "primary": {
-      "line1": "5678 Bangla Main Road, cities 580",
-      "line2": "GBnagla, example 54786",
-      "full": "5678 Bangla Main Road, cities 580, GBnagla, example 54786",
-      "display": "5678 Bangla Main Road, cities 580, GBnagla, example 54786"
+      "line1": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8",
+      "line2": "Bilkent ANKARA, Türkiye",
+      "full": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8 Bilkent ANKARA, Türkiye",
+      "display": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8 Bilkent ANKARA, Türkiye"
     },
     "footer": {
-      "line1": "15205 North Kierland Blvd.",
+      "line1": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8",
       "line2": "",
-      "full": "15205 North Kierland Blvd.",
-      "display": "15205 North Kierland Blvd."
+      "full": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8",
+      "display": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8"
     }
   },
   "social": {
