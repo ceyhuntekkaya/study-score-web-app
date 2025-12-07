@@ -2,43 +2,70 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { UserRole } from '@/types';
 import { useTranslation } from '@/i18n';
-import { useRouter } from 'next/navigation';
+import { useLogin } from '@/generated/api/auth-rest-controller/auth-rest-controller';
+import { mapGeneratedUserToLocal } from '@/utils/userMapper';
+import { getErrorMessage } from '@/utils/errorHandler';
 
 /**
- * Dummy Login Page
- * Allows testing different roles
+ * Login Page with API Integration
  */
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole>('learner');
+  const [error, setError] = useState<string | null>(null);
   const { setAuth } = useAuth();
   const { t } = useTranslation();
-  const router = useRouter();
 
-  // Dummy login - creates fake user and tokens
+  const loginMutation = useLogin({
+    mutation: {
+      onSuccess: (response) => {
+        try {
+          // customInstance already extracts data, so response is AuthenticationResponse
+          const authResponse = response as any;
+          
+          if (!authResponse?.user || !authResponse?.accessToken || !authResponse?.refreshToken) {
+            throw new Error('Invalid response from server: missing user, accessToken, or refreshToken');
+          }
+
+          // Map generated user to local user type
+          const localUser = mapGeneratedUserToLocal(authResponse.user);
+
+          // Set tokens
+          const tokens = {
+            accessToken: authResponse.accessToken,
+            refreshToken: authResponse.refreshToken,
+          };
+
+          // Set auth (this will redirect to role-based dashboard)
+          setAuth(localUser, tokens);
+        } catch (err) {
+          const errorMessage = err instanceof Error ? err.message : 'Failed to process login response';
+          setError(errorMessage);
+        }
+      },
+      onError: (error: any) => {
+        const errorMessage = getErrorMessage(error);
+        setError(errorMessage);
+      },
+    },
+  });
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Create dummy user based on selected role
-    const dummyUser = {
-      id: `user-${selectedRole}-${Date.now()}`,
-      email: email || `${selectedRole}@example.com`,
-      name: `${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)} User`,
-      role: selectedRole,
-      avatar: undefined,
-    };
+    setError(null);
 
-    // Create dummy tokens
-    const dummyTokens = {
-      accessToken: `dummy-access-token-${selectedRole}-${Date.now()}`,
-      refreshToken: `dummy-refresh-token-${selectedRole}-${Date.now()}`,
-    };
+    if (!username.trim() || !password.trim()) {
+      setError('Please enter both username and password');
+      return;
+    }
 
-    // Set auth and redirect
-    setAuth(dummyUser, dummyTokens);
+    loginMutation.mutate({
+      data: {
+        username: username.trim(),
+        password: password,
+      },
+    });
   };
 
   return (
@@ -62,21 +89,37 @@ export default function LoginPage() {
         </h2>
         
         <form onSubmit={handleLogin}>
+          {error && (
+            <div style={{
+              marginBottom: '20px',
+              padding: '12px',
+              backgroundColor: '#fee',
+              border: '1px solid #fcc',
+              borderRadius: '4px',
+              color: '#c33',
+              fontSize: '14px'
+            }}>
+              {error}
+            </div>
+          )}
+
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-              {t('common.email')}
+              {t('common.email')} / Username
             </label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t('auth.login.email.placeholder')}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username or email"
+              disabled={loginMutation.isPending}
               style={{
                 width: '100%',
                 padding: '10px',
                 borderRadius: '4px',
                 border: '1px solid #ddd',
-                fontSize: '16px'
+                fontSize: '16px',
+                opacity: loginMutation.isPending ? 0.6 : 1
               }}
             />
           </div>
@@ -90,66 +133,37 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={t('auth.login.password.placeholder')}
-              style={{
-                width: '100%',
-                padding: '10px',
-                borderRadius: '4px',
-                border: '1px solid #ddd',
-                fontSize: '16px'
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-              Select Role (for testing):
-            </label>
-            <select
-              value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value as UserRole)}
+              disabled={loginMutation.isPending}
               style={{
                 width: '100%',
                 padding: '10px',
                 borderRadius: '4px',
                 border: '1px solid #ddd',
                 fontSize: '16px',
-                cursor: 'pointer'
+                opacity: loginMutation.isPending ? 0.6 : 1
               }}
-            >
-              <option value="learner">Learner</option>
-              <option value="tutor">Tutor</option>
-              <option value="manager">Manager</option>
-              <option value="admin">Admin</option>
-              <option value="writer">Writer</option>
-            </select>
+            />
           </div>
 
           <button
             type="submit"
+            disabled={loginMutation.isPending}
             style={{
               width: '100%',
               padding: '12px',
-              backgroundColor: '#0070f3',
+              backgroundColor: loginMutation.isPending ? '#999' : '#0070f3',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
               fontSize: '16px',
               fontWeight: 'bold',
-              cursor: 'pointer'
+              cursor: loginMutation.isPending ? 'not-allowed' : 'pointer',
+              opacity: loginMutation.isPending ? 0.7 : 1
             }}
           >
-            {t('auth.login.button')}
+            {loginMutation.isPending ? 'Logging in...' : t('auth.login.button')}
           </button>
         </form>
-
-        <p style={{ 
-          marginTop: '20px', 
-          fontSize: '12px', 
-          color: '#666',
-          textAlign: 'center'
-        }}>
-          This is a dummy login. Select a role to test different user types.
-        </p>
       </div>
     </div>
   );

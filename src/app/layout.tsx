@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { QueryProvider } from "@/providers/QueryProvider";
 
 export const metadata: Metadata = {
   title: "Study Score AI",
@@ -24,9 +25,11 @@ export default function RootLayout({
         <link rel="stylesheet" href="/assets/css/styles.css" />
       </head>
       <body>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </QueryProvider>
         
         {/* Template Scripts - jQuery alternatives will be added as React components */}
         {/* Note: jQuery scripts will be replaced with React/vanilla JS alternatives */}

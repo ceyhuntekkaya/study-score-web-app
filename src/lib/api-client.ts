@@ -1,4 +1,5 @@
 import Axios, { AxiosRequestConfig, AxiosError } from 'axios';
+import { tokenStorage } from '@/utils/tokenStorage';
 
 export const AXIOS_INSTANCE = Axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api',
@@ -10,14 +11,26 @@ export const AXIOS_INSTANCE = Axios.create({
 // Request interceptor - token ekleme
 AXIOS_INSTANCE.interceptors.request.use(
   (config) => {
-    // Token'ı localStorage'dan al (veya cookie'den)
-    const token = typeof window !== 'undefined' 
-      ? localStorage.getItem('token') 
-      : null;
+    // Auth endpoint'lerine token EKLEME (login, register, refresh-token)
+    // Bu endpoint'ler token gerektirmez çünkü henüz authenticate olmamışız
+    const url = config.url || '';
+    const isAuthEndpoint = 
+      url.includes('/auth/login') || 
+      url.includes('/auth/register') ||
+      url.includes('/auth/refresh-token') ||
+      url.endsWith('/auth/login') ||
+      url.endsWith('/auth/register') ||
+      url.endsWith('/auth/refresh-token');
     
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Sadece auth endpoint'leri DEĞİLSE token ekle
+    if (!isAuthEndpoint) {
+      const accessToken = tokenStorage.getAccessToken();
+      
+      if (accessToken && config.headers) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+      }
     }
+    // Auth endpoint'lerine token EKLENMEZ - bu kasıtlı!
     
     return config;
   },
@@ -32,9 +45,9 @@ AXIOS_INSTANCE.interceptors.response.use(
   (error: AxiosError) => {
     // 401 - Unauthorized
     if (error.response?.status === 401) {
-      // Token geçersiz, login'e yönlendir
+      // Token geçersiz, token'ları temizle ve login'e yönlendir
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('token');
+        tokenStorage.clearTokens();
         window.location.href = '/login';
       }
     }
