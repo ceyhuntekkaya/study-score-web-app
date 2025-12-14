@@ -59,7 +59,6 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
       const container = messagesContainerRef.current;
-      // Hemen scroll yap
       container.scrollTop = container.scrollHeight;
     }
   };
@@ -76,23 +75,11 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
 
   // Mesajlar güncellendiğinde otomatik kaydırma
   useEffect(() => {
-    // Kısa bir delay ile scroll yap ki DOM güncellensin
     const scrollTimeout = setTimeout(() => {
       scrollToBottom();
-    }, 50);
+    }, 5);
 
     return () => clearTimeout(scrollTimeout);
-  }, [messages]);
-
-  // Stream sırasında da otomatik scroll
-  useEffect(() => {
-    if (activeMessageId.current) {
-      const scrollInterval = setInterval(() => {
-        scrollToBottom();
-      }, 100);
-
-      return () => clearInterval(scrollInterval);
-    }
   }, [messages]);
 
   // Benzersiz ID oluşturucu
@@ -115,11 +102,6 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
     setIsLoading(true);
     const currentInput = input;
     setInput('');
-    
-    // Reset textarea height
-    if (inputRef.current) {
-      inputRef.current.style.height = 'auto';
-    }
 
     // Asistan için mesaj ID'si oluştur ve saklayalım
     const assistantMessageId = generateId();
@@ -159,9 +141,9 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
             );
           });
           // Her chunk geldiğinde scroll yap
-          requestAnimationFrame(() => {
+          setTimeout(() => {
             scrollToBottom();
-          });
+          }, 10);
         },
         () => {
           // Stream tamamlandığında
@@ -177,6 +159,9 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
           setTimeout(() => {
             if (inputRef.current) {
               inputRef.current.focus();
+              // Reset textarea height
+              inputRef.current.style.height = 'auto';
+              inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 120)}px`;
             }
             smoothScrollToBottom();
           }, 200);
@@ -205,6 +190,9 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
       setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus();
+          // Reset textarea height
+          inputRef.current.style.height = 'auto';
+          inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 120)}px`;
         }
         smoothScrollToBottom();
       }, 200);
@@ -242,29 +230,17 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
   // Service online ise
   return (
     <div 
-      className="flex flex-col bg-gray-100 relative"
+      className="flex flex-col"
       style={{
         height: '100%',
         minHeight: '100%',
         maxHeight: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
-      {/* Header */}
-      {lessonPartName && (
-        <div 
-          className="px-4 py-3 bg-white border-b border-gray-200"
-          style={{
-            flexShrink: 0
-          }}
-        >
-          <h3 className="text-base font-semibold text-gray-800">
-            AI Assistant - {lessonPartName}
-          </h3>
-        </div>
-      )}
-
-      {/* Mesajlar alanı - scrollable, textarea için yer bırak */}
+      {/* Mesajlar alanı - scrollable */}
       <div
         ref={messagesContainerRef}
         style={{ 
@@ -272,115 +248,74 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
           overflowY: 'auto',
           overflowX: 'hidden',
           padding: '16px',
-          backgroundColor: '#f3f4f6',
+          backgroundColor: '#f9fafb',
           scrollBehavior: 'smooth',
-          paddingBottom: '100px', // Textarea için yer
-          minHeight: 0, // Flexbox için önemli
+          minHeight: 0, // Flexbox scroll için kritik
+          maxHeight: '100%',
         }}
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="mb-4">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
                 <i className="feather-send text-2xl text-blue-600"></i>
               </div>
             </div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
               AI Assistant Ready
             </h3>
-            <p className="text-gray-600 max-w-md text-sm">
+            <p className="text-gray-600 max-w-md">
               {activeText
                 ? 'Ask me anything about the selected content or IELTS-related questions.'
                 : 'Ask me anything about IELTS-related questions.'}
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {messages.map((message) => {
-              const isUser = message.role === 'user';
-              return (
-                <div
-                  key={message.id}
-                  className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}
-                  style={{ marginBottom: '8px' }}
-                >
-                  <div
-                    className={`ai-chat-message max-w-[75%] sm:max-w-[65%] rounded-2xl px-4 py-2.5 ${
-                      isUser
-                        ? 'rounded-br-sm'
-                        : 'rounded-bl-sm shadow-sm'
-                    }`}
-                    style={{
-                      wordBreak: 'break-word',
-                      display: 'block',
-                      visibility: 'visible',
-                      opacity: 1,
-                      backgroundColor: isUser ? '#f3f4f6' : '#EEEEFF',
-                      color: isUser ? '#192335' : '#2f57ef',
-                      border: isUser ? 'none' : 'none',
-                    }}
-                  >
-                    {isUser ? (
-                      <div 
-                        className="whitespace-pre-wrap text-sm leading-relaxed user-message-text" 
-                        style={{ 
-                          color: '#192335 !important',
-                          display: 'block',
-                          visibility: 'visible',
-                          opacity: 1,
-                        }}
-                      >
-                        {message.content || '(empty message)'}
+          <div className="space-y-4">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`ai-chat-message ${message.role}`}
+              >
+                {message.role === 'assistant' ? (
+                  <>
+                    <div
+                      className="whitespace-pre-wrap markdown-content"
+                      dangerouslySetInnerHTML={{
+                        __html: convertToHtml(message.content),
+                      }}
+                    />
+                    {/* Yükleniyor animasyonu - isComplete false ise göster */}
+                    {message.isComplete === false && (
+                      <div className="flex mt-3">
+                        <LoadingDots
+                          size="md"
+                          color="primary"
+                          enhanced={true}
+                        />
                       </div>
-                    ) : (
-                      <>
-                        {message.content && (
-                          <div
-                            className="whitespace-pre-wrap markdown-content text-sm leading-relaxed"
-                            style={{ color: '#2f57ef' }}
-                            dangerouslySetInnerHTML={{
-                              __html: convertToHtml(message.content),
-                            }}
-                          />
-                        )}
-                        {/* Yükleniyor animasyonu - isComplete false ise göster */}
-                        {message.isComplete === false && (
-                          <div className="flex mt-2">
-                            <LoadingDots size="sm" color="primary" enhanced={true} />
-                          </div>
-                        )}
-                      </>
                     )}
+                  </>
+                ) : (
+                  <div className="whitespace-pre-wrap user-message-content">
+                    {message.content}
                   </div>
-                </div>
-              );
-            })}
+                )}
+              </div>
+            ))}
             <div ref={messagesEndRef} />
           </div>
         )}
       </div>
 
-      {/* Input alanı - fixed altta */}
+      {/* Input alanı - sabit */}
       <div 
-        className="bg-white border-t border-gray-200 p-3"
+        className="ai-chat-form-container"
         style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 10
+          flexShrink: 0
         }}
       >
-        <form 
-          onSubmit={handleSubmit} 
-          ref={formRef}
-          style={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            gap: '8px',
-            width: '100%'
-          }}
-        >
+        <form onSubmit={handleSubmit} className="ai-chat-form" ref={formRef}>
           <textarea
             ref={inputRef}
             value={input}
@@ -400,68 +335,29 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
                 }
               }
             }}
-            placeholder="Enter Message..."
+            placeholder="Ask about the content or IELTS questions..."
+            className="ai-chat-input"
             style={{
-              flex: '1 1 auto',
-              minWidth: 0,
-              minHeight: '44px',
+              minHeight: '48px',
               maxHeight: '120px',
-              lineHeight: '1.5',
-              padding: '8px 16px',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
-              outline: 'none',
-              resize: 'none',
-              overflowY: 'auto',
-              fontFamily: 'inherit',
-              fontSize: '14px'
             }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#3b82f6';
-              e.target.style.boxShadow = '0 0 0 2px rgba(59, 130, 246, 0.1)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#d1d5db';
-              e.target.style.boxShadow = 'none';
-            }}
-            rows={2}
             disabled={isLoading}
           />
           <button
             type="submit"
-            disabled={isLoading || input.trim() === '' || serviceStatus !== 'online'}
-            style={{ 
-              flexShrink: 0,
-              width: '44px',
-              height: '44px',
-              minWidth: '44px',
-              minHeight: '44px',
-              borderRadius: '50%',
-              border: 'none',
-              backgroundColor: isLoading || input.trim() === '' || serviceStatus !== 'online' ? '#9ca3af' : '#2f57ef',
-              color: '#ffffff',
-              cursor: isLoading || input.trim() === '' || serviceStatus !== 'online' ? 'not-allowed' : 'pointer',
-              opacity: isLoading || input.trim() === '' || serviceStatus !== 'online' ? 0.5 : 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'opacity 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              if (!isLoading && input.trim() && serviceStatus === 'online') {
-                e.currentTarget.style.opacity = '0.9';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isLoading && input.trim() && serviceStatus === 'online') {
-                e.currentTarget.style.opacity = '1';
-              }
-            }}
+            disabled={
+              isLoading || input.trim() === '' || serviceStatus !== 'online'
+            }
+            className={`send-btn ${
+              isLoading || input.trim() === '' || serviceStatus !== 'online'
+                ? 'disabled'
+                : ''
+            }`}
           >
             {isLoading ? (
               <LoadingSpinner size="sm" color="white" />
             ) : (
-              <i className="feather-arrow-right" style={{ color: '#ffffff', fontSize: '18px' }}></i>
+              <i className="feather-arrow-right"></i>
             )}
           </button>
         </form>

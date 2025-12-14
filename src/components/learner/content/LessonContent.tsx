@@ -272,9 +272,13 @@ export default function LessonContent() {
           <div 
             className="ai-chat-container" 
             style={{ 
-              height: 'calc(100vh - 200px)',
+              height: 'calc(100vh - 250px)',
               minHeight: '600px',
-              position: 'relative'
+              maxHeight: 'calc(100vh - 250px)',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden'
             }}
           >
             <AIChat
