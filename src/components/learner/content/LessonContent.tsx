@@ -9,6 +9,7 @@ import { useGetCourseProgress } from '@/generated/api/learner-activity-rest-cont
 import type { CourseLessonDetailDTO, CourseLessonPartDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
 import MaterialRenderer from './MaterialRenderer';
 import { useProgressTracking } from './useProgressTracking';
+import AIChat from './AIChat';
 
 /**
  * Lesson Content Component
@@ -25,6 +26,7 @@ export default function LessonContent() {
   const lessonId = pathParts[3];
   const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
   const [pendingPartId, setPendingPartId] = useState<string | null>(null);
+  const [showAIChat, setShowAIChat] = useState(false);
 
   // API calls
   const { data: courseDetails } = useGetCourseWithAllDetails(
@@ -253,10 +255,10 @@ export default function LessonContent() {
               </div>
               <div className="col-auto ms-auto">
                 <button
-                  className="rbt-btn btn-md bg-primary"
-                  onClick={() => console.log('Study with AI clicked')}
+                  className={`rbt-btn btn-md ${showAIChat ? 'bg-primary-opacity' : 'bg-primary'}`}
+                  onClick={() => setShowAIChat(!showAIChat)}
                 >
-                  <span className="btn-text">Study with AI</span>
+                  <span className="btn-text">{showAIChat ? 'Hide AI' : 'Study with AI'}</span>
                 </button>
               </div>
             </div>
@@ -266,26 +268,44 @@ export default function LessonContent() {
       
       {/* Content */}
       <div className="inner">
-        {materials.length > 0 ? (
-          <div className="materials-content p-4">
-            {materials.map((material) => (
-              <MaterialRenderer
-                key={material.id}
-                material={material}
-                onVideoRef={registerVideoElement}
-                onPdfLoad={handlePdfLoad}
-                onPdfDownload={handlePdfDownload}
-                onLinkClick={handleLinkClick}
-              />
-            ))}
+        {showAIChat ? (
+          <div 
+            className="ai-chat-container p-3 p-md-4" 
+            style={{ 
+              minHeight: '70vh',
+              height: 'auto',
+              maxHeight: 'none'
+            }}
+          >
+            <AIChat
+              activeText={selectedPart?.description || ''}
+              lessonPartName={selectedPart?.name}
+            />
           </div>
         ) : (
-          <div className="content">
-            <div className="section-title">
-              <h4>{selectedLesson?.name || 'Untitled Lesson'}</h4>
-              <p>{selectedLesson?.description || 'No content available for this lesson part.'}</p>
-            </div>
-          </div>
+          <>
+            {materials.length > 0 ? (
+              <div className="materials-content p-4">
+                {materials.map((material) => (
+                  <MaterialRenderer
+                    key={material.id}
+                    material={material}
+                    onVideoRef={registerVideoElement}
+                    onPdfLoad={handlePdfLoad}
+                    onPdfDownload={handlePdfDownload}
+                    onLinkClick={handleLinkClick}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="content">
+                <div className="section-title">
+                  <h4>{selectedLesson?.name || 'Untitled Lesson'}</h4>
+                  <p>{selectedLesson?.description || 'No content available for this lesson part.'}</p>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

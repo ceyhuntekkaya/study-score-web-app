@@ -60,3 +60,147 @@ a {
   height: 100%;
   border: none;
 }
+
+/* Loading Dots Animation */
+.loading-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-dot-1,
+.loading-dot-2,
+.loading-dot-3 {
+  animation: loading-dot-bounce 1.4s infinite ease-in-out both;
+}
+
+.loading-dot-1 {
+  animation-delay: -0.32s;
+}
+
+.loading-dot-2 {
+  animation-delay: -0.16s;
+}
+
+.loading-dot-3 {
+  animation-delay: 0s;
+}
+
+@keyframes loading-dot-bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.loading-dots-enhanced .loading-dot-1,
+.loading-dots-enhanced .loading-dot-2,
+.loading-dots-enhanced .loading-dot-3 {
+  animation: loading-dot-bounce-enhanced 1.4s infinite ease-in-out both;
+}
+
+.loading-dots-enhanced .loading-dot-1 {
+  animation-delay: -0.32s;
+}
+
+.loading-dots-enhanced .loading-dot-2 {
+  animation-delay: -0.16s;
+}
+
+.loading-dots-enhanced .loading-dot-3 {
+  animation-delay: 0s;
+}
+
+@keyframes loading-dot-bounce-enhanced {
+  0%,
+  80%,
+  100% {
+    transform: scale(0) translateY(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1.2) translateY(-8px);
+    opacity: 1;
+  }
+}
+
+/* AI Chat Styles */
+.ai-chat-message {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.ai-chat-message.user {
+  text-align: right;
+}
+
+.ai-chat-message.assistant {
+  text-align: left;
+}
+
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.markdown-content h1 {
+  font-size: 1.5em;
+}
+
+.markdown-content h2 {
+  font-size: 1.3em;
+}
+
+.markdown-content h3 {
+  font-size: 1.1em;
+}
+
+.markdown-content p {
+  margin-bottom: 1em;
+}
+
+.markdown-content strong {
+  font-weight: 600;
+}
+
+.markdown-content em {
+  font-style: italic;
+}
+
+.markdown-content code {
+  background-color: #f3f4f6;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.markdown-content .numbered-item,
+.markdown-content .bullet-item {
+  margin-left: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.markdown-content hr {
+  margin: 1em 0;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Inline Loading Spinner */
+.inline-loading-spinner {
+  display: inline-block;
+}
