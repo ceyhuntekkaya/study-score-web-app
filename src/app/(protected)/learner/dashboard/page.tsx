@@ -7,6 +7,35 @@ import ActiveExamCard from '@/components/learner/dashboard/ActiveExamCard';
 import OverallStatsCard from '@/components/learner/dashboard/OverallStatsCard';
 import { useGetDashboard } from '@/generated/api/learner-activity-rest-controller/learner-activity-rest-controller';
 
+// Type definitions for dashboard data (temporary until generated types are available)
+type ActiveCourseInfo = {
+  courseId?: string | number;
+  courseName?: string;
+  imageUrl?: string;
+  category?: string;
+  progressPercentage?: number;
+  completedParts?: number;
+  totalParts?: number;
+  nextContent?: { partId?: string | number; partName?: string };
+  accessEndDate?: string;
+  daysRemaining?: number;
+  thisWeekTimeSpentSeconds?: number;
+  thisWeekAccessCount?: number;
+};
+
+type ActiveExamInfo = {
+  examId?: string | number;
+  examName?: string;
+  examType?: string;
+  attemptCount?: number;
+  maxAttempts?: number;
+  hasAttemptsLeft?: boolean;
+  bestScore?: number;
+  lastAttemptDate?: string;
+  accessEndDate?: string;
+  daysRemaining?: number;
+};
+
 /**
  * Learner Dashboard Page
  * Template content converted to React components
@@ -52,8 +81,8 @@ export default function DashboardPage() {
     );
   }
 
-  const activeCourses = data?.activeCourses || [];
-  const activeExams = data?.activeExams || [];
+  const activeCourses = (Array.isArray(data?.activeCourses) ? data.activeCourses : []) as ActiveCourseInfo[];
+  const activeExams = (Array.isArray(data?.activeExams) ? data.activeExams : []) as ActiveExamInfo[];
 
   return (
     <>

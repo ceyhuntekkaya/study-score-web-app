@@ -298,17 +298,17 @@ export interface User {
   roleSet?: UserRoleSetItem[];
   authoritySet?: UserAuthoritySetItem[];
   enabled?: boolean;
-  admin?: boolean;
+  authorities?: GrantedAuthority[];
+  institutionalLearner?: boolean;
+  individualLearner?: boolean;
+  accountNonExpired?: boolean;
+  accountNonLocked?: boolean;
+  credentialsNonExpired?: boolean;
   learner?: boolean;
   manager?: boolean;
   tutor?: boolean;
   writer?: boolean;
-  accountNonExpired?: boolean;
-  accountNonLocked?: boolean;
-  credentialsNonExpired?: boolean;
-  authorities?: GrantedAuthority[];
-  institutionalLearner?: boolean;
-  individualLearner?: boolean;
+  admin?: boolean;
 }
 
 export type UserAssignmentStatus =
@@ -1190,16 +1190,16 @@ export interface AuthenticationRequest {
 }
 
 export interface PageCurriculumDto {
-  totalPages?: number;
   totalElements?: number;
+  totalPages?: number;
   first?: boolean;
   last?: boolean;
   size?: number;
   content?: CurriculumDto[];
   number?: number;
   sort?: SortObject;
-  numberOfElements?: number;
   pageable?: PageableObject;
+  numberOfElements?: number;
   empty?: boolean;
 }
 
@@ -1214,8 +1214,8 @@ export interface PageableObject {
 
 export interface SortObject {
   empty?: boolean;
-  unsorted?: boolean;
   sorted?: boolean;
+  unsorted?: boolean;
 }
 
 export type RenameFileParams = {

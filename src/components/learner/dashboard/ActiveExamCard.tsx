@@ -1,7 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { ActiveExamInfo } from '@/generated/api/openAPIDefinition.schemas';
+
+// Type definition for ActiveExamInfo (temporary until generated types are available)
+type ActiveExamInfo = {
+  examId?: string | number;
+  examName?: string;
+  examType?: string;
+  attemptCount?: number;
+  maxAttempts?: number;
+  hasAttemptsLeft?: boolean;
+  bestScore?: number;
+  lastAttemptDate?: string;
+  accessEndDate?: string;
+  daysRemaining?: number;
+};
 
 interface ActiveExamCardProps {
   exam: ActiveExamInfo;

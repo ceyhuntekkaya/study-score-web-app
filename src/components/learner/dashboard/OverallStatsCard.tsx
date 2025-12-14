@@ -1,6 +1,16 @@
 'use client';
 
-import { DashboardStats } from '@/generated/api/openAPIDefinition.schemas';
+// Type definition for DashboardStats (temporary until generated types are available)
+type DashboardStats = {
+  totalActiveCourses?: number;
+  totalActiveExams?: number;
+  totalStudyTimeSeconds?: number;
+  averageProgressPercentage?: number;
+  thisWeekStudyTimeSeconds?: number;
+  thisMonthStudyTimeSeconds?: number;
+  thisWeekSessionCount?: number;
+  thisMonthSessionCount?: number;
+};
 
 interface OverallStatsCardProps {
   stats: DashboardStats;

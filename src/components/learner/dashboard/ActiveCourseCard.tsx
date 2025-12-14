@@ -2,7 +2,22 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ActiveCourseInfo } from '@/generated/api/openAPIDefinition.schemas';
+
+// Type definition for ActiveCourseInfo (temporary until generated types are available)
+type ActiveCourseInfo = {
+  courseId?: string | number;
+  courseName?: string;
+  imageUrl?: string;
+  category?: string;
+  progressPercentage?: number;
+  completedParts?: number;
+  totalParts?: number;
+  nextContent?: { partId?: string | number; partName?: string };
+  accessEndDate?: string;
+  daysRemaining?: number;
+  thisWeekTimeSpentSeconds?: number;
+  thisWeekAccessCount?: number;
+};
 
 interface ActiveCourseCardProps {
   course: ActiveCourseInfo;

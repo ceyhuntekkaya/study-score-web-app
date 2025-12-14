@@ -3,6 +3,8 @@ import Script from "next/script";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { QueryProvider } from "@/providers/QueryProvider";
+// Import types to ensure module augmentations are loaded
+import "@/types";
 
 export const metadata: Metadata = {
   title: "Study Score AI",
