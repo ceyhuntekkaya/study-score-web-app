@@ -3,6 +3,7 @@
  */
 
 import { UserRole, Language } from '@/types';
+import { getApiInvokeUrl } from '@/config';
 
 export const ROLES: Record<UserRole, UserRole> = {
   learner: 'learner',
@@ -26,7 +27,7 @@ export const LANGUAGES: Record<Language, Language> = {
 
 export const DEFAULT_LANGUAGE: Language = 'en';
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api';
+export const API_BASE_URL = getApiInvokeUrl();
 
 export const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:8080';
 

@@ -1,8 +1,9 @@
 import Axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { tokenStorage } from '@/utils/tokenStorage';
+import { getApiInvokeUrl } from '@/config';
 
 export const AXIOS_INSTANCE = Axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api',
+  baseURL: getApiInvokeUrl(),
   headers: {
     'Content-Type': 'application/json',
   },

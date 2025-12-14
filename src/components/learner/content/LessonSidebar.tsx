@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContent } from '@/contexts/ContentContext';
 import { useGetCourseWithAllDetails } from '@/generated/api/course-rest-controller/course-rest-controller';
+import { useGetCourseProgress } from '@/generated/api/learner-activity-rest-controller/learner-activity-rest-controller';
 import type { CourseLessonDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
 import { LessonSection, LessonItem } from '@/lib/menus';
 
@@ -38,6 +39,17 @@ export default function LessonSidebar() {
       },
     }
   );
+
+  // API call to fetch course progress
+  const { data: courseProgress } = useGetCourseProgress(
+    courseId || '',
+    {
+      query: {
+        enabled: !!courseId, // Only fetch if we have a courseId
+      },
+    }
+  );
+
   
   // Accordion state'i localStorage'dan restore et veya default değer kullan
   const [openSections, setOpenSections] = useState<Set<string>>(() => {
@@ -119,6 +131,188 @@ export default function LessonSidebar() {
     return count;
   };
 
+  // Helper function to build a map of partId -> lessonId from courseDetails
+  const buildPartToLessonMap = useMemo(() => {
+    if (!courseDetails?.lessons) {
+      return new Map<string, string>();
+    }
+
+    const partToLessonMap = new Map<string, string>();
+
+    // Recursively find all lessons and their parts
+    const processLesson = (lesson: CourseLessonDetailDTOWithChildren) => {
+      if (!lesson.id) return;
+
+      // If this is a LESSON level, process its parts
+      if (lesson.lessonLevel === 'LESSON' && lesson.lessonParts && lesson.id) {
+        const lessonId = lesson.id; // TypeScript guard
+        lesson.lessonParts.forEach((part) => {
+          if (part.id && lessonId) {
+            partToLessonMap.set(part.id, lessonId);
+          }
+        });
+      }
+
+      // Process child lessons
+      const children = getChildLessons(lesson);
+      children.forEach((child) => {
+        processLesson(child);
+      });
+
+      // Fallback: find children by parentLessonId
+      const allLessons = (courseDetails?.lessons || [])
+        .filter((l): l is CourseLessonDetailDTO => !!l)
+        .map((l) => l as CourseLessonDetailDTOWithChildren);
+      
+      const childrenById = allLessons.filter((l) => l.parentLessonId === lesson.id);
+      childrenById.forEach((child) => {
+        processLesson(child);
+      });
+    };
+
+    courseDetails.lessons.forEach((lesson) => {
+      processLesson(lesson as CourseLessonDetailDTOWithChildren);
+    });
+
+    return partToLessonMap;
+  }, [courseDetails]);
+
+  // Helper function to check if a lesson is completed
+  // A lesson is completed if ALL its parts are COMPLETED
+  const isLessonCompleted = useMemo(() => {
+    // Wait for courseDetails to load
+    if (isLoading || !courseDetails?.lessons || !courseProgress) {
+      return new Map<string, boolean>();
+    }
+
+    const lessonCompletionMap = new Map<string, boolean>();
+
+    // Get part progresses from courseProgress
+    const partProgresses = (courseProgress as any)?.partProgresses || [];
+    
+    // Build map: partId -> completionStatus
+    const partProgressMap = new Map<string, string>();
+    partProgresses.forEach((pp: any) => {
+      if (pp.partId && pp.completionStatus) {
+        partProgressMap.set(pp.partId, pp.completionStatus);
+      }
+    });
+
+    // Recursive function to find all LESSON level items
+    const findAllLessons = (lesson: CourseLessonDetailDTOWithChildren): CourseLessonDetailDTOWithChildren[] => {
+      const lessons: CourseLessonDetailDTOWithChildren[] = [];
+      
+      if (lesson.lessonLevel === 'LESSON') {
+        lessons.push(lesson);
+      }
+      
+      // Get children from childLessons array or by parentLessonId
+      const children = getChildLessons(lesson);
+      children.forEach((child) => {
+        lessons.push(...findAllLessons(child));
+      });
+      
+      return lessons;
+    };
+
+    // Find all LESSON level items recursively
+    const allLessons: CourseLessonDetailDTOWithChildren[] = [];
+    courseDetails.lessons.forEach((lesson) => {
+      allLessons.push(...findAllLessons(lesson as CourseLessonDetailDTOWithChildren));
+    });
+
+    // Check each LESSON
+    allLessons.forEach((lesson) => {
+      if (!lesson.id) {
+        return;
+      }
+
+      // Get all parts in this lesson from courseDetails
+      const parts = lesson.lessonParts || [];
+      
+      if (parts.length === 0) {
+        lessonCompletionMap.set(lesson.id, false);
+        return;
+      }
+
+      // Check if all parts are COMPLETED
+      const allPartsCompleted = parts.every((part) => {
+        if (!part.id) return false;
+        const status = partProgressMap.get(part.id);
+        return status === 'COMPLETED';
+      });
+
+      lessonCompletionMap.set(lesson.id, allPartsCompleted);
+    });
+
+    return lessonCompletionMap;
+  }, [courseDetails, courseProgress, buildPartToLessonMap, isLoading]);
+
+  // Helper function to check if a UNIT is completed
+  // A UNIT is completed if ALL its LESSONs are completed
+  const isUnitCompleted = useMemo(() => {
+    if (!courseDetails?.lessons || !isLessonCompleted.size) {
+      return new Map<string, boolean>();
+    }
+
+    const unitCompletionMap = new Map<string, boolean>();
+
+    const allLessons = courseDetails.lessons
+      .filter((lesson): lesson is CourseLessonDetailDTO => !!lesson)
+      .map((lesson) => lesson as CourseLessonDetailDTOWithChildren)
+      .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
+
+    // Get all UNITs
+    const units = allLessons.filter(
+      (lesson) => lesson.lessonLevel === 'UNIT' && !lesson.parentLessonId
+    );
+
+    units.forEach((unit) => {
+      if (!unit.id) return;
+
+      // Get all LESSONs in this UNIT (recursively)
+      const getAllLessonsInUnit = (lesson: CourseLessonDetailDTOWithChildren): CourseLessonDetailDTOWithChildren[] => {
+        const lessons: CourseLessonDetailDTOWithChildren[] = [];
+        
+        if (lesson.lessonLevel === 'LESSON') {
+          lessons.push(lesson);
+        }
+
+        const children = getChildLessons(lesson);
+        if (children.length > 0) {
+          children.forEach((child) => {
+            lessons.push(...getAllLessonsInUnit(child));
+          });
+        } else {
+          const childrenById = allLessons.filter((l) => l.parentLessonId === lesson.id);
+          childrenById.forEach((child) => {
+            lessons.push(...getAllLessonsInUnit(child));
+          });
+        }
+
+        return lessons;
+      };
+
+      const unitLessons = getAllLessonsInUnit(unit);
+      const lessonLevelLessons = unitLessons.filter((l) => l.lessonLevel === 'LESSON');
+
+      if (lessonLevelLessons.length === 0) {
+        unitCompletionMap.set(unit.id, false);
+        return;
+      }
+
+      // Check if all LESSONs are completed
+      const allLessonsCompleted = lessonLevelLessons.every((lesson) => {
+        if (!lesson.id) return false;
+        return isLessonCompleted.get(lesson.id) === true;
+      });
+
+      unitCompletionMap.set(unit.id, allLessonsCompleted);
+    });
+
+    return unitCompletionMap;
+  }, [courseDetails, isLessonCompleted]);
+
   // Transform API data to LessonSection format
   // UNIT -> TOPIC -> LESSON hierarchy (using childLessons array when available)
   const sections = useMemo(() => {
@@ -175,10 +369,40 @@ export default function LessonSidebar() {
       // Calculate total lessons count recursively
       const totalLessonsCount = countLessonsInTree(unit, allLessons);
 
+      // Calculate completed count
+      const getAllLessonsInUnit = (lesson: CourseLessonDetailDTOWithChildren): CourseLessonDetailDTOWithChildren[] => {
+        const lessons: CourseLessonDetailDTOWithChildren[] = [];
+        
+        if (lesson.lessonLevel === 'LESSON') {
+          lessons.push(lesson);
+        }
+
+        const children = getChildLessons(lesson);
+        if (children.length > 0) {
+          children.forEach((child) => {
+            lessons.push(...getAllLessonsInUnit(child));
+          });
+        } else {
+          const childrenById = allLessons.filter((l) => l.parentLessonId === lesson.id);
+          childrenById.forEach((child) => {
+            lessons.push(...getAllLessonsInUnit(child));
+          });
+        }
+
+        return lessons;
+      };
+
+      const unitLessons = getAllLessonsInUnit(unit);
+      const lessonLevelLessons = unitLessons.filter((l) => l.lessonLevel === 'LESSON');
+      const completedCount = lessonLevelLessons.filter((lesson) => {
+        if (!lesson.id) return false;
+        return isLessonCompleted.get(lesson.id) === true;
+      }).length;
+
       return {
         id: `unit-${unit.id || unitIndex}`,
         title: unit.name || `Unit ${unitIndex + 1}`,
-        completedCount: 0, // TODO: Calculate from progress
+        completedCount: completedCount,
         totalCount: totalLessonsCount,
         lessons: [], // Will be rendered separately with nested structure
         // Store additional data for nested rendering
@@ -193,7 +417,7 @@ export default function LessonSidebar() {
     });
 
     return sectionsList;
-  }, [courseDetails]);
+  }, [courseDetails, isLessonCompleted, isUnitCompleted]);
 
   // Find which UNIT contains the active lesson and auto-open it (only when lessonId changes)
   useEffect(() => {
@@ -325,6 +549,10 @@ export default function LessonSidebar() {
                 const isOpen = openSections.has(section.id);
                 const topics = sectionWithData.topics || [];
                 const directLessons = sectionWithData.directLessons || [];
+                
+                // Check if UNIT is completed
+                const unitId = sectionWithData.unit?.id;
+                const unitIsCompleted = unitId ? isUnitCompleted.get(unitId) === true : false;
 
                 return (
                   <div key={section.id} className="accordion-item card">
@@ -342,6 +570,9 @@ export default function LessonSidebar() {
                           }
                         }}
                         aria-expanded={isOpen}
+                        style={{
+                          color: unitIsCompleted ? '#28a745' : 'inherit'
+                        }}
                       >
                         {section.title} <span className="rbt-badge-5 ml--10">{section.completedCount}/{section.totalCount}</span>
                       </button>
@@ -403,6 +634,9 @@ export default function LessonSidebar() {
                               {allLessonsInUnit.map((lesson) => {
                                 // Strict comparison for active state
                                 const isActive = !!lessonId && !!lesson.id && lesson.id === lessonId;
+                                // Check if lesson is completed
+                                const isCompleted = lesson.id ? isLessonCompleted.get(lesson.id) === true : false;
+                                
                                 return (
                                   <li
                                     key={lesson.id}
@@ -423,11 +657,18 @@ export default function LessonSidebar() {
                                     >
                                       <div className="course-content-left">
                                         <i className={getLessonIcon('video')}></i>
-                                        <span className="text">{lesson.name || 'Untitled Lesson'}</span>
+                                        <span 
+                                          className="text" 
+                                          style={{ 
+                                            color: isCompleted ? '#28a745' : 'inherit' 
+                                          }}
+                                        >
+                                          {lesson.name || 'Untitled Lesson'}
+                                        </span>
                                       </div>
                                       <div className="course-content-right">
-                                        <span className={isActive ? 'rbt-check' : 'rbt-check unread'}>
-                                          <i className={isActive ? 'feather-check' : 'feather-circle'}></i>
+                                        <span className={isActive || isCompleted ? 'rbt-check' : 'rbt-check unread'}>
+                                          <i className={isActive || isCompleted ? 'feather-check' : 'feather-circle'}></i>
                                         </span>
                                       </div>
                                     </Link>
