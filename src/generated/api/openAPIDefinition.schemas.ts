@@ -298,17 +298,17 @@ export interface User {
   roleSet?: UserRoleSetItem[];
   authoritySet?: UserAuthoritySetItem[];
   enabled?: boolean;
+  accountNonExpired?: boolean;
+  accountNonLocked?: boolean;
+  credentialsNonExpired?: boolean;
+  authorities?: GrantedAuthority[];
+  institutionalLearner?: boolean;
+  individualLearner?: boolean;
+  admin?: boolean;
   learner?: boolean;
   manager?: boolean;
   tutor?: boolean;
   writer?: boolean;
-  admin?: boolean;
-  accountNonExpired?: boolean;
-  accountNonLocked?: boolean;
-  credentialsNonExpired?: boolean;
-  institutionalLearner?: boolean;
-  individualLearner?: boolean;
-  authorities?: GrantedAuthority[];
 }
 
 export type UserAssignmentStatus =
@@ -1365,8 +1365,8 @@ export interface PageCurriculumDto {
   content?: CurriculumDto[];
   number?: number;
   sort?: SortObject;
-  numberOfElements?: number;
   pageable?: PageableObject;
+  numberOfElements?: number;
   empty?: boolean;
 }
 
@@ -1374,9 +1374,9 @@ export interface PageableObject {
   offset?: number;
   sort?: SortObject;
   paged?: boolean;
-  unpaged?: boolean;
   pageNumber?: number;
   pageSize?: number;
+  unpaged?: boolean;
 }
 
 export interface SortObject {

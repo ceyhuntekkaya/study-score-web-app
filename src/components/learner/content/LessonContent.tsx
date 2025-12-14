@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContent } from '@/contexts/ContentContext';
+import { useGetCourseWithAllDetails } from '@/generated/api/course-rest-controller/course-rest-controller';
 
 /**
  * Lesson Content Component
@@ -19,6 +20,46 @@ export default function LessonContent() {
   const pathParts = pathname?.split('/').filter(Boolean) || [];
   const courseId = pathParts[2] || 'dummy-course-1'; // learner, content, [courseId]
   const lessonId = pathParts[3] || 'dummy-1'; // [lessonId]
+
+  // API call to fetch course with all details
+  const { data: courseDetails, isLoading, error } = useGetCourseWithAllDetails(
+    courseId,
+    {
+      query: {
+        enabled: !!courseId && courseId !== 'dummy-course-1', // Only fetch if we have a real courseId
+      },
+    }
+  );
+
+  // Log API response to console
+  useEffect(() => {
+    if (courseDetails) {
+      console.log('=== Course With All Details API Response ===');
+      console.log('Course ID:', courseId);
+      console.log('Full Response:', courseDetails);
+      console.log('Response Type:', typeof courseDetails);
+      console.log('Response Keys:', courseDetails ? Object.keys(courseDetails) : 'N/A');
+      if (courseDetails) {
+        console.log('Course Title:', (courseDetails as any)?.title || (courseDetails as any)?.name || 'N/A');
+        console.log('Lessons:', (courseDetails as any)?.lessons || (courseDetails as any)?.courseLessons || 'N/A');
+        if ((courseDetails as any)?.lessons) {
+          console.log('Number of Lessons:', Array.isArray((courseDetails as any).lessons) ? (courseDetails as any).lessons.length : 'N/A');
+        }
+        if ((courseDetails as any)?.courseLessons) {
+          console.log('Number of Course Lessons:', Array.isArray((courseDetails as any).courseLessons) ? (courseDetails as any).courseLessons.length : 'N/A');
+        }
+      }
+      console.log('============================================');
+    }
+    if (error) {
+      console.error('=== Course With All Details API Error ===');
+      console.error('Error:', error);
+      console.error('==========================================');
+    }
+    if (isLoading) {
+      console.log('Loading course with all details...');
+    }
+  }, [courseDetails, error, isLoading, courseId]);
 
   // Dummy lesson data - will be replaced with API call
   // Her lesson ID'sine göre farklı içerik
