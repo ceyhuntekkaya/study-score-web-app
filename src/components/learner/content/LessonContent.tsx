@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useContent } from '@/contexts/ContentContext';
 import { useGetCourseWithAllDetails } from '@/generated/api/course-rest-controller/course-rest-controller';
-import type { CourseLessonDetailDTO, CourseLessonPartDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
+import type { CourseLessonDetailDTO, CourseLessonPartDetailDTO, CourseLessonPartMaterialDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
 
 /**
  * Lesson Content Component
@@ -14,28 +14,30 @@ import type { CourseLessonDetailDTO, CourseLessonPartDetailDTO } from '@/generat
  */
 export default function LessonContent() {
   const pathname = usePathname();
+  const router = useRouter();
   const { sidebarOpen, toggleSidebar } = useContent();
   
   // Parse courseId and lessonId from pathname
   // Path format: /learner/content/[courseId]/[lessonId]
   const pathParts = pathname?.split('/').filter(Boolean) || [];
-  const courseId = pathParts[2] || 'dummy-course-1'; // learner, content, [courseId]
-  const lessonId = pathParts[3] || 'dummy-1'; // [lessonId]
+  const courseId = pathParts[2]; // learner, content, [courseId]
+  const lessonId = pathParts[3]; // [lessonId]
   const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
+  const [pendingPartId, setPendingPartId] = useState<string | null>(null); // For navigation between lessons
 
   // API call to fetch course with all details
   const { data: courseDetails, isLoading, error } = useGetCourseWithAllDetails(
-    courseId,
+    courseId || '',
     {
       query: {
-        enabled: !!courseId && courseId !== 'dummy-course-1', // Only fetch if we have a real courseId
+        enabled: !!courseId, // Only fetch if we have a courseId
       },
     }
   );
 
   // Find selected lesson from API data
   const selectedLesson = useMemo(() => {
-    if (!courseDetails?.lessons || !lessonId || lessonId === 'dummy-1') {
+    if (!courseDetails?.lessons || !lessonId) {
       return null;
     }
 
@@ -76,130 +78,139 @@ export default function LessonContent() {
     return lessonParts.find((part) => part.id === selectedPartId) || null;
   }, [selectedPartId, lessonParts]);
 
-  // Auto-select first part when lesson changes
-  useEffect(() => {
-    if (lessonParts.length > 0 && !selectedPartId) {
-      setSelectedPartId(lessonParts[0].id || null);
-    } else if (lessonParts.length === 0) {
-      setSelectedPartId(null);
+  // Get materials from selected part, sorted by orderNumber
+  const materials = useMemo(() => {
+    if (!selectedPart?.materials) {
+      return [];
     }
-  }, [lessonParts, selectedPartId]);
+    const materialsList = selectedPart.materials
+      .filter((material): material is CourseLessonPartMaterialDetailDTO => !!material)
+      .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
+    
+    return materialsList;
+  }, [selectedPart]);
 
-  // Log API response to console
-  useEffect(() => {
-    if (courseDetails) {
-      console.log('=== Course With All Details API Response ===');
-      console.log('Course ID:', courseId);
-      console.log('Full Response:', courseDetails);
-      console.log('Response Type:', typeof courseDetails);
-      console.log('Response Keys:', courseDetails ? Object.keys(courseDetails) : 'N/A');
-      if (courseDetails) {
-        console.log('Course Title:', (courseDetails as any)?.title || (courseDetails as any)?.name || 'N/A');
-        console.log('Lessons:', (courseDetails as any)?.lessons || (courseDetails as any)?.courseLessons || 'N/A');
-        if ((courseDetails as any)?.lessons) {
-          console.log('Number of Lessons:', Array.isArray((courseDetails as any).lessons) ? (courseDetails as any).lessons.length : 'N/A');
+  // Get all parts from all lessons in the course, sorted by lesson order and part order
+  const allParts = useMemo(() => {
+    if (!courseDetails?.lessons) {
+      return [];
+    }
+
+    // Helper function to recursively collect all parts from lessons
+    const collectParts = (lessons: CourseLessonDetailDTO[]): Array<{ part: CourseLessonPartDetailDTO; lessonId: string; lessonName: string }> => {
+      const parts: Array<{ part: CourseLessonPartDetailDTO; lessonId: string; lessonName: string }> = [];
+      
+      for (const lesson of lessons) {
+        if (lesson.lessonParts && lesson.lessonParts.length > 0) {
+          const sortedParts = lesson.lessonParts
+            .filter((part): part is CourseLessonPartDetailDTO => !!part)
+            .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
+          
+          sortedParts.forEach((part) => {
+            parts.push({
+              part,
+              lessonId: lesson.id || '',
+              lessonName: lesson.name || 'Untitled Lesson',
+            });
+          });
         }
-        if ((courseDetails as any)?.courseLessons) {
-          console.log('Number of Course Lessons:', Array.isArray((courseDetails as any).courseLessons) ? (courseDetails as any).courseLessons.length : 'N/A');
+        
+        // Check childLessons if available
+        const lessonWithChildren = lesson as CourseLessonDetailDTO & { childLessons?: CourseLessonDetailDTO[] };
+        if (lessonWithChildren.childLessons && lessonWithChildren.childLessons.length > 0) {
+          const childParts = collectParts(lessonWithChildren.childLessons);
+          parts.push(...childParts);
         }
       }
-      console.log('============================================');
-    }
-    if (error) {
-      console.error('=== Course With All Details API Error ===');
-      console.error('Error:', error);
-      console.error('==========================================');
-    }
-    if (isLoading) {
-      console.log('Loading course with all details...');
-    }
-  }, [courseDetails, error, isLoading, courseId]);
-
-  // Get lesson data from API or fallback to dummy
-  const lessonData = useMemo(() => {
-    // Use API data if available
-    if (selectedLesson) {
-      return {
-        id: selectedLesson.id || lessonId,
-        title: selectedLesson.name || 'Untitled Lesson',
-        description: selectedLesson.description || '',
-        courseTitle: courseDetails?.name || 'Course',
-        videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE', // Default video, will be replaced with actual content later
-      };
-    }
-
-    // Fallback to dummy data
-    const lessons: Record<string, { title: string; videoUrl: string; description: string }> = {
-      'dummy-1': {
-        title: 'Course Intro',
-        videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE',
-        description: 'Let us analyze the greatest hits of the past and learn what makes these tracks so special.',
-      },
-      'dummy-2': {
-        title: 'Introduction',
-        videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE',
-        description: 'This is the introduction lesson. Learn the basics of the course.',
-      },
-      'dummy-3': {
-        title: 'Hello World!',
-        videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE',
-        description: 'Start your journey with Hello World! This is your first step.',
-      },
-      'dummy-4': {
-        title: 'Values and Variables',
-        videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE',
-        description: 'Learn about values and variables in programming.',
-      },
-      'dummy-5': {
-        title: 'Basic Operators',
-        videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE',
-        description: 'Understanding basic operators and how to use them.',
-      },
-      'dummy-6': {
-        title: 'Questions Types',
-        videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE',
-        description: 'Learn about different types of questions in quizzes.',
-      },
-      'dummy-7': {
-        title: 'All Questions',
-        videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE',
-        description: 'Review all questions and their formats.',
-      },
-      'dummy-8': {
-        title: 'Study Score Assignments',
-        videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE',
-        description: 'Complete your assignments and submit them.',
-      },
-      'dummy-9': {
-        title: 'Study Score Assignments Submit',
-        videoUrl: 'https://www.youtube.com/embed/qKzhrXqT6oE',
-        description: 'Learn how to submit your assignments properly.',
-      },
+      
+      return parts;
     };
 
-    const dummyLesson = lessons[lessonId] || lessons['dummy-1'];
-    return {
-      id: lessonId,
-      title: dummyLesson.title,
-      description: dummyLesson.description,
-      videoUrl: dummyLesson.videoUrl,
-      courseTitle: courseDetails?.name || 'The Complete Study Score 2026: From Zero to Expert!',
-    };
-  }, [selectedLesson, lessonId, courseDetails]);
+    return collectParts(courseDetails.lessons);
+  }, [courseDetails]);
+
+  // Find current part index in all parts
+  const currentPartIndex = useMemo(() => {
+    if (!selectedPartId || !allParts.length) {
+      return -1;
+    }
+    return allParts.findIndex((item) => item.part.id === selectedPartId);
+  }, [selectedPartId, allParts]);
+
+  // Get previous and next part info
+  const previousPart = useMemo(() => {
+    if (currentPartIndex > 0) {
+      return allParts[currentPartIndex - 1];
+    }
+    return null;
+  }, [currentPartIndex, allParts]);
+
+  const nextPart = useMemo(() => {
+    if (currentPartIndex >= 0 && currentPartIndex < allParts.length - 1) {
+      return allParts[currentPartIndex + 1];
+    }
+    return null;
+  }, [currentPartIndex, allParts]);
+
+  // Navigate to previous/next part
+  const handlePreviousPart = () => {
+    if (previousPart && previousPart.lessonId && previousPart.part.id) {
+      setPendingPartId(previousPart.part.id);
+      router.push(`/learner/content/${courseId}/${previousPart.lessonId}`);
+    }
+  };
+
+  const handleNextPart = () => {
+    if (nextPart && nextPart.lessonId && nextPart.part.id) {
+      setPendingPartId(nextPart.part.id);
+      router.push(`/learner/content/${courseId}/${nextPart.lessonId}`);
+    }
+  };
+
+
+  // Auto-select first part when lesson changes, or select specific part if navigating from previous/next
+  useEffect(() => {
+    if (lessonParts.length > 0) {
+      // If we have a pending part ID (from previous/next navigation), use it
+      if (pendingPartId) {
+        const partExists = lessonParts.some((part) => part.id === pendingPartId);
+        if (partExists) {
+          setSelectedPartId(pendingPartId);
+          setPendingPartId(null); // Clear pending
+          return;
+        }
+      }
+      
+      // Check if current selected part is still in this lesson
+      if (selectedPartId) {
+        const partExists = lessonParts.some((part) => part.id === selectedPartId);
+        if (partExists) {
+          return; // Keep current selection
+        }
+      }
+      
+      // Otherwise, select the first part
+      const firstPartId = lessonParts[0].id || null;
+      setSelectedPartId(firstPartId);
+    } else {
+      setSelectedPartId(null);
+    }
+  }, [lessonId, lessonParts, pendingPartId, selectedPartId]);
+
 
   // Get header title: "Lesson Name / Part Name" or just "Lesson Name"
   const headerTitle = useMemo(() => {
-    const lessonName = selectedLesson?.name || lessonData.title;
+    const lessonName = selectedLesson?.name || 'Untitled Lesson';
     if (selectedPart?.name) {
       return `${lessonName} / ${selectedPart.name}`;
     }
     return lessonName;
-  }, [selectedLesson, selectedPart, lessonData]);
+  }, [selectedLesson, selectedPart]);
 
-  // Lesson değiştiğinde scroll to top and reset selected part
+  // Lesson değiştiğinde scroll to top
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setSelectedPartId(null); // Reset part selection when lesson changes
+    // Part selection is handled by the lessonParts useEffect above
   }, [lessonId]);
 
   return (
@@ -268,31 +279,197 @@ export default function LessonContent() {
       )}
       
       <div className="inner">
-        <div className="rbt-video-player">
-          <iframe
-            src={lessonData.videoUrl}
-            allowFullScreen
-            allow="autoplay"
-            style={{ width: '100%', border: 'none' }}
-          ></iframe>
-        </div>
-        <div className="content">
-          <div className="section-title">
-            <h4>{lessonData.title}</h4>
-            <p>{lessonData.description}</p>
+        {/* Materials Content */}
+        {materials.length > 0 ? (
+          <div className="materials-content">
+            {materials.map((material) => {
+              const mediaType = material.mediaType;
+              const content = material.content || '';
+
+              // IMAGE - content is the image URL
+              if (mediaType === 'IMAGE') {
+                return (
+                  <div key={material.id} className="material-item material-image mb--30">
+                    {material.name && <h5 className="mb--15">{material.name}</h5>}
+                    {material.description && <p className="mb--15">{material.description}</p>}
+                    {content && (
+                      <div className="image-wrapper">
+                        <img
+                          src={content}
+                          alt={material.name || 'Image'}
+                          style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
+                          onError={(e) => {
+                            console.error('Image load error:', content);
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // VIDEO - content is the video URL
+              if (mediaType === 'VIDEO') {
+                return (
+                  <div key={material.id} className="material-item material-video mb--30">
+                    {material.name && <h5 className="mb--15">{material.name}</h5>}
+                    {material.description && <p className="mb--15">{material.description}</p>}
+                    {content && (
+                      <div className="rbt-video-player">
+                        <video
+                          controls
+                          style={{ width: '100%', borderRadius: '8px' }}
+                          src={content}
+                          onError={(e) => {
+                            console.error('Video load error:', content);
+                          }}
+                        >
+                          Your browser does not support the video tag.
+                        </video>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // AUDIO - content is the audio URL
+              if (mediaType === 'AUDIO') {
+                return (
+                  <div key={material.id} className="material-item material-audio mb--30">
+                    {material.name && <h5 className="mb--15">{material.name}</h5>}
+                    {material.description && <p className="mb--15">{material.description}</p>}
+                    {content && (
+                      <div className="audio-wrapper">
+                        <audio controls style={{ width: '100%' }}>
+                          <source src={content} />
+                          Your browser does not support the audio tag.
+                        </audio>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // DOCUMENT - content may contain HTML or download link
+              if (mediaType === 'DOCUMENT') {
+                return (
+                  <div key={material.id} className="material-item material-document mb--30">
+                    {material.name && <h5 className="mb--15">{material.name}</h5>}
+                    {material.description && <p className="mb--15">{material.description}</p>}
+                    {content && (
+                      <div
+                        className="document-content"
+                        dangerouslySetInnerHTML={{ __html: content }}
+                      />
+                    )}
+                  </div>
+                );
+              }
+
+              // PDF - content may contain HTML or PDF URL
+              if (mediaType === 'PDF') {
+                return (
+                  <div key={material.id} className="material-item material-pdf mb--30">
+                    {material.name && <h5 className="mb--15">{material.name}</h5>}
+                    {material.description && <p className="mb--15">{material.description}</p>}
+                    {content && (
+                      <div className="pdf-wrapper">
+                        <iframe
+                          src={content}
+                          style={{ width: '100%', height: '600px', border: 'none', borderRadius: '8px' }}
+                          title={material.name || 'PDF Document'}
+                          onError={(e) => {
+                            console.error('PDF load error:', content);
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // LINK - content is the URL
+              if (mediaType === 'LINK') {
+                return (
+                  <div key={material.id} className="material-item material-link mb--30">
+                    {material.name && <h5 className="mb--15">{material.name}</h5>}
+                    {material.description && <p className="mb--15">{material.description}</p>}
+                    {content && (
+                      <div className="link-wrapper">
+                        <a
+                          href={content}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rbt-btn btn-md bg-primary"
+                        >
+                          <span className="btn-text">Open Link</span>
+                          <span className="btn-icon"><i className="feather-external-link"></i></span>
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // TEXT or OTHER - render content as HTML
+              if (mediaType === 'TEXT' || mediaType === 'OTHER' || !mediaType) {
+                return (
+                  <div key={material.id} className="material-item material-text mb--30">
+                    {material.name && <h5 className="mb--15">{material.name}</h5>}
+                    {material.description && <p className="mb--15">{material.description}</p>}
+                    {content && (
+                      <div
+                        className="text-content"
+                        dangerouslySetInnerHTML={{ __html: content }}
+                      />
+                    )}
+                  </div>
+                );
+              }
+
+              // Fallback for unknown types - render as HTML
+              return (
+                <div key={material.id} className="material-item material-unknown mb--30">
+                  {material.name && <h5 className="mb--15">{material.name}</h5>}
+                  {material.description && <p className="mb--15">{material.description}</p>}
+                  {content && (
+                    <div
+                      className="unknown-content"
+                      dangerouslySetInnerHTML={{ __html: content }}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
-        </div>
+        ) : (
+          // Fallback content when no materials
+          <div className="content">
+            <div className="section-title">
+              <h4>{selectedLesson?.name || 'Untitled Lesson'}</h4>
+              <p>{selectedLesson?.description || 'No content available for this lesson part.'}</p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="bg-color-extra2 ptb--15 overflow-hidden">
         <div className="rbt-button-group">
-          {/* TODO: Previous/Next lesson navigation - will be implemented with actual lesson order */}
-          <button className="rbt-btn icon-hover icon-hover-left btn-md bg-primary-opacity" disabled>
+          <button
+            className={`rbt-btn icon-hover icon-hover-left btn-md ${previousPart ? 'bg-primary-opacity' : 'bg-primary-opacity'}`}
+            disabled={!previousPart}
+            onClick={handlePreviousPart}
+          >
             <span className="btn-icon"><i className="feather-arrow-left"></i></span>
             <span className="btn-text">Previous</span>
           </button>
 
-          <button className="rbt-btn icon-hover btn-md" disabled>
+          <button
+            className={`rbt-btn icon-hover btn-md ${nextPart ? 'bg-primary-opacity' : 'bg-primary-opacity'}`}
+            disabled={!nextPart}
+            onClick={handleNextPart}
+          >
             <span className="btn-text">Next</span>
             <span className="btn-icon"><i className="feather-arrow-right"></i></span>
           </button>

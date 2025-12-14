@@ -26,15 +26,22 @@ export default function LessonSidebar() {
   // Parse courseId and lessonId from pathname
   // Path format: /learner/content/[courseId] or /learner/content/[courseId]/[lessonId]
   const pathParts = pathname?.split('/').filter(Boolean) || [];
-  const courseId = pathParts[2] || 'dummy-course-1'; // learner, content, [courseId]
-  const lessonId = pathParts[3] || 'dummy-1'; // [lessonId] if exists
+  const courseId = pathParts[2]; // learner, content, [courseId]
+  const lessonId = pathParts[3]; // [lessonId] if exists
+
+  // Debug: Log lessonId changes
+  useEffect(() => {
+    if (lessonId) {
+      console.log('LessonSidebar - lessonId changed:', lessonId);
+    }
+  }, [lessonId]);
 
   // API call to fetch course with all details
   const { data: courseDetails, isLoading } = useGetCourseWithAllDetails(
-    courseId,
+    courseId || '',
     {
       query: {
-        enabled: !!courseId && courseId !== 'dummy-course-1', // Only fetch if we have a real courseId
+        enabled: !!courseId, // Only fetch if we have a courseId
       },
     }
   );
@@ -192,13 +199,85 @@ export default function LessonSidebar() {
       };
     });
 
-    // Auto-open first section if no sections are open
-    if (sectionsList.length > 0 && openSections.size === 0) {
-      setOpenSections(new Set([sectionsList[0].id]));
+    return sectionsList;
+  }, [courseDetails]);
+
+  // Find which UNIT contains the active lesson and auto-open it
+  useEffect(() => {
+    if (!lessonId || !sections.length || !courseDetails?.lessons) {
+      return;
     }
 
-    return sectionsList;
-  }, [courseDetails, openSections]);
+    // Find which section (UNIT) contains the active lesson
+    const findSectionForLesson = (): string | null => {
+      for (const section of sections) {
+        const sectionWithData = section as LessonSection & {
+          unit?: CourseLessonDetailDTOWithChildren;
+          topics?: CourseLessonDetailDTOWithChildren[];
+          directLessons?: CourseLessonDetailDTOWithChildren[];
+        };
+        
+        const topics = sectionWithData.topics || [];
+        const directLessons = sectionWithData.directLessons || [];
+        
+        // Check direct lessons
+        if (directLessons.some((lesson) => lesson.id === lessonId)) {
+          return section.id;
+        }
+        
+        // Check lessons in topics
+        for (const topic of topics) {
+          const topicWithChildren = topic as CourseLessonDetailDTOWithChildren;
+          const topicChildLessons = getChildLessons(topicWithChildren);
+          
+          let topicLessons: CourseLessonDetailDTOWithChildren[] = [];
+          if (topicChildLessons.length > 0) {
+            topicLessons = topicChildLessons.filter((child) => child.lessonLevel === 'LESSON');
+          } else {
+            const allLessons = (courseDetails?.lessons || [])
+              .filter((lesson): lesson is CourseLessonDetailDTO => !!lesson)
+              .map((lesson) => lesson as CourseLessonDetailDTOWithChildren);
+            
+            topicLessons = allLessons.filter(
+              (lesson) =>
+                lesson.lessonLevel === 'LESSON' &&
+                lesson.parentLessonId === topic.id
+            );
+          }
+          
+          if (topicLessons.some((lesson) => lesson.id === lessonId)) {
+            return section.id;
+          }
+        }
+      }
+      return null;
+    };
+
+    const sectionId = findSectionForLesson();
+    
+    if (sectionId && !openSections.has(sectionId)) {
+      // Open the UNIT that contains the active lesson
+      setOpenSections(new Set([sectionId]));
+    } else if (sections.length > 0 && openSections.size === 0) {
+      // Fallback: open first section if no sections are open
+      setOpenSections(new Set([sections[0].id]));
+    }
+  }, [lessonId, sections, courseDetails, openSections]);
+
+  // Scroll to active lesson when lessonId changes or accordion opens
+  useEffect(() => {
+    if (lessonId && openSections.size > 0) {
+      // Wait for accordion to fully open and DOM to update
+      const timeoutId = setTimeout(() => {
+        const activeLessonElement = document.getElementById(`active-lesson-${lessonId}`);
+        if (activeLessonElement) {
+          activeLessonElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500); // Increased timeout to wait for accordion animation
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [lessonId, openSections]);
 
   const getLessonIcon = (type: string) => {
     switch (type) {
@@ -335,9 +414,14 @@ export default function LessonSidebar() {
                           return (
                             <ul className="rbt-course-main-content liststyle">
                               {allLessonsInUnit.map((lesson) => {
-                                const isActive = lesson.id === lessonId;
+                                // Strict comparison for active state
+                                const isActive = !!lessonId && !!lesson.id && lesson.id === lessonId;
                                 return (
-                                  <li key={lesson.id} className={isActive ? 'active' : ''}>
+                                  <li
+                                    key={lesson.id}
+                                    id={isActive ? `active-lesson-${lesson.id}` : undefined}
+                                    className={isActive ? 'active' : ''}
+                                  >
                                     <Link
                                       href={`/learner/content/${courseId}/${lesson.id}`}
                                       className={isActive ? 'active' : ''}
@@ -355,8 +439,8 @@ export default function LessonSidebar() {
                                         <span className="text">{lesson.name || 'Untitled Lesson'}</span>
                                       </div>
                                       <div className="course-content-right">
-                                        <span className="rbt-check unread">
-                                          <i className="feather-circle"></i>
+                                        <span className={isActive ? 'rbt-check' : 'rbt-check unread'}>
+                                          <i className={isActive ? 'feather-check' : 'feather-circle'}></i>
                                         </span>
                                       </div>
                                     </Link>
