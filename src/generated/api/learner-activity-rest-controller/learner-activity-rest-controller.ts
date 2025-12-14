@@ -21,11 +21,11 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
-  ActiveCourseInfo,
-  CourseLessonPartMaterialProgress,
-  CourseLessonPartProgress,
-  LearnerDashboardResponse,
+  GetCourseProgress200,
+  GetDashboard200,
+  UpdateMaterialProgress200,
   UpdateMaterialProgressRequest,
+  UpdatePartProgress200,
   UpdatePartProgressRequest,
 } from "../openAPIDefinition.schemas";
 
@@ -38,7 +38,7 @@ export const updatePartProgress = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<CourseLessonPartProgress>(
+  return customInstance<UpdatePartProgress200>(
     {
       url: `/learner/progress/part`,
       method: "POST",
@@ -120,7 +120,7 @@ export const updateMaterialProgress = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<CourseLessonPartMaterialProgress>(
+  return customInstance<UpdateMaterialProgress200>(
     {
       url: `/learner/progress/material`,
       method: "POST",
@@ -202,7 +202,7 @@ export const getCourseProgress = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<ActiveCourseInfo>(
+  return customInstance<GetCourseProgress200>(
     { url: `/learner/progress/course/${courseId}`, method: "GET", signal },
     options,
   );
@@ -363,7 +363,7 @@ export const getDashboard = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<LearnerDashboardResponse>(
+  return customInstance<GetDashboard200>(
     { url: `/learner/dashboard`, method: "GET", signal },
     options,
   );

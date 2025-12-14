@@ -298,17 +298,17 @@ export interface User {
   roleSet?: UserRoleSetItem[];
   authoritySet?: UserAuthoritySetItem[];
   enabled?: boolean;
+  admin?: boolean;
+  learner?: boolean;
+  manager?: boolean;
+  tutor?: boolean;
+  writer?: boolean;
   accountNonExpired?: boolean;
   accountNonLocked?: boolean;
   credentialsNonExpired?: boolean;
   authorities?: GrantedAuthority[];
   institutionalLearner?: boolean;
   individualLearner?: boolean;
-  admin?: boolean;
-  learner?: boolean;
-  manager?: boolean;
-  tutor?: boolean;
-  writer?: boolean;
 }
 
 export type UserAssignmentStatus =
@@ -934,111 +934,12 @@ export interface UpdatePartProgressRequest {
   currentMaterialPositionSeconds?: number;
 }
 
-export type CourseLessonPartProgressStatus =
-  (typeof CourseLessonPartProgressStatus)[keyof typeof CourseLessonPartProgressStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CourseLessonPartProgressStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type CourseLessonPartProgressCompletionStatus =
-  (typeof CourseLessonPartProgressCompletionStatus)[keyof typeof CourseLessonPartProgressCompletionStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CourseLessonPartProgressCompletionStatus = {
-  NOT_STARTED: "NOT_STARTED",
-  IN_PROGRESS: "IN_PROGRESS",
-  COMPLETED: "COMPLETED",
-  LOCKED: "LOCKED",
-} as const;
-
-export interface CourseLessonPartProgress {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: CourseLessonPartProgressStatus;
-  createdBy?: User;
-  deletedBy?: User;
-  learner?: User;
-  courseLessonPart?: CourseLessonPart;
-  completionStatus?: CourseLessonPartProgressCompletionStatus;
-  progressPercentage?: number;
-  firstStartedAt?: string;
-  lastAccessedAt?: string;
-  completedAt?: string;
-  totalTimeSpentSeconds?: number;
-  currentMaterial?: CourseLessonPartMaterial;
-  currentMaterialPositionSeconds?: number;
-  aiMessageCount?: number;
-  aiLastInteractionAt?: string;
-}
-
 export interface UpdateMaterialProgressRequest {
   materialId?: string;
   currentPositionSeconds?: number;
   totalDurationSeconds?: number;
   watchDurationSeconds?: number;
   isDownloaded?: boolean;
-}
-
-export type CourseLessonPartMaterialProgressStatus =
-  (typeof CourseLessonPartMaterialProgressStatus)[keyof typeof CourseLessonPartMaterialProgressStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CourseLessonPartMaterialProgressStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export interface CourseLessonPartMaterialProgress {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: CourseLessonPartMaterialProgressStatus;
-  createdBy?: User;
-  deletedBy?: User;
-  learner?: User;
-  material?: CourseLessonPartMaterial;
-  watchedSeconds?: number;
-  totalDurationSeconds?: number;
-  currentPositionSeconds?: number;
-  watchCount?: number;
-  isActivelyWatched?: boolean;
-  completionPercentage?: number;
-  isCompleted?: boolean;
-  firstWatchedAt?: string;
-  lastWatchedAt?: string;
-  completedAt?: string;
-  isDownloaded?: boolean;
-  timeSpentSeconds?: number;
 }
 
 export type CurriculumFilterDtoCategory =
@@ -1288,74 +1189,6 @@ export interface AuthenticationRequest {
   password?: string;
 }
 
-export type ActiveCourseInfoCategory =
-  (typeof ActiveCourseInfoCategory)[keyof typeof ActiveCourseInfoCategory];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ActiveCourseInfoCategory = {
-  IELTS: "IELTS",
-  TOEFL: "TOEFL",
-} as const;
-
-export interface ActiveCourseInfo {
-  courseId?: string;
-  courseName?: string;
-  imageUrl?: string;
-  category?: ActiveCourseInfoCategory;
-  progressPercentage?: number;
-  lastAccessDate?: string;
-  totalTimeSpentSeconds?: number;
-  nextContent?: NextContentInfo;
-  totalParts?: number;
-  completedParts?: number;
-  inProgressParts?: number;
-  accessEndDate?: string;
-  daysRemaining?: number;
-  thisWeekTimeSpentSeconds?: number;
-  thisWeekAccessCount?: number;
-}
-
-export interface NextContentInfo {
-  partId?: string;
-  partName?: string;
-  lessonId?: string;
-  lessonName?: string;
-  orderNumber?: number;
-  materialId?: string;
-  materialName?: string;
-  materialPositionSeconds?: number;
-}
-
-export interface ActiveExamInfo {
-  examId?: string;
-  examName?: string;
-  examType?: string;
-  attemptCount?: number;
-  maxAttempts?: number;
-  hasAttemptsLeft?: boolean;
-  bestScore?: number;
-  lastAttemptDate?: string;
-  accessEndDate?: string;
-  daysRemaining?: number;
-}
-
-export interface DashboardStats {
-  totalActiveCourses?: number;
-  totalActiveExams?: number;
-  totalStudyTimeSeconds?: number;
-  averageProgressPercentage?: number;
-  thisWeekStudyTimeSeconds?: number;
-  thisMonthStudyTimeSeconds?: number;
-  thisWeekSessionCount?: number;
-  thisMonthSessionCount?: number;
-}
-
-export interface LearnerDashboardResponse {
-  activeCourses?: ActiveCourseInfo[];
-  activeExams?: ActiveExamInfo[];
-  overallStats?: DashboardStats;
-}
-
 export interface PageCurriculumDto {
   totalPages?: number;
   totalElements?: number;
@@ -1365,8 +1198,8 @@ export interface PageCurriculumDto {
   content?: CurriculumDto[];
   number?: number;
   sort?: SortObject;
-  pageable?: PageableObject;
   numberOfElements?: number;
+  pageable?: PageableObject;
   empty?: boolean;
 }
 
@@ -1374,15 +1207,15 @@ export interface PageableObject {
   offset?: number;
   sort?: SortObject;
   paged?: boolean;
+  unpaged?: boolean;
   pageNumber?: number;
   pageSize?: number;
-  unpaged?: boolean;
 }
 
 export interface SortObject {
   empty?: boolean;
-  sorted?: boolean;
   unsorted?: boolean;
+  sorted?: boolean;
 }
 
 export type RenameFileParams = {
@@ -1412,6 +1245,10 @@ export type UpdateContentOrderParams = {
 export type MoveContentParams = {
   newParentId: string;
 };
+
+export type UpdatePartProgress200 = { [key: string]: unknown };
+
+export type UpdateMaterialProgress200 = { [key: string]: unknown };
 
 export type CopyFileParams = {
   /**
@@ -1477,6 +1314,10 @@ export type DuplicateCurriculumParams = {
    */
   newName: string;
 };
+
+export type GetCourseProgress200 = { [key: string]: unknown };
+
+export type GetDashboard200 = { [key: string]: unknown };
 
 export type GetFileTypeStatistics200 = { [key: string]: number };
 
