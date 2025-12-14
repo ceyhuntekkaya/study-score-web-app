@@ -267,13 +267,13 @@ export default function LessonSidebar() {
                         className={`accordion-button ${isOpen ? '' : 'collapsed'}`}
                         type="button"
                         onClick={() => {
-                          const newOpenSections = new Set(openSections);
                           if (isOpen) {
-                            newOpenSections.delete(section.id);
+                            // If already open, close it
+                            setOpenSections(new Set());
                           } else {
-                            newOpenSections.add(section.id);
+                            // If closed, open only this one (close others)
+                            setOpenSections(new Set([section.id]));
                           }
-                          setOpenSections(newOpenSections);
                         }}
                         aria-expanded={isOpen}
                       >
@@ -286,144 +286,86 @@ export default function LessonSidebar() {
                       aria-labelledby={`heading-${section.id}`}
                     >
                       <div className="accordion-body card-body">
-                        {/* Direct LESSONs under UNIT (no TOPIC) */}
-                        {directLessons.length > 0 && (
-                          <ul className="rbt-course-main-content liststyle">
-                            {directLessons.map((lesson) => {
-                              const isActive = lesson.id === lessonId;
-                              return (
-                                <li key={lesson.id} className={isActive ? 'active' : ''}>
-                                  <Link
-                                    href={`/learner/content/${courseId}/${lesson.id}`}
-                                    className={isActive ? 'active' : ''}
-                                    onClick={() => {
-                                      const sectionId = section.id;
-                                      if (!openSections.has(sectionId)) {
-                                        const newOpenSections = new Set(openSections);
-                                        newOpenSections.add(sectionId);
-                                        setOpenSections(newOpenSections);
-                                      }
-                                    }}
-                                  >
-                                    <div className="course-content-left">
-                                      <i className={getLessonIcon('video')}></i>
-                                      <span className="text">{lesson.name || 'Untitled Lesson'}</span>
-                                    </div>
-                                    <div className="course-content-right">
-                                      <span className="rbt-check unread">
-                                        <i className="feather-circle"></i>
-                                      </span>
-                                    </div>
-                                  </Link>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        )}
-
-                        {/* TOPICs with nested LESSONs */}
-                        {topics.length > 0 && (
-                          <div className="rbt-accordion-style rbt-accordion-02 accordion mt--20">
-                            <div className="accordion">
-                              {topics.map((topic) => {
-                                const topicId = `topic-${topic.id}`;
-                                const isTopicOpen = openTopics.has(topicId);
-                                
-                                // Get LESSONs from childLessons array or by parentLessonId
-                                const topicWithChildren = topic as CourseLessonDetailDTOWithChildren;
-                                const topicChildLessons = getChildLessons(topicWithChildren);
-                                
-                                let topicLessons: CourseLessonDetailDTOWithChildren[] = [];
-                                if (topicChildLessons.length > 0) {
-                                  // Use childLessons array
-                                  topicLessons = topicChildLessons
-                                    .filter((child) => child.lessonLevel === 'LESSON')
-                                    .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
-                                } else {
-                                  // Fallback: use parentLessonId relationship
-                                  const allLessons = (courseDetails?.lessons || [])
-                                    .filter((lesson): lesson is CourseLessonDetailDTO => !!lesson)
-                                    .map((lesson) => lesson as CourseLessonDetailDTOWithChildren);
-                                  
-                                  topicLessons = allLessons
-                                    .filter(
-                                      (lesson) =>
-                                        lesson.lessonLevel === 'LESSON' &&
-                                        lesson.parentLessonId === topic.id
-                                    )
-                                    .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
-                                }
-
+                        {/* Collect all LESSONs from this UNIT (direct + from all TOPICs) */}
+                        {(() => {
+                          // Get all LESSONs from TOPICs
+                          const allTopicLessons: CourseLessonDetailDTOWithChildren[] = [];
+                          
+                          topics.forEach((topic) => {
+                            const topicWithChildren = topic as CourseLessonDetailDTOWithChildren;
+                            const topicChildLessons = getChildLessons(topicWithChildren);
+                            
+                            let topicLessons: CourseLessonDetailDTOWithChildren[] = [];
+                            if (topicChildLessons.length > 0) {
+                              // Use childLessons array
+                              topicLessons = topicChildLessons
+                                .filter((child) => child.lessonLevel === 'LESSON')
+                                .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
+                            } else {
+                              // Fallback: use parentLessonId relationship
+                              const allLessons = (courseDetails?.lessons || [])
+                                .filter((lesson): lesson is CourseLessonDetailDTO => !!lesson)
+                                .map((lesson) => lesson as CourseLessonDetailDTOWithChildren);
+                              
+                              topicLessons = allLessons
+                                .filter(
+                                  (lesson) =>
+                                    lesson.lessonLevel === 'LESSON' &&
+                                    lesson.parentLessonId === topic.id
+                                )
+                                .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
+                            }
+                            
+                            allTopicLessons.push(...topicLessons);
+                          });
+                          
+                          // Combine direct lessons and topic lessons, sort by orderNumber
+                          const allLessonsInUnit = [...directLessons, ...allTopicLessons].sort(
+                            (a, b) => (a.orderNumber || 0) - (b.orderNumber || 0)
+                          );
+                          
+                          if (allLessonsInUnit.length === 0) {
+                            return (
+                              <div className="text-center p--10">
+                                <p className="text-muted">No lessons available in this unit.</p>
+                              </div>
+                            );
+                          }
+                          
+                          return (
+                            <ul className="rbt-course-main-content liststyle">
+                              {allLessonsInUnit.map((lesson) => {
+                                const isActive = lesson.id === lessonId;
                                 return (
-                                  <div key={topicId} className="accordion-item card">
-                                    <h2 className="accordion-header card-header" id={`heading-${topicId}`}>
-                                      <button
-                                        className={`accordion-button ${isTopicOpen ? '' : 'collapsed'}`}
-                                        type="button"
-                                        onClick={() => {
-                                          const newOpenTopics = new Set(openTopics);
-                                          if (isTopicOpen) {
-                                            newOpenTopics.delete(topicId);
-                                          } else {
-                                            newOpenTopics.add(topicId);
-                                          }
-                                          setOpenTopics(newOpenTopics);
-                                        }}
-                                        aria-expanded={isTopicOpen}
-                                      >
-                                        {topic.name || 'Untitled Topic'}
-                                      </button>
-                                    </h2>
-                                    <div
-                                      id={`collapse-${topicId}`}
-                                      className={`accordion-collapse collapse ${isTopicOpen ? 'show' : ''}`}
-                                      aria-labelledby={`heading-${topicId}`}
+                                  <li key={lesson.id} className={isActive ? 'active' : ''}>
+                                    <Link
+                                      href={`/learner/content/${courseId}/${lesson.id}`}
+                                      className={isActive ? 'active' : ''}
+                                      onClick={() => {
+                                        const sectionId = section.id;
+                                        if (!openSections.has(sectionId)) {
+                                          const newOpenSections = new Set(openSections);
+                                          newOpenSections.add(sectionId);
+                                          setOpenSections(newOpenSections);
+                                        }
+                                      }}
                                     >
-                                      <div className="accordion-body card-body">
-                                        <ul className="rbt-course-main-content liststyle">
-                                          {topicLessons.map((lesson) => {
-                                            const isActive = lesson.id === lessonId;
-                                            return (
-                                              <li key={lesson.id} className={isActive ? 'active' : ''}>
-                                                <Link
-                                                  href={`/learner/content/${courseId}/${lesson.id}`}
-                                                  className={isActive ? 'active' : ''}
-                                                  onClick={() => {
-                                                    const sectionId = section.id;
-                                                    if (!openSections.has(sectionId)) {
-                                                      const newOpenSections = new Set(openSections);
-                                                      newOpenSections.add(sectionId);
-                                                      setOpenSections(newOpenSections);
-                                                    }
-                                                    if (!openTopics.has(topicId)) {
-                                                      const newOpenTopics = new Set(openTopics);
-                                                      newOpenTopics.add(topicId);
-                                                      setOpenTopics(newOpenTopics);
-                                                    }
-                                                  }}
-                                                >
-                                                  <div className="course-content-left">
-                                                    <i className={getLessonIcon('video')}></i>
-                                                    <span className="text">{lesson.name || 'Untitled Lesson'}</span>
-                                                  </div>
-                                                  <div className="course-content-right">
-                                                    <span className="rbt-check unread">
-                                                      <i className="feather-circle"></i>
-                                                    </span>
-                                                  </div>
-                                                </Link>
-                                              </li>
-                                            );
-                                          })}
-                                        </ul>
+                                      <div className="course-content-left">
+                                        <i className={getLessonIcon('video')}></i>
+                                        <span className="text">{lesson.name || 'Untitled Lesson'}</span>
                                       </div>
-                                    </div>
-                                  </div>
+                                      <div className="course-content-right">
+                                        <span className="rbt-check unread">
+                                          <i className="feather-circle"></i>
+                                        </span>
+                                      </div>
+                                    </Link>
+                                  </li>
                                 );
                               })}
-                            </div>
-                          </div>
-                        )}
+                            </ul>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
