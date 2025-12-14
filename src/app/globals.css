@@ -130,18 +130,35 @@ a {
   }
 }
 
-/* AI Chat Styles */
+/* AI Chat Styles - WhatsApp like */
 .ai-chat-message {
   word-wrap: break-word;
   overflow-wrap: break-word;
+  position: relative;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .ai-chat-message.user {
-  text-align: right;
+  text-align: left;
 }
 
 .ai-chat-message.assistant {
   text-align: left;
+}
+
+.user-message-text {
+  color: #ffffff !important;
+}
+
+.ai-chat-message.bg-blue-500 .user-message-text,
+.ai-chat-message.bg-blue-500 {
+  color: #ffffff !important;
+}
+
+.ai-chat-message.bg-blue-500 * {
+  color: #ffffff !important;
 }
 
 .markdown-content {
