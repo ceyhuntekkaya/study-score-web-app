@@ -9,6 +9,7 @@ export default defineConfig({
       mode: 'tags-split',
       target: 'src/generated/api',
       client: 'react-query',
+      clean: true, // 👈 BUNU EKLE - Her generate'de klasörü tamamen temizler
       override: {
         mutator: {
           path: 'src/lib/api-client.ts',
