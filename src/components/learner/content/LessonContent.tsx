@@ -270,11 +270,11 @@ export default function LessonContent() {
       <div className="inner">
         {showAIChat ? (
           <div 
-            className="ai-chat-container p-3 p-md-4" 
+            className="ai-chat-container" 
             style={{ 
-              minHeight: '70vh',
-              height: 'auto',
-              maxHeight: 'none'
+              height: 'calc(100vh - 200px)',
+              minHeight: '600px',
+              position: 'relative'
             }}
           >
             <AIChat

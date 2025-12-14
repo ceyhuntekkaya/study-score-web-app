@@ -37,17 +37,7 @@ export default function LearnerDashboardTop() {
             </ul>
           </div>
         </div>
-        <div className="rbt-tutor-information-right">
-          <div className="tutor-btn">
-            <Link className="rbt-btn btn-md hover-icon-reverse" href="/become-instructor">
-              <span className="icon-reverse-wrapper">
-                <span className="btn-text">Become an Instructor</span>
-                <span className="btn-icon"><i className="feather-arrow-right"></i></span>
-                <span className="btn-icon"><i className="feather-arrow-right"></i></span>
-              </span>
-            </Link>
-          </div>
-        </div>
+       
       </div>
     </div>
   );

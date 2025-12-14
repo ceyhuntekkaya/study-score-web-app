@@ -1,0 +1,62 @@
+{
+  "id": "part-002",
+  "name": "Form Completion Techniques",
+  "description": "Master form completion tasks with focus on spelling, numbers, dates, and personal information accuracy.",
+  "orderNumber": 2,
+  "curriculumContentIds": [
+    "cc-subtopic-005",
+    "cc-topic-004",
+    "cc-subtopic-006",
+    "cc-gain-001"
+  ],
+  "materials": [
+    {
+      "id": "mat-004",
+      "name": "Form Completion Strategy Video",
+      "description": "Video tutorial on effective form completion strategies including prediction and spelling accuracy.",
+      "content": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "mediaType": "VIDEO",
+      "orderNumber": 1,
+      "duration": 720,
+      "uploadedFileId": null,
+      "uploadedFileName": null,
+      "userProgress": null
+    },
+    {
+      "id": "mat-005",
+      "name": "Practice Forms Collection",
+      "description": "Downloadable collection of practice forms similar to those used in actual IELTS tests.",
+      "content": "https://www.antennahouse.com/hubfs/xsl-fo-sample/pdf/basic-link-1.pdf",
+      "mediaType": "PDF",
+      "orderNumber": 2,
+      "duration": null,
+      "uploadedFileId": "file-003",
+      "uploadedFileName": "practice-forms-001.pdf",
+      "userProgress": null
+    },
+    {
+      "id": "mat-006",
+      "name": "Form Completion Audio Practice",
+      "description": "Audio exercises specifically designed for form completion practice with varying difficulty levels.",
+      "content": "https://storage.googleapis.com/kagglesdsdata/datasets/829978/1417968/harvard.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=databundle-worker-v2%40kaggle-161607.iam.gserviceaccount.com%2F20250620%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20250620T181453Z&X-Goog-Expires=345600&X-Goog-SignedHeaders=host&X-Goog-Signature=85d321181663cc504bcb98f804514417930bd4e853848ca04eb84b71f4735f5c2decb7668c72be9ee4b17030737b19457aa662adb1456af9a2d0b84127bec339045edd2a93570b810b8dd9e05d5ea3f9d8a7fab79637b64549392047514f1ff991904a948002d533ce00eb06435ec137c3bb8f563552f400dd374b51c8e608f5e07cb09ef8a5c7d7ff8e988e8b698909d46b74957f5d3c55b8e88656b74163feb13be5d09172f6ea8fee579ccfd3eef6011985adca5ecea660d549eb68c063c3300630d64d869d6d42b5a9f72c24a38ee35f88952416cb6238b214f0e76f713dcc45634642dd3ceab4dbd080c3e4b5c7314fb43d7b0cb5673ef562cb87a7aea6",
+      "mediaType": "AUDIO",
+      "orderNumber": 3,
+      "duration": 900,
+      "uploadedFileId": "file-004",
+      "uploadedFileName": "form-practice-001.mp3",
+      "userProgress": null
+    },
+    {
+      "id": "mat-007",
+      "name": "Spelling and Numbers Checklist",
+      "description": "Essential checklist for common spelling patterns, number formats, and date conventions in IELTS.",
+      "content": "Comprehensive reference guide covering: \\n- Common spelling patterns\\n- Number formats (phone numbers, postcodes)\\n- Date and time conventions\\n- Currency and measurement units\\n- Names and addresses formatting",
+      "mediaType": "TEXT",
+      "orderNumber": 4,
+      "duration": null,
+      "uploadedFileId": null,
+      "uploadedFileName": null,
+      "userProgress": null
+    }
+  ]
+}

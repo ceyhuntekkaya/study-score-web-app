@@ -59,6 +59,7 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
       const container = messagesContainerRef.current;
+      // Hemen scroll yap
       container.scrollTop = container.scrollHeight;
     }
   };
@@ -75,15 +76,23 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
 
   // Mesajlar güncellendiğinde otomatik kaydırma
   useEffect(() => {
-    console.log('📋 Messages array:', messages);
-    console.log('📊 Messages count:', messages.length);
-    console.log('👤 User messages:', messages.filter(m => m.role === 'user'));
-    
+    // Kısa bir delay ile scroll yap ki DOM güncellensin
     const scrollTimeout = setTimeout(() => {
       scrollToBottom();
-    }, 5);
+    }, 50);
 
     return () => clearTimeout(scrollTimeout);
+  }, [messages]);
+
+  // Stream sırasında da otomatik scroll
+  useEffect(() => {
+    if (activeMessageId.current) {
+      const scrollInterval = setInterval(() => {
+        scrollToBottom();
+      }, 100);
+
+      return () => clearInterval(scrollInterval);
+    }
   }, [messages]);
 
   // Benzersiz ID oluşturucu
@@ -101,12 +110,7 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
       isComplete: true,
       id: generateId(),
     };
-    setMessages((prev) => {
-      const newMessages = [...prev, userMessage];
-      console.log('📤 User message added:', userMessage);
-      console.log('💬 All messages after user:', newMessages);
-      return newMessages;
-    });
+    setMessages((prev) => [...prev, userMessage]);
 
     setIsLoading(true);
     const currentInput = input;
@@ -155,9 +159,9 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
             );
           });
           // Her chunk geldiğinde scroll yap
-          setTimeout(() => {
+          requestAnimationFrame(() => {
             scrollToBottom();
-          }, 10);
+          });
         },
         () => {
           // Stream tamamlandığında
@@ -237,21 +241,42 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
 
   // Service online ise
   return (
-    <div className="flex flex-col h-full bg-gray-100">
+    <div 
+      className="flex flex-col bg-gray-100 relative"
+      style={{
+        height: '100%',
+        minHeight: '100%',
+        maxHeight: '100%',
+        overflow: 'hidden'
+      }}
+    >
       {/* Header */}
       {lessonPartName && (
-        <div className="px-4 py-3 bg-white border-b border-gray-200">
+        <div 
+          className="px-4 py-3 bg-white border-b border-gray-200"
+          style={{
+            flexShrink: 0
+          }}
+        >
           <h3 className="text-base font-semibold text-gray-800">
             AI Assistant - {lessonPartName}
           </h3>
         </div>
       )}
 
-      {/* Mesajlar alanı - scrollable */}
+      {/* Mesajlar alanı - scrollable, textarea için yer bırak */}
       <div
-        className="flex-1 overflow-y-auto px-4 py-4 bg-gray-100"
         ref={messagesContainerRef}
-        style={{ scrollBehavior: 'smooth' }}
+        style={{ 
+          flex: '1 1 auto',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          padding: '16px',
+          backgroundColor: '#f3f4f6',
+          scrollBehavior: 'smooth',
+          paddingBottom: '100px', // Textarea için yer
+          minHeight: 0, // Flexbox için önemli
+        }}
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
@@ -273,13 +298,6 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
           <div className="space-y-2">
             {messages.map((message) => {
               const isUser = message.role === 'user';
-              console.log('🎨 Rendering message:', { 
-                id: message.id, 
-                role: message.role, 
-                isUser,
-                content: message.content?.substring(0, 50),
-                contentLength: message.content?.length
-              });
               return (
                 <div
                   key={message.id}
@@ -289,23 +307,24 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
                   <div
                     className={`ai-chat-message max-w-[75%] sm:max-w-[65%] rounded-2xl px-4 py-2.5 ${
                       isUser
-                        ? 'bg-blue-500 text-white rounded-br-sm'
-                        : 'bg-white text-gray-800 rounded-bl-sm shadow-sm border border-gray-100'
+                        ? 'rounded-br-sm'
+                        : 'rounded-bl-sm shadow-sm'
                     }`}
                     style={{
                       wordBreak: 'break-word',
                       display: 'block',
                       visibility: 'visible',
                       opacity: 1,
-                      backgroundColor: isUser ? '#3b82f6' : '#ffffff',
-                      color: isUser ? '#ffffff' : '#1f2937',
+                      backgroundColor: isUser ? '#f3f4f6' : '#EEEEFF',
+                      color: isUser ? '#192335' : '#2f57ef',
+                      border: isUser ? 'none' : 'none',
                     }}
                   >
                     {isUser ? (
                       <div 
                         className="whitespace-pre-wrap text-sm leading-relaxed user-message-text" 
                         style={{ 
-                          color: '#ffffff',
+                          color: '#192335 !important',
                           display: 'block',
                           visibility: 'visible',
                           opacity: 1,
@@ -318,7 +337,7 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
                         {message.content && (
                           <div
                             className="whitespace-pre-wrap markdown-content text-sm leading-relaxed"
-                            style={{ color: '#1f2937' }}
+                            style={{ color: '#2f57ef' }}
                             dangerouslySetInnerHTML={{
                               __html: convertToHtml(message.content),
                             }}
@@ -341,59 +360,110 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
         )}
       </div>
 
-      {/* Input alanı - sabit altta */}
-      <div className="bg-white border-t border-gray-200 p-3">
-        <form onSubmit={handleSubmit} className="relative flex items-end" ref={formRef}>
-          <div className="flex-1 relative pr-14">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                // Auto-resize textarea
-                if (e.target instanceof HTMLTextAreaElement) {
-                  e.target.style.height = 'auto';
-                  e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+      {/* Input alanı - fixed altta */}
+      <div 
+        className="bg-white border-t border-gray-200 p-3"
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 10
+        }}
+      >
+        <form 
+          onSubmit={handleSubmit} 
+          ref={formRef}
+          style={{
+            display: 'flex',
+            alignItems: 'flex-end',
+            gap: '8px',
+            width: '100%'
+          }}
+        >
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              // Auto-resize textarea
+              if (e.target instanceof HTMLTextAreaElement) {
+                e.target.style.height = 'auto';
+                e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (input.trim() && !isLoading && serviceStatus === 'online') {
+                  handleSubmit(e);
                 }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  if (input.trim() && !isLoading && serviceStatus === 'online') {
-                    handleSubmit(e);
-                  }
-                }
-              }}
-              placeholder="Type a message..."
-              className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none overflow-y-auto"
-              style={{
-                minHeight: '44px',
-                maxHeight: '120px',
-                lineHeight: '1.5',
-              }}
-              rows={2}
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              disabled={isLoading || input.trim() === '' || serviceStatus !== 'online'}
-              className={`absolute right-2 bottom-2 w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center transition-colors ${
-                isLoading || input.trim() === '' || serviceStatus !== 'online'
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-blue-600 active:bg-blue-700'
-              }`}
-              style={{ 
-                minWidth: '40px',
-                minHeight: '40px'
-              }}
-            >
-              {isLoading ? (
-                <LoadingSpinner size="sm" color="white" />
-              ) : (
-                <i className="feather-arrow-right"></i>
-              )}
-            </button>
-          </div>
+              }
+            }}
+            placeholder="Enter Message..."
+            style={{
+              flex: '1 1 auto',
+              minWidth: 0,
+              minHeight: '44px',
+              maxHeight: '120px',
+              lineHeight: '1.5',
+              padding: '8px 16px',
+              border: '1px solid #d1d5db',
+              borderRadius: '8px',
+              outline: 'none',
+              resize: 'none',
+              overflowY: 'auto',
+              fontFamily: 'inherit',
+              fontSize: '14px'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#3b82f6';
+              e.target.style.boxShadow = '0 0 0 2px rgba(59, 130, 246, 0.1)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#d1d5db';
+              e.target.style.boxShadow = 'none';
+            }}
+            rows={2}
+            disabled={isLoading}
+          />
+          <button
+            type="submit"
+            disabled={isLoading || input.trim() === '' || serviceStatus !== 'online'}
+            style={{ 
+              flexShrink: 0,
+              width: '44px',
+              height: '44px',
+              minWidth: '44px',
+              minHeight: '44px',
+              borderRadius: '50%',
+              border: 'none',
+              backgroundColor: isLoading || input.trim() === '' || serviceStatus !== 'online' ? '#9ca3af' : '#2f57ef',
+              color: '#ffffff',
+              cursor: isLoading || input.trim() === '' || serviceStatus !== 'online' ? 'not-allowed' : 'pointer',
+              opacity: isLoading || input.trim() === '' || serviceStatus !== 'online' ? 0.5 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              if (!isLoading && input.trim() && serviceStatus === 'online') {
+                e.currentTarget.style.opacity = '0.9';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isLoading && input.trim() && serviceStatus === 'online') {
+                e.currentTarget.style.opacity = '1';
+              }
+            }}
+          >
+            {isLoading ? (
+              <LoadingSpinner size="sm" color="white" />
+            ) : (
+              <i className="feather-arrow-right" style={{ color: '#ffffff', fontSize: '18px' }}></i>
+            )}
+          </button>
         </form>
       </div>
     </div>

@@ -1,27 +1,54 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { getPrimaryPhone, getPrimaryEmail } from '@/lib/contact';
+import { useGetCurrentUser } from '@/generated/api/auth-rest-controller/auth-rest-controller';
 
 /**
  * Tutor Profile Page
  * Template content converted to React components
  */
 export default function TutorProfilePage() {
-  const { user } = useAuth();
-  const defaultPhone = getPrimaryPhone();
-  const defaultEmail = getPrimaryEmail();
+  const { user: localUser } = useAuth();
+  const { data: apiUser } = useGetCurrentUser();
+
+  // Use API user data if available, otherwise fall back to local user
+  const user = apiUser || localUser;
+
+  // Split name into first and last name if available
+  const nameParts = user?.name?.split(' ') || [];
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts.slice(1).join(' ') || '';
+
+  // Get organization info from API user
+  const brandName = apiUser?.brand?.name;
+  const campusName = apiUser?.campus?.name;
+  const institutionName = apiUser?.institution?.name;
+  const branchName = apiUser?.branch?.name;
+  const level = apiUser?.level;
+  
+  // Format level for display
+  const formatLevel = (level?: string) => {
+    if (!level) return '';
+    return level.charAt(0) + level.slice(1).toLowerCase();
+  };
 
   const profileData = [
-    { label: 'Registration Date', value: 'February 25, 2025 6:01 am' },
-    { label: 'First Name', value: user?.name?.split(' ')[0] || 'John' },
-    { label: 'Last Name', value: user?.name?.split(' ')[1] || 'Due' },
-    { label: 'Username', value: user?.email?.split('@')[0] || 'instructor' },
-    { label: 'Email', value: user?.email || defaultEmail.display },
-    { label: 'Phone Number', value: defaultPhone.display },
-    { label: 'Skill/Occupation', value: 'Full Stack Developer' },
-    { label: 'Biography', value: "I'm the Front-End Developer for #Rainbow IT in Bangladesh, OR. I have serious passion for UI effects, animations and creating intuitive, dynamic user experiences." },
-  ];
+    { label: 'Name', value: user?.name || '' },
+    ...(firstName && lastName ? [
+      { label: 'First Name', value: firstName },
+      { label: 'Last Name', value: lastName },
+    ] : []),
+    { label: 'Email', value: user?.email || '' },
+    ...(user?.email ? [
+      { label: 'Username', value: user.email.split('@')[0] },
+    ] : []),
+    { label: 'Role', value: localUser?.role ? localUser.role.charAt(0).toUpperCase() + localUser.role.slice(1) : '' },
+    ...(brandName ? [{ label: 'Brand', value: brandName }] : []),
+    ...(campusName ? [{ label: 'Campus', value: campusName }] : []),
+    ...(institutionName ? [{ label: 'Institution', value: institutionName }] : []),
+    ...(branchName ? [{ label: 'Branch', value: branchName }] : []),
+    ...(level ? [{ label: 'Level', value: formatLevel(level) }] : []),
+  ].filter(item => item.value); // Only show fields with values
 
   return (
     <>
