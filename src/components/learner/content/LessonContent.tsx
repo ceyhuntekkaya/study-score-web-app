@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useContent } from '@/contexts/ContentContext';
 import { useGetCourseWithAllDetails } from '@/generated/api/course-rest-controller/course-rest-controller';
+import { useGetCourseProgress } from '@/generated/api/learner-activity-rest-controller/learner-activity-rest-controller';
 import type { CourseLessonDetailDTO, CourseLessonPartDetailDTO, CourseLessonPartMaterialDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
 
 /**
@@ -34,6 +35,23 @@ export default function LessonContent() {
       },
     }
   );
+
+  // API call to fetch course progress
+  const { data: courseProgress, isLoading: isLoadingProgress, error: progressError } = useGetCourseProgress(
+    courseId || '',
+    {
+      query: {
+        enabled: !!courseId, // Only fetch if we have a courseId
+      },
+    }
+  );
+
+  // Console log course progress data
+  useEffect(() => {
+    if (courseProgress) {
+      console.log('Course Progress Data:', courseProgress);
+    }
+  }, [courseProgress]);
 
   // Find selected lesson from API data
   const selectedLesson = useMemo(() => {
@@ -293,7 +311,8 @@ export default function LessonContent() {
                     {content && (
                       <div className="image-wrapper">
                         <img
-                          src={content}
+                        src={"/assets/"+content}
+                         
                           alt={material.name || 'Image'}
                           style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
                           onError={(e) => {
@@ -309,21 +328,53 @@ export default function LessonContent() {
 
               // VIDEO - content is the video URL
               if (mediaType === 'VIDEO') {
+                // Check if content is a YouTube URL
+                const isYouTube = content && (
+                  content.includes('youtube.com') ||
+                  content.includes('youtu.be') ||
+                  content.startsWith('https://www.youtube.com')
+                );
+
+                // Convert YouTube watch URL to embed URL if needed
+                const getYouTubeEmbedUrl = (url: string): string => {
+                  if (url.includes('/embed/')) {
+                    return url; // Already embed URL
+                  }
+                  if (url.includes('youtu.be/')) {
+                    const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+                    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+                  }
+                  if (url.includes('watch?v=')) {
+                    const videoId = url.split('watch?v=')[1]?.split('&')[0];
+                    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+                  }
+                  return url;
+                };
+
                 return (
                   <div key={material.id} className="material-item material-video mb--30">
-                  
                     {content && (
                       <div className="rbt-video-player">
-                        <video
-                          controls
-                          style={{ width: '100%', borderRadius: '8px' }}
-                          src={content}
-                          onError={(e) => {
-                            console.error('Video load error:', content);
-                          }}
-                        >
-                          Your browser does not support the video tag.
-                        </video>
+                        {isYouTube ? (
+                          <iframe
+                            src={getYouTubeEmbedUrl(content)}
+                            allowFullScreen
+                            allow="autoplay; encrypted-media"
+                            style={{ width: '100%', height: '500px', border: 'none', borderRadius: '8px' }}
+                            title={material.name || 'Video'}
+                          />
+                        ) : (
+                          <video
+                            controls
+                            style={{ width: '100%', borderRadius: '8px' }}
+                            src={content}
+                            onError={(e) => {
+                              console.error('Video load error:', content);
+                            }}
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                        )}
                       </div>
                     )}
                   </div>
@@ -444,27 +495,44 @@ export default function LessonContent() {
         )}
       </div>
 
-      <div className="bg-color-extra2 ptb--15 overflow-hidden">
-        <div className="rbt-button-group">
-          <button
-            className={`rbt-btn icon-hover icon-hover-left btn-md ${previousPart ? 'bg-primary-opacity' : 'bg-primary-opacity'}`}
-            disabled={!previousPart}
-            onClick={handlePreviousPart}
-          >
-            <span className="btn-icon"><i className="feather-arrow-left"></i></span>
-            <span className="btn-text">Previous</span>
-          </button>
+      {/* Fixed Navigation Buttons at Bottom */}
+      <div 
+        className="bg-color-extra2 ptb--15 overflow-hidden"
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: sidebarOpen ? '400px' : 0, // Sidebar width is 400px when open
+          right: 0,
+          zIndex: 1000,
+          boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
+          transition: 'left 0.3s ease',
+        }}
+      >
+        <div className="container-fluid">
+          <div className="rbt-button-group d-flex justify-content-center gap-3">
+            <button
+              className={`rbt-btn icon-hover icon-hover-left btn-md ${previousPart ? 'bg-primary-opacity' : 'bg-primary-opacity'}`}
+              disabled={!previousPart}
+              onClick={handlePreviousPart}
+            >
+              <span className="btn-icon"><i className="feather-arrow-left"></i></span>
+              <span className="btn-text">Previous</span>
+            </button>
 
-          <button
-            className={`rbt-btn icon-hover btn-md ${nextPart ? 'bg-primary-opacity' : 'bg-primary-opacity'}`}
-            disabled={!nextPart}
-            onClick={handleNextPart}
-          >
-            <span className="btn-text">Next</span>
-            <span className="btn-icon"><i className="feather-arrow-right"></i></span>
-          </button>
+            <button
+              className={`rbt-btn icon-hover btn-md ${nextPart ? 'bg-primary-opacity' : 'bg-primary-opacity'}`}
+              disabled={!nextPart}
+              onClick={handleNextPart}
+            >
+              <span className="btn-text">Next</span>
+              <span className="btn-icon"><i className="feather-arrow-right"></i></span>
+            </button>
+          </div>
         </div>
       </div>
+      
+      {/* Spacer to prevent content from being hidden behind fixed buttons */}
+      <div style={{ height: '80px' }}></div>
     </div>
   );
 }
