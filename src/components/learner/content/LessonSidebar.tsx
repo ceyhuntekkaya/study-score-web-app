@@ -29,13 +29,6 @@ export default function LessonSidebar() {
   const courseId = pathParts[2]; // learner, content, [courseId]
   const lessonId = pathParts[3]; // [lessonId] if exists
 
-  // Debug: Log lessonId changes
-  useEffect(() => {
-    if (lessonId) {
-      console.log('LessonSidebar - lessonId changed:', lessonId);
-    }
-  }, [lessonId]);
-
   // API call to fetch course with all details
   const { data: courseDetails, isLoading } = useGetCourseWithAllDetails(
     courseId || '',
@@ -202,9 +195,16 @@ export default function LessonSidebar() {
     return sectionsList;
   }, [courseDetails]);
 
-  // Find which UNIT contains the active lesson and auto-open it
+  // Find which UNIT contains the active lesson and auto-open it (only when lessonId changes)
   useEffect(() => {
     if (!lessonId || !sections.length || !courseDetails?.lessons) {
+      // If no lessonId, open first section if none are open
+      setOpenSections((prev) => {
+        if (sections.length > 0 && prev.size === 0) {
+          return new Set([sections[0].id]);
+        }
+        return prev;
+      });
       return;
     }
 
@@ -255,14 +255,17 @@ export default function LessonSidebar() {
 
     const sectionId = findSectionForLesson();
     
-    if (sectionId && !openSections.has(sectionId)) {
-      // Open the UNIT that contains the active lesson
-      setOpenSections(new Set([sectionId]));
-    } else if (sections.length > 0 && openSections.size === 0) {
-      // Fallback: open first section if no sections are open
-      setOpenSections(new Set([sections[0].id]));
+    // Only open if the section is not already open (to avoid interfering with user interactions)
+    if (sectionId) {
+      setOpenSections((prev) => {
+        // Only update if the section is not already open
+        if (!prev.has(sectionId)) {
+          return new Set([sectionId]);
+        }
+        return prev; // Keep existing state if already open
+      });
     }
-  }, [lessonId, sections, courseDetails, openSections]);
+  }, [lessonId, sections, courseDetails]); // Removed openSections from dependencies to prevent infinite loop
 
   // Scroll to active lesson when lessonId changes or accordion opens
   useEffect(() => {
@@ -301,22 +304,6 @@ export default function LessonSidebar() {
           <h4 className="rbt-title-style-3">Course Content</h4>
         </div>
 
-        <div className="lesson-search-wrapper">
-          <form action="#" className="rbt-search-style-1" onSubmit={(e) => e.preventDefault()}>
-            <input
-              className="rbt-search-active"
-              type="text"
-              placeholder="Search Lesson"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button className="search-btn disabled" type="submit">
-              <i className="feather-search"></i>
-            </button>
-          </form>
-        </div>
-
-        <hr className="mt--10" />
 
         {isLoading ? (
           <div className="text-center p--20">

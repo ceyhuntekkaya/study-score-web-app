@@ -281,7 +281,7 @@ export default function LessonContent() {
       <div className="inner">
         {/* Materials Content */}
         {materials.length > 0 ? (
-          <div className="materials-content">
+          <div className="materials-content p-4">
             {materials.map((material) => {
               const mediaType = material.mediaType;
               const content = material.content || '';
@@ -290,8 +290,6 @@ export default function LessonContent() {
               if (mediaType === 'IMAGE') {
                 return (
                   <div key={material.id} className="material-item material-image mb--30">
-                    {material.name && <h5 className="mb--15">{material.name}</h5>}
-                    {material.description && <p className="mb--15">{material.description}</p>}
                     {content && (
                       <div className="image-wrapper">
                         <img
@@ -313,8 +311,7 @@ export default function LessonContent() {
               if (mediaType === 'VIDEO') {
                 return (
                   <div key={material.id} className="material-item material-video mb--30">
-                    {material.name && <h5 className="mb--15">{material.name}</h5>}
-                    {material.description && <p className="mb--15">{material.description}</p>}
+                  
                     {content && (
                       <div className="rbt-video-player">
                         <video
@@ -337,8 +334,7 @@ export default function LessonContent() {
               if (mediaType === 'AUDIO') {
                 return (
                   <div key={material.id} className="material-item material-audio mb--30">
-                    {material.name && <h5 className="mb--15">{material.name}</h5>}
-                    {material.description && <p className="mb--15">{material.description}</p>}
+                   
                     {content && (
                       <div className="audio-wrapper">
                         <audio controls style={{ width: '100%' }}>
@@ -355,8 +351,7 @@ export default function LessonContent() {
               if (mediaType === 'DOCUMENT') {
                 return (
                   <div key={material.id} className="material-item material-document mb--30">
-                    {material.name && <h5 className="mb--15">{material.name}</h5>}
-                    {material.description && <p className="mb--15">{material.description}</p>}
+                  
                     {content && (
                       <div
                         className="document-content"
@@ -371,8 +366,7 @@ export default function LessonContent() {
               if (mediaType === 'PDF') {
                 return (
                   <div key={material.id} className="material-item material-pdf mb--30">
-                    {material.name && <h5 className="mb--15">{material.name}</h5>}
-                    {material.description && <p className="mb--15">{material.description}</p>}
+                  
                     {content && (
                       <div className="pdf-wrapper">
                         <iframe
@@ -393,8 +387,7 @@ export default function LessonContent() {
               if (mediaType === 'LINK') {
                 return (
                   <div key={material.id} className="material-item material-link mb--30">
-                    {material.name && <h5 className="mb--15">{material.name}</h5>}
-                    {material.description && <p className="mb--15">{material.description}</p>}
+                  
                     {content && (
                       <div className="link-wrapper">
                         <a
@@ -416,8 +409,6 @@ export default function LessonContent() {
               if (mediaType === 'TEXT' || mediaType === 'OTHER' || !mediaType) {
                 return (
                   <div key={material.id} className="material-item material-text mb--30">
-                    {material.name && <h5 className="mb--15">{material.name}</h5>}
-                    {material.description && <p className="mb--15">{material.description}</p>}
                     {content && (
                       <div
                         className="text-content"
@@ -431,8 +422,7 @@ export default function LessonContent() {
               // Fallback for unknown types - render as HTML
               return (
                 <div key={material.id} className="material-item material-unknown mb--30">
-                  {material.name && <h5 className="mb--15">{material.name}</h5>}
-                  {material.description && <p className="mb--15">{material.description}</p>}
+                
                   {content && (
                     <div
                       className="unknown-content"
