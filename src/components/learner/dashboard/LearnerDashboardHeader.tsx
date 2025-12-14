@@ -267,10 +267,12 @@ export default function LearnerDashboardHeader() {
                         {menu.userMenu && (
                           <>
                             <ul className="user-list-wrapper">
-                              {menu.userMenu.main.map((item) => {
+                              {menu.userMenu.main.map((item, index) => {
                                 const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
+                                // Create unique key by combining href, labelKey, and index
+                                const uniqueKey = `${item.href || ''}-${item.labelKey || item.label || ''}-${index}`;
                                 return (
-                                  <li key={item.href || item.labelKey || item.label}>
+                                  <li key={uniqueKey}>
                                     {item.href ? (
                                       <Link href={item.href}>
                                         {item.icon && <i className={item.icon}></i>}
@@ -288,10 +290,12 @@ export default function LearnerDashboardHeader() {
                             </ul>
                             <hr className="mt--10 mb--10" />
                             <ul className="user-list-wrapper">
-                              {menu.userMenu.secondary.map((item) => {
+                              {menu.userMenu.secondary.map((item, index) => {
                                 const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
+                                // Create unique key by combining href, action, labelKey, and index
+                                const uniqueKey = `${item.href || ''}-${item.action || ''}-${item.labelKey || item.label || ''}-${index}`;
                                 return (
-                                  <li key={item.href || item.action}>
+                                  <li key={uniqueKey}>
                                     {item.action === 'logout' ? (
                                       <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }}>
                                         {item.icon && <i className={item.icon}></i>}

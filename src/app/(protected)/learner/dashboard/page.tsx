@@ -1,51 +1,102 @@
 'use client';
 
+import { useEffect } from 'react';
 import DashboardStatsCard from '@/components/learner/dashboard/DashboardStatsCard';
+import ActiveCourseCard from '@/components/learner/dashboard/ActiveCourseCard';
+import ActiveExamCard from '@/components/learner/dashboard/ActiveExamCard';
+import OverallStatsCard from '@/components/learner/dashboard/OverallStatsCard';
+import { useGetDashboard } from '@/generated/api/learner-activity-rest-controller/learner-activity-rest-controller';
 
 /**
  * Learner Dashboard Page
  * Template content converted to React components
  */
 export default function DashboardPage() {
+  const { data, isLoading, error } = useGetDashboard();
+
+  useEffect(() => {
+    if (data) {
+      console.log('Dashboard Data:', data);
+    }
+    if (error) {
+      console.error('Dashboard Error:', error);
+    }
+    if (isLoading) {
+      console.log('Loading dashboard data...');
+    }
+  }, [data, error, isLoading]);
+
+  if (isLoading) {
+    return (
+      <>
+        <div className="section-title">
+          <h4 className="rbt-title-style-3">Dashboard</h4>
+        </div>
+        <div className="text-center p--40">
+          <p>Loading dashboard data...</p>
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <div className="section-title">
+          <h4 className="rbt-title-style-3">Dashboard</h4>
+        </div>
+        <div className="text-center p--40">
+          <p className="text-danger">Error loading dashboard data. Please try again later.</p>
+        </div>
+      </>
+    );
+  }
+
+  const activeCourses = data?.activeCourses || [];
+  const activeExams = data?.activeExams || [];
+
   return (
     <>
       <div className="section-title">
         <h4 className="rbt-title-style-3">Dashboard</h4>
       </div>
-      <div className="row g-5">
-        {/* Enrolled Courses */}
-        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-          <DashboardStatsCard
-            icon="feather-book-open"
-            iconBg="bg-primary-opacity"
-            count={30}
-            label="Enrolled Courses"
-            color="color-primary"
-          />
-        </div>
 
-        {/* Active Courses */}
-        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-          <DashboardStatsCard
-            icon="feather-monitor"
-            iconBg="bg-secondary-opacity"
-            count={10}
-            label="ACTIVE COURSES"
-            color="color-secondary"
-          />
+      {/* Active Courses Section */}
+      {activeCourses.length > 0 && (
+        <div className="mb--40">
+          <div className="section-title mb--20">
+            <h5 className="rbt-title-style-2">Active Courses</h5>
+          </div>
+          <div className="row">
+            {activeCourses.map((course) => (
+              <ActiveCourseCard key={course.courseId || Math.random()} course={course} />
+            ))}
+          </div>
         </div>
+      )}
 
-        {/* Completed Courses */}
-        <div className="col-lg-4 col-md-4 col-sm-6 col-12">
-          <DashboardStatsCard
-            icon="feather-award"
-            iconBg="bg-violet-opacity"
-            count={7}
-            label="Completed Courses"
-            color="color-violet"
-          />
+      {/* Active Exams Section */}
+      {activeExams.length > 0 && (
+        <div className="mb--40">
+          <div className="section-title mb--20">
+            <h5 className="rbt-title-style-2">Active Exams</h5>
+          </div>
+          <div className="row">
+            {activeExams.map((exam) => (
+              <ActiveExamCard key={exam.examId || Math.random()} exam={exam} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Overall Stats Section */}
+      {data?.overallStats && (
+        <div className="mb--40">
+          <div className="row">
+            <OverallStatsCard stats={data.overallStats} />
+          </div>
+        </div>
+      )}
     </>
   );
 }
