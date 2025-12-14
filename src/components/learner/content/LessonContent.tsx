@@ -86,7 +86,7 @@ export default function LessonContent() {
   }, [selectedPartId, selectedPart?.materials?.length || 0, selectedPart?.materials?.map(m => `${m.id}-${m.orderNumber}`).join(',') || '']);
 
   // Progress tracking hook
-  const { registerVideoElement, handlePdfLoad, handlePdfDownload } = useProgressTracking({
+  const { registerVideoElement, handlePdfLoad, handlePdfDownload, handleLinkClick } = useProgressTracking({
     selectedPartId,
     materials,
   });
@@ -275,6 +275,7 @@ export default function LessonContent() {
                 onVideoRef={registerVideoElement}
                 onPdfLoad={handlePdfLoad}
                 onPdfDownload={handlePdfDownload}
+                onLinkClick={handleLinkClick}
               />
             ))}
           </div>

@@ -8,6 +8,7 @@ interface MaterialRendererProps {
   onVideoRef?: (materialId: string, element: HTMLVideoElement | HTMLAudioElement) => void;
   onPdfLoad?: (materialId: string) => void;
   onPdfDownload?: (materialId: string) => void;
+  onLinkClick?: (materialId: string) => void;
 }
 
 export default function MaterialRenderer({
@@ -15,6 +16,7 @@ export default function MaterialRenderer({
   onVideoRef,
   onPdfLoad,
   onPdfDownload,
+  onLinkClick,
 }: MaterialRendererProps) {
   const mediaType = material.mediaType;
   const content = material.content || '';
@@ -189,6 +191,13 @@ export default function MaterialRenderer({
               target="_blank"
               rel="noopener noreferrer"
               className="rbt-btn btn-md bg-primary"
+              onClick={async (e) => {
+                // Progress kaydet
+                if (material.id && onLinkClick) {
+                  await onLinkClick(material.id);
+                }
+                // Link açılacak (default behavior)
+              }}
             >
               <span className="btn-text">Open Link</span>
               <span className="btn-icon"><i className="feather-external-link"></i></span>
