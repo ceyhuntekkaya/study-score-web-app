@@ -248,6 +248,9 @@ export const UserRoleSetItem = {
   LEARNER: "LEARNER",
   INSTRUCTOR: "INSTRUCTOR",
   OBSERVER: "OBSERVER",
+  MANAGER: "MANAGER",
+  TUTOR: "TUTOR",
+  WRITER: "WRITER",
   COMPANY: "COMPANY",
 } as const;
 
@@ -289,15 +292,23 @@ export interface User {
   brand?: Brand;
   campus?: Campus;
   institution?: Institution;
+  branch?: Branch;
   level?: UserLevel;
   departmentSet?: UserDepartmentSetItem[];
   roleSet?: UserRoleSetItem[];
   authoritySet?: UserAuthoritySetItem[];
   enabled?: boolean;
-  authorities?: GrantedAuthority[];
+  learner?: boolean;
+  manager?: boolean;
+  tutor?: boolean;
+  writer?: boolean;
+  admin?: boolean;
   accountNonExpired?: boolean;
   accountNonLocked?: boolean;
   credentialsNonExpired?: boolean;
+  institutionalLearner?: boolean;
+  individualLearner?: boolean;
+  authorities?: GrantedAuthority[];
 }
 
 export type UserAssignmentStatus =
@@ -440,11 +451,11 @@ export interface UploadedFileDto {
   version?: number;
 }
 
-export type BaseQuestionTemplateDtoStatus =
-  (typeof BaseQuestionTemplateDtoStatus)[keyof typeof BaseQuestionTemplateDtoStatus];
+export type CurriculumDtoStatus =
+  (typeof CurriculumDtoStatus)[keyof typeof CurriculumDtoStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const BaseQuestionTemplateDtoStatus = {
+export const CurriculumDtoStatus = {
   ACTIVE: "ACTIVE",
   PASSIVE: "PASSIVE",
   DELETED: "DELETED",
@@ -462,43 +473,27 @@ export const BaseQuestionTemplateDtoStatus = {
   FINISHED: "FINISHED",
 } as const;
 
-export type BaseQuestionTemplateDtoTemplateType =
-  (typeof BaseQuestionTemplateDtoTemplateType)[keyof typeof BaseQuestionTemplateDtoTemplateType];
+export type CurriculumDtoCategory =
+  (typeof CurriculumDtoCategory)[keyof typeof CurriculumDtoCategory];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const BaseQuestionTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
+export const CurriculumDtoCategory = {
+  IELTS: "IELTS",
+  TOEFL: "TOEFL",
 } as const;
 
-export interface BaseQuestionTemplateDto {
+export interface CurriculumDto {
   id?: string;
   createdAt?: string;
   deletedAt?: string;
-  status?: BaseQuestionTemplateDtoStatus;
+  status?: CurriculumDtoStatus;
   createdById?: string;
   deletedById?: string;
-  title?: string;
+  name?: string;
   description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: BaseQuestionTemplateDtoTemplateType;
+  category?: CurriculumDtoCategory;
+  updatedAt?: string;
+  version?: number;
 }
 
 export type CurriculumContentDtoStatus =
@@ -547,405 +542,8 @@ export interface CurriculumContentDto {
   content?: string;
   orderNumber?: number;
   parentId?: string;
-  children?: unknown[];
   updatedAt?: string;
   version?: number;
-}
-
-export type CurriculumDtoStatus =
-  (typeof CurriculumDtoStatus)[keyof typeof CurriculumDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CurriculumDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type CurriculumDtoCategory =
-  (typeof CurriculumDtoCategory)[keyof typeof CurriculumDtoCategory];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CurriculumDtoCategory = {
-  IELTS: "IELTS",
-  TOEFL: "TOEFL",
-} as const;
-
-export interface CurriculumDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: CurriculumDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  name?: string;
-  description?: string;
-  category?: CurriculumDtoCategory;
-  updatedAt?: string;
-  version?: number;
-}
-
-export type ExamDtoStatus = (typeof ExamDtoStatus)[keyof typeof ExamDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type ExamDtoCategory =
-  (typeof ExamDtoCategory)[keyof typeof ExamDtoCategory];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamDtoCategory = {
-  IELTS: "IELTS",
-  TOEFL: "TOEFL",
-} as const;
-
-export interface ExamDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: ExamDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  name?: string;
-  category?: ExamDtoCategory;
-  imageUrl?: string;
-  description?: string;
-  code?: string;
-  language?: string;
-  level?: string;
-  introText?: string;
-  examParts?: ExamPartDto[];
-  maxScore?: number;
-  examQuestions?: ExamQuestionDto[];
-}
-
-export type ExamPartDtoStatus =
-  (typeof ExamPartDtoStatus)[keyof typeof ExamPartDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamPartDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type ExamPartDtoSkill =
-  (typeof ExamPartDtoSkill)[keyof typeof ExamPartDtoSkill];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamPartDtoSkill = {
-  SPEAKING: "SPEAKING",
-  WRITING: "WRITING",
-  LISTENING: "LISTENING",
-  READING: "READING",
-  GRAMMAR: "GRAMMAR",
-  VOCABULARY: "VOCABULARY",
-  PRONUNCIATION: "PRONUNCIATION",
-  FLUENCY: "FLUENCY",
-  COMPREHENSION: "COMPREHENSION",
-} as const;
-
-export interface ExamPartDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: ExamPartDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  name?: string;
-  orderNumber?: number;
-  description?: string;
-  skill?: ExamPartDtoSkill;
-}
-
-export type ExamQuestionDtoStatus =
-  (typeof ExamQuestionDtoStatus)[keyof typeof ExamQuestionDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamQuestionDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type ExamQuestionDtoQuestionType =
-  (typeof ExamQuestionDtoQuestionType)[keyof typeof ExamQuestionDtoQuestionType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamQuestionDtoQuestionType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface ExamQuestionDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: ExamQuestionDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  isMain?: boolean;
-  duration?: number;
-  repeatCount?: number;
-  score?: number;
-  examPart?: ExamPartDto;
-  curriculumContentSet?: CurriculumContentDto[];
-  questionTemplateId?: string;
-  questionType?: ExamQuestionDtoQuestionType;
-  questionOrder?: number;
-  points?: number;
-  isActive?: boolean;
-  shuffleOptions?: boolean;
-  timeLimit?: number;
-  additionalTags?: string[];
-  questionTemplate?: BaseQuestionTemplateDto;
-}
-
-export type ExamQuestionExtraSectionDtoStatus =
-  (typeof ExamQuestionExtraSectionDtoStatus)[keyof typeof ExamQuestionExtraSectionDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamQuestionExtraSectionDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type ExamQuestionExtraSectionDtoMediaType =
-  (typeof ExamQuestionExtraSectionDtoMediaType)[keyof typeof ExamQuestionExtraSectionDtoMediaType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamQuestionExtraSectionDtoMediaType = {
-  IMAGE: "IMAGE",
-  VIDEO: "VIDEO",
-  AUDIO: "AUDIO",
-  DOCUMENT: "DOCUMENT",
-  PDF: "PDF",
-  TEXT: "TEXT",
-  LINK: "LINK",
-  OTHER: "OTHER",
-} as const;
-
-export type ExamQuestionExtraSectionDtoExtraSectionType =
-  (typeof ExamQuestionExtraSectionDtoExtraSectionType)[keyof typeof ExamQuestionExtraSectionDtoExtraSectionType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamQuestionExtraSectionDtoExtraSectionType = {
-  QUESTION: "QUESTION",
-  ANSWER: "ANSWER",
-  EXPLANATION: "EXPLANATION",
-  HINT: "HINT",
-  FEEDBACK: "FEEDBACK",
-  SOLUTION: "SOLUTION",
-  ADDITIONAL_RESOURCES: "ADDITIONAL_RESOURCES",
-  DIFFICULTY_LEVEL: "DIFFICULTY_LEVEL",
-  LEARNING_OBJECTIVES: "LEARNING_OBJECTIVES",
-  KEYWORDS: "KEYWORDS",
-  REFERENCES: "REFERENCES",
-  RUBRIC: "RUBRIC",
-} as const;
-
-export interface ExamQuestionExtraSectionDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: ExamQuestionExtraSectionDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  orderNumber?: number;
-  mediaType?: ExamQuestionExtraSectionDtoMediaType;
-  content?: string;
-  extraSectionType?: ExamQuestionExtraSectionDtoExtraSectionType;
-  url?: string;
-  file?: UploadedFileDto;
-}
-
-export type ExamQuestionReadyDtoQuestionType =
-  (typeof ExamQuestionReadyDtoQuestionType)[keyof typeof ExamQuestionReadyDtoQuestionType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamQuestionReadyDtoQuestionType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface ExamQuestionReadyDto {
-  id?: string;
-  isMain?: boolean;
-  duration?: number;
-  repeatCount?: number;
-  score?: number;
-  questionOrder?: number;
-  points?: number;
-  isActive?: boolean;
-  shuffleOptions?: boolean;
-  timeLimit?: number;
-  additionalTags?: string[];
-  examPart?: ExamPartDto;
-  curriculumContentSet?: CurriculumContentDto[];
-  questionType?: ExamQuestionReadyDtoQuestionType;
-  questionTemplate?: BaseQuestionTemplateDto;
-  extraSections?: ExamQuestionExtraSectionDto[];
-}
-
-export type ExamReadyDtoCategory =
-  (typeof ExamReadyDtoCategory)[keyof typeof ExamReadyDtoCategory];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamReadyDtoCategory = {
-  IELTS: "IELTS",
-  TOEFL: "TOEFL",
-} as const;
-
-export interface ExamReadyDto {
-  id?: string;
-  name?: string;
-  category?: ExamReadyDtoCategory;
-  imageUrl?: string;
-  description?: string;
-  code?: string;
-  language?: string;
-  level?: string;
-  introText?: string;
-  maxScore?: number;
-  createdAt?: string;
-  examParts?: ExamPartDto[];
-  questions?: ExamQuestionReadyDto[];
-  totalQuestions?: number;
-  totalPoints?: number;
-  estimatedDuration?: number;
-}
-
-export type ExamAnswerDtoStatus =
-  (typeof ExamAnswerDtoStatus)[keyof typeof ExamAnswerDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamAnswerDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export interface ExamAnswerDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: ExamAnswerDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  sessionId?: string;
-  questionId?: string;
-  answerData?: string;
-  previousAnswerData?: string;
-  firstAnsweredAt?: string;
-  lastModifiedAt?: string;
-  timeSpentOnQuestion?: number;
-  modificationCount?: number;
-  isAnswered?: boolean;
-  isMarkedForReview?: boolean;
-  isSkipped?: boolean;
-  isAutoSaved?: boolean;
-  score?: number;
-  isCorrect?: boolean;
-  feedback?: string;
 }
 
 export type CourseStatus = (typeof CourseStatus)[keyof typeof CourseStatus];
@@ -1328,999 +926,119 @@ export interface CourseLessonDTO {
   childLessons?: CourseLessonDTO[];
 }
 
-export type ExamFilterDtoCategory =
-  (typeof ExamFilterDtoCategory)[keyof typeof ExamFilterDtoCategory];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamFilterDtoCategory = {
-  IELTS: "IELTS",
-  TOEFL: "TOEFL",
-} as const;
-
-export interface ExamFilterDto {
-  name?: string;
-  category?: ExamFilterDtoCategory;
-  level?: string;
-  language?: string;
-  createdFrom?: string;
-  createdTo?: string;
-  minQuestions?: number;
-  maxQuestions?: number;
-  minPoints?: number;
-  maxPoints?: number;
-}
-
-export type VideoResponseTemplateDtoStatus =
-  (typeof VideoResponseTemplateDtoStatus)[keyof typeof VideoResponseTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const VideoResponseTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type VideoResponseTemplateDtoTemplateType =
-  (typeof VideoResponseTemplateDtoTemplateType)[keyof typeof VideoResponseTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const VideoResponseTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface VideoResponseTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: VideoResponseTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: VideoResponseTemplateDtoTemplateType;
-  prompt?: string;
-  videoPromptUrl?: string;
-  maxRecordingDuration?: number;
-  minRecordingDuration?: number;
-  gradingCriteria?: string[];
-  rubric?: string;
-  requiresManualGrading?: boolean;
-  allowedFormats?: string;
-  allowScreenRecording?: boolean;
-}
-
-export type TrueFalseTemplateDtoStatus =
-  (typeof TrueFalseTemplateDtoStatus)[keyof typeof TrueFalseTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const TrueFalseTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type TrueFalseTemplateDtoTemplateType =
-  (typeof TrueFalseTemplateDtoTemplateType)[keyof typeof TrueFalseTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const TrueFalseTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface TrueFalseTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: TrueFalseTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: TrueFalseTemplateDtoTemplateType;
-  statement?: string;
-  correctAnswer?: boolean;
-  explanation?: string;
-}
-
-export type ShortAnswerTemplateDtoStatus =
-  (typeof ShortAnswerTemplateDtoStatus)[keyof typeof ShortAnswerTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ShortAnswerTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type ShortAnswerTemplateDtoTemplateType =
-  (typeof ShortAnswerTemplateDtoTemplateType)[keyof typeof ShortAnswerTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ShortAnswerTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface ShortAnswerTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: ShortAnswerTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: ShortAnswerTemplateDtoTemplateType;
-  question?: string;
-  expectedKeywords?: string[];
-  sampleAnswers?: string[];
-  maxCharacters?: number;
-  minCharacters?: number;
-  rubric?: string;
-  requiresManualGrading?: boolean;
-}
-
-export type OrderingTemplateDtoStatus =
-  (typeof OrderingTemplateDtoStatus)[keyof typeof OrderingTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrderingTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type OrderingTemplateDtoTemplateType =
-  (typeof OrderingTemplateDtoTemplateType)[keyof typeof OrderingTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrderingTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface OrderingTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: OrderingTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: OrderingTemplateDtoTemplateType;
-  items?: string[];
-  correctOrder?: number[];
-  shuffleItems?: boolean;
-  explanation?: string;
-}
-
-export type MultipleResponseTemplateDtoStatus =
-  (typeof MultipleResponseTemplateDtoStatus)[keyof typeof MultipleResponseTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MultipleResponseTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type MultipleResponseTemplateDtoTemplateType =
-  (typeof MultipleResponseTemplateDtoTemplateType)[keyof typeof MultipleResponseTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MultipleResponseTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface MultipleResponseTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: MultipleResponseTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: MultipleResponseTemplateDtoTemplateType;
-  question?: string;
-  options?: string[];
-  correctOptionIndices?: number[];
-  minSelections?: number;
-  maxSelections?: number;
-  shuffleOptions?: boolean;
-  explanation?: string;
-}
-
-export type MultipleChoiceTemplateDtoStatus =
-  (typeof MultipleChoiceTemplateDtoStatus)[keyof typeof MultipleChoiceTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MultipleChoiceTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type MultipleChoiceTemplateDtoTemplateType =
-  (typeof MultipleChoiceTemplateDtoTemplateType)[keyof typeof MultipleChoiceTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MultipleChoiceTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface MultipleChoiceTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: MultipleChoiceTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: MultipleChoiceTemplateDtoTemplateType;
-  question?: string;
-  options?: string[];
-  correctOptionIndex?: number;
-  explanation?: string;
-  shuffleOptions?: boolean;
-}
-
-export type MatchingTemplateDtoStatus =
-  (typeof MatchingTemplateDtoStatus)[keyof typeof MatchingTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MatchingTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type MatchingTemplateDtoTemplateType =
-  (typeof MatchingTemplateDtoTemplateType)[keyof typeof MatchingTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MatchingTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface MatchingTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: MatchingTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: MatchingTemplateDtoTemplateType;
-  leftItems?: string[];
-  rightItems?: string[];
-  correctMatches?: string[];
-  shuffleItems?: boolean;
-  explanation?: string;
-}
-
-export type ImageResponseTemplateDtoStatus =
-  (typeof ImageResponseTemplateDtoStatus)[keyof typeof ImageResponseTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ImageResponseTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type ImageResponseTemplateDtoTemplateType =
-  (typeof ImageResponseTemplateDtoTemplateType)[keyof typeof ImageResponseTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ImageResponseTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface ImageResponseTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: ImageResponseTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: ImageResponseTemplateDtoTemplateType;
-  prompt?: string;
-  referenceImageUrl?: string;
-  maxFileSize?: number;
-  gradingCriteria?: string[];
-  rubric?: string;
-  requiresManualGrading?: boolean;
-  allowedFormats?: string;
-  requiresDrawing?: boolean;
-  allowsUpload?: boolean;
-}
-
-export type HotSpotTemplateDtoStatus =
-  (typeof HotSpotTemplateDtoStatus)[keyof typeof HotSpotTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const HotSpotTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type HotSpotTemplateDtoTemplateType =
-  (typeof HotSpotTemplateDtoTemplateType)[keyof typeof HotSpotTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const HotSpotTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface HotSpotTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: HotSpotTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: HotSpotTemplateDtoTemplateType;
-  imageUrl?: string;
-  hotSpotAreas?: string[];
-  maxSelections?: number;
-  allowMultipleSpots?: boolean;
-  explanation?: string;
-}
-
-export type TemplateFilterDtoType =
-  (typeof TemplateFilterDtoType)[keyof typeof TemplateFilterDtoType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const TemplateFilterDtoType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface TemplateFilterDto {
-  type?: TemplateFilterDtoType;
-  subject?: string;
-  difficulty?: string;
-  minPoints?: number;
-  maxPoints?: number;
-  minTimeLimit?: number;
-  maxTimeLimit?: number;
-  isActive?: boolean;
-  tags?: string[];
-}
-
-export type FillInTheBlanksTemplateDtoStatus =
-  (typeof FillInTheBlanksTemplateDtoStatus)[keyof typeof FillInTheBlanksTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FillInTheBlanksTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type FillInTheBlanksTemplateDtoTemplateType =
-  (typeof FillInTheBlanksTemplateDtoTemplateType)[keyof typeof FillInTheBlanksTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FillInTheBlanksTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface FillInTheBlanksTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: FillInTheBlanksTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: FillInTheBlanksTemplateDtoTemplateType;
-  textWithBlanks?: string;
-  correctAnswers?: string[];
-  alternativeAnswers?: string[];
-  caseSensitive?: boolean;
-  exactMatch?: boolean;
-  explanation?: string;
-}
-
-export type EssayTemplateDtoStatus =
-  (typeof EssayTemplateDtoStatus)[keyof typeof EssayTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const EssayTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type EssayTemplateDtoTemplateType =
-  (typeof EssayTemplateDtoTemplateType)[keyof typeof EssayTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const EssayTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface EssayTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: EssayTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: EssayTemplateDtoTemplateType;
-  prompt?: string;
-  gradingCriteria?: string[];
-  minWords?: number;
-  maxWords?: number;
-  requiredTopics?: string[];
-  rubric?: string;
-  requiresManualGrading?: boolean;
-}
-
-export type DragAndDropTemplateDtoStatus =
-  (typeof DragAndDropTemplateDtoStatus)[keyof typeof DragAndDropTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DragAndDropTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type DragAndDropTemplateDtoTemplateType =
-  (typeof DragAndDropTemplateDtoTemplateType)[keyof typeof DragAndDropTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DragAndDropTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface DragAndDropTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: DragAndDropTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: DragAndDropTemplateDtoTemplateType;
-  draggableItems?: string[];
-  targetZones?: string[];
-  correctMappings?: string[];
-  allowMultipleItemsPerZone?: boolean;
-  shuffleDraggableItems?: boolean;
-  explanation?: string;
-}
-
-export type AudioResponseTemplateDtoStatus =
-  (typeof AudioResponseTemplateDtoStatus)[keyof typeof AudioResponseTemplateDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AudioResponseTemplateDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type AudioResponseTemplateDtoTemplateType =
-  (typeof AudioResponseTemplateDtoTemplateType)[keyof typeof AudioResponseTemplateDtoTemplateType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AudioResponseTemplateDtoTemplateType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface AudioResponseTemplateDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: AudioResponseTemplateDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  title?: string;
-  description?: string;
-  subject?: string;
-  difficulty?: string;
-  points?: number;
-  timeLimit?: number;
-  instructions?: string;
-  tags?: string[];
-  isActive?: boolean;
-  templateType?: AudioResponseTemplateDtoTemplateType;
-  prompt?: string;
-  audioPromptUrl?: string;
-  maxRecordingDuration?: number;
-  minRecordingDuration?: number;
-  gradingCriteria?: string[];
-  rubric?: string;
-  requiresManualGrading?: boolean;
-  allowedFormats?: string;
-}
-
-export type ExamReadyFilterDtoQuestionType =
-  (typeof ExamReadyFilterDtoQuestionType)[keyof typeof ExamReadyFilterDtoQuestionType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamReadyFilterDtoQuestionType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface ExamReadyFilterDto {
-  questionType?: ExamReadyFilterDtoQuestionType;
-  minPoints?: number;
-  maxPoints?: number;
-  isActive?: boolean;
+export interface UpdatePartProgressRequest {
   partId?: string;
+  progressPercentage?: number;
+  timeSpentSeconds?: number;
+  currentMaterialId?: string;
+  currentMaterialPositionSeconds?: number;
 }
 
-export interface ExamSettingsDto {
-  shuffleQuestions?: boolean;
-  shuffleOptions?: boolean;
-  timeLimit?: number;
-  maxQuestions?: number;
-}
-
-export type QuestionFilterDtoQuestionType =
-  (typeof QuestionFilterDtoQuestionType)[keyof typeof QuestionFilterDtoQuestionType];
+export type CourseLessonPartProgressStatus =
+  (typeof CourseLessonPartProgressStatus)[keyof typeof CourseLessonPartProgressStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const QuestionFilterDtoQuestionType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
+export const CourseLessonPartProgressStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
 } as const;
 
-export interface QuestionFilterDto {
-  questionType?: QuestionFilterDtoQuestionType;
-  partId?: string;
-  minPoints?: number;
-  maxPoints?: number;
-  minTimeLimit?: number;
-  maxTimeLimit?: number;
-  isActive?: boolean;
-  isMain?: boolean;
-  tags?: string[];
+export type CourseLessonPartProgressCompletionStatus =
+  (typeof CourseLessonPartProgressCompletionStatus)[keyof typeof CourseLessonPartProgressCompletionStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CourseLessonPartProgressCompletionStatus = {
+  NOT_STARTED: "NOT_STARTED",
+  IN_PROGRESS: "IN_PROGRESS",
+  COMPLETED: "COMPLETED",
+  LOCKED: "LOCKED",
+} as const;
+
+export interface CourseLessonPartProgress {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: CourseLessonPartProgressStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  learner?: User;
+  courseLessonPart?: CourseLessonPart;
+  completionStatus?: CourseLessonPartProgressCompletionStatus;
+  progressPercentage?: number;
+  firstStartedAt?: string;
+  lastAccessedAt?: string;
+  completedAt?: string;
+  totalTimeSpentSeconds?: number;
+  currentMaterial?: CourseLessonPartMaterial;
+  currentMaterialPositionSeconds?: number;
+  aiMessageCount?: number;
+  aiLastInteractionAt?: string;
+}
+
+export interface UpdateMaterialProgressRequest {
+  materialId?: string;
+  currentPositionSeconds?: number;
+  totalDurationSeconds?: number;
+  watchDurationSeconds?: number;
+  isDownloaded?: boolean;
+}
+
+export type CourseLessonPartMaterialProgressStatus =
+  (typeof CourseLessonPartMaterialProgressStatus)[keyof typeof CourseLessonPartMaterialProgressStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CourseLessonPartMaterialProgressStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export interface CourseLessonPartMaterialProgress {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: CourseLessonPartMaterialProgressStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  learner?: User;
+  material?: CourseLessonPartMaterial;
+  watchedSeconds?: number;
+  totalDurationSeconds?: number;
+  currentPositionSeconds?: number;
+  watchCount?: number;
+  isActivelyWatched?: boolean;
+  completionPercentage?: number;
+  isCompleted?: boolean;
+  firstWatchedAt?: string;
+  lastWatchedAt?: string;
+  completedAt?: string;
+  isDownloaded?: boolean;
+  timeSpentSeconds?: number;
 }
 
 export type CurriculumFilterDtoCategory =
@@ -2424,7 +1142,145 @@ export interface CourseLessonPartDetailDTO {
 export interface AuthenticationResponse {
   accessToken?: string;
   refreshToken?: string;
-  user?: User;
+  user?: UserDto;
+  expiresIn?: number;
+  tokenType?: string;
+}
+
+export interface BranchAssignment {
+  assignmentId?: string;
+  branchId?: string;
+  branchName?: string;
+  branchGrade?: string;
+  institutionId?: string;
+  institutionName?: string;
+  studentCount?: number;
+  assignedAt?: string;
+  assignmentStatus?: string;
+}
+
+export interface CourseAssignment {
+  assignmentId?: string;
+  courseId?: string;
+  courseName?: string;
+  writerRole?: string;
+  assignedAt?: string;
+  assignmentStatus?: string;
+  completedAt?: string;
+}
+
+export interface IndividualSubscriptionDto {
+  subscriptionId?: string;
+  startDate?: string;
+  endDate?: string;
+  subscriptionStatus?: string;
+  subscriptionType?: string;
+  autoRenew?: boolean;
+  includedCourseCount?: number;
+}
+
+export interface InstitutionalSubscriptionDto {
+  subscriptionId?: string;
+  organizationLevel?: string;
+  startDate?: string;
+  endDate?: string;
+  subscriptionStatus?: string;
+  includedCourseCount?: number;
+}
+
+export interface ManagerScopeInfo {
+  scopes?: ScopeItem[];
+}
+
+export interface OrganizationInfo {
+  brandId?: string;
+  brandName?: string;
+  campusId?: string;
+  campusName?: string;
+  institutionId?: string;
+  institutionName?: string;
+  branchId?: string;
+  branchName?: string;
+  branchGrade?: string;
+  isInstitutional?: boolean;
+}
+
+export interface ScopeItem {
+  assignmentId?: string;
+  organizationLevel?: string;
+  organizationId?: string;
+  organizationName?: string;
+  assignedAt?: string;
+  assignmentStatus?: string;
+}
+
+export interface SubscriptionInfo {
+  activeSubscriptionCount?: number;
+  activeCourseCount?: number;
+  institutionalSubscription?: InstitutionalSubscriptionDto;
+  individualSubscriptions?: IndividualSubscriptionDto[];
+}
+
+export interface TutorInfo {
+  assignedBranches?: BranchAssignment[];
+}
+
+export type UserDtoRolesItem =
+  (typeof UserDtoRolesItem)[keyof typeof UserDtoRolesItem];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserDtoRolesItem = {
+  USER: "USER",
+  ADMIN: "ADMIN",
+  LEARNER: "LEARNER",
+  INSTRUCTOR: "INSTRUCTOR",
+  OBSERVER: "OBSERVER",
+  MANAGER: "MANAGER",
+  TUTOR: "TUTOR",
+  WRITER: "WRITER",
+  COMPANY: "COMPANY",
+} as const;
+
+export type UserDtoDepartmentsItem =
+  (typeof UserDtoDepartmentsItem)[keyof typeof UserDtoDepartmentsItem];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserDtoDepartmentsItem = {
+  TEACHER: "TEACHER",
+  MANAGER: "MANAGER",
+} as const;
+
+export type UserDtoLevel = (typeof UserDtoLevel)[keyof typeof UserDtoLevel];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserDtoLevel = {
+  BRAND: "BRAND",
+  CAMPUS: "CAMPUS",
+  INSTITUTION: "INSTITUTION",
+  GENERAL: "GENERAL",
+  ADMIN: "ADMIN",
+} as const;
+
+export interface UserDto {
+  id?: string;
+  username?: string;
+  email?: string;
+  name?: string;
+  lastName?: string;
+  mobilePhone?: string;
+  lastLoginTime?: string;
+  roles?: UserDtoRolesItem[];
+  departments?: UserDtoDepartmentsItem[];
+  level?: UserDtoLevel;
+  organizationInfo?: OrganizationInfo;
+  subscriptionInfo?: SubscriptionInfo;
+  managerScopeInfo?: ManagerScopeInfo;
+  tutorInfo?: TutorInfo;
+  writerInfo?: WriterInfo;
+}
+
+export interface WriterInfo {
+  assignedCourses?: CourseAssignment[];
 }
 
 export interface AuthenticationRequest {
@@ -2432,112 +1288,81 @@ export interface AuthenticationRequest {
   password?: string;
 }
 
-export type ExamStatisticsDtoCategory =
-  (typeof ExamStatisticsDtoCategory)[keyof typeof ExamStatisticsDtoCategory];
+export type ActiveCourseInfoCategory =
+  (typeof ActiveCourseInfoCategory)[keyof typeof ActiveCourseInfoCategory];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExamStatisticsDtoCategory = {
+export const ActiveCourseInfoCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
 } as const;
 
-export type ExamStatisticsDtoQuestionTypeDistribution = {
-  [key: string]: number;
-};
+export interface ActiveCourseInfo {
+  courseId?: string;
+  courseName?: string;
+  imageUrl?: string;
+  category?: ActiveCourseInfoCategory;
+  progressPercentage?: number;
+  lastAccessDate?: string;
+  totalTimeSpentSeconds?: number;
+  nextContent?: NextContentInfo;
+  totalParts?: number;
+  completedParts?: number;
+  inProgressParts?: number;
+  accessEndDate?: string;
+  daysRemaining?: number;
+  thisWeekTimeSpentSeconds?: number;
+  thisWeekAccessCount?: number;
+}
 
-export interface ExamStatisticsDto {
+export interface NextContentInfo {
+  partId?: string;
+  partName?: string;
+  lessonId?: string;
+  lessonName?: string;
+  orderNumber?: number;
+  materialId?: string;
+  materialName?: string;
+  materialPositionSeconds?: number;
+}
+
+export interface ActiveExamInfo {
   examId?: string;
   examName?: string;
-  category?: ExamStatisticsDtoCategory;
-  level?: string;
-  totalQuestions?: number;
-  activeQuestions?: number;
-  inactiveQuestions?: number;
-  totalParts?: number;
-  totalPoints?: number;
-  estimatedDuration?: number;
-  questionTypeDistribution?: ExamStatisticsDtoQuestionTypeDistribution;
-  isValid?: boolean;
-  validationErrors?: string[];
+  examType?: string;
+  attemptCount?: number;
+  maxAttempts?: number;
+  hasAttemptsLeft?: boolean;
+  bestScore?: number;
+  lastAttemptDate?: string;
+  accessEndDate?: string;
+  daysRemaining?: number;
 }
 
-export interface TemplateUsageStatsDto {
-  templateId?: string;
-  usageCount?: number;
-  examCount?: number;
-  lastUsed?: string;
+export interface DashboardStats {
+  totalActiveCourses?: number;
+  totalActiveExams?: number;
+  totalStudyTimeSeconds?: number;
+  averageProgressPercentage?: number;
+  thisWeekStudyTimeSeconds?: number;
+  thisMonthStudyTimeSeconds?: number;
+  thisWeekSessionCount?: number;
+  thisMonthSessionCount?: number;
 }
 
-export type ExamComplexityDtoQuestionTypeDistribution = {
-  [key: string]: number;
-};
-
-export type ExamComplexityDtoDifficultyDistribution = { [key: string]: number };
-
-export interface ExamComplexityDto {
-  examId?: string;
-  questionTypeDistribution?: ExamComplexityDtoQuestionTypeDistribution;
-  difficultyDistribution?: ExamComplexityDtoDifficultyDistribution;
-  timeComplexity?: string;
-  pointComplexity?: string;
-  complexityScore?: number;
+export interface LearnerDashboardResponse {
+  activeCourses?: ActiveCourseInfo[];
+  activeExams?: ActiveExamInfo[];
+  overallStats?: DashboardStats;
 }
 
-export type QuestionStatisticsDtoQuestionType =
-  (typeof QuestionStatisticsDtoQuestionType)[keyof typeof QuestionStatisticsDtoQuestionType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const QuestionStatisticsDtoQuestionType = {
-  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
-  TRUE_FALSE: "TRUE_FALSE",
-  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
-  SHORT_ANSWER: "SHORT_ANSWER",
-  MATCHING: "MATCHING",
-  ESSAY: "ESSAY",
-  ORDERING: "ORDERING",
-  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
-  HOT_SPOT: "HOT_SPOT",
-  DRAG_AND_DROP: "DRAG_AND_DROP",
-  AUDIO_RESPONSE: "AUDIO_RESPONSE",
-  VIDEO_RESPONSE: "VIDEO_RESPONSE",
-  IMAGE_RESPONSE: "IMAGE_RESPONSE",
-} as const;
-
-export interface QuestionStatisticsDto {
-  questionId?: string;
-  questionType?: QuestionStatisticsDtoQuestionType;
-  points?: number;
-  timeLimit?: number;
-  isActive?: boolean;
-  isMain?: boolean;
-  usageCount?: number;
-  averageScore?: number;
-  difficultyLevel?: string;
-}
-
-export type QuestionAnalyticsDtoQuestionsByType = { [key: string]: number };
-
-export type QuestionAnalyticsDtoQuestionsBySkill = { [key: string]: number };
-
-export interface QuestionAnalyticsDto {
-  totalQuestions?: number;
-  questionsByType?: QuestionAnalyticsDtoQuestionsByType;
-  questionsBySkill?: QuestionAnalyticsDtoQuestionsBySkill;
-  totalPoints?: number;
-  totalTimeLimit?: number;
-  inactiveQuestions?: number;
-  activeQuestions?: number;
-  questionsWithTemplate?: number;
-  questionsWithoutTemplate?: number;
-}
-
-export interface PageExamQuestionDto {
-  totalElements?: number;
+export interface PageCurriculumDto {
   totalPages?: number;
+  totalElements?: number;
   first?: boolean;
   last?: boolean;
   size?: number;
-  content?: ExamQuestionDto[];
+  content?: CurriculumDto[];
   number?: number;
   sort?: SortObject;
   numberOfElements?: number;
@@ -2560,64 +1385,6 @@ export interface SortObject {
   unsorted?: boolean;
 }
 
-export type PartStatisticsDtoSkill =
-  (typeof PartStatisticsDtoSkill)[keyof typeof PartStatisticsDtoSkill];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PartStatisticsDtoSkill = {
-  SPEAKING: "SPEAKING",
-  WRITING: "WRITING",
-  LISTENING: "LISTENING",
-  READING: "READING",
-  GRAMMAR: "GRAMMAR",
-  VOCABULARY: "VOCABULARY",
-  PRONUNCIATION: "PRONUNCIATION",
-  FLUENCY: "FLUENCY",
-  COMPREHENSION: "COMPREHENSION",
-} as const;
-
-export type PartStatisticsDtoQuestionTypeDistribution = {
-  [key: string]: number;
-};
-
-export interface PartStatisticsDto {
-  partId?: string;
-  partName?: string;
-  skill?: PartStatisticsDtoSkill;
-  questionCount?: number;
-  totalPoints?: number;
-  estimatedDuration?: number;
-  questionTypeDistribution?: PartStatisticsDtoQuestionTypeDistribution;
-}
-
-export interface PageExamPartDto {
-  totalElements?: number;
-  totalPages?: number;
-  first?: boolean;
-  last?: boolean;
-  size?: number;
-  content?: ExamPartDto[];
-  number?: number;
-  sort?: SortObject;
-  numberOfElements?: number;
-  pageable?: PageableObject;
-  empty?: boolean;
-}
-
-export interface PageCurriculumDto {
-  totalElements?: number;
-  totalPages?: number;
-  first?: boolean;
-  last?: boolean;
-  size?: number;
-  content?: CurriculumDto[];
-  number?: number;
-  sort?: SortObject;
-  numberOfElements?: number;
-  pageable?: PageableObject;
-  empty?: boolean;
-}
-
 export type RenameFileParams = {
   /**
    * @minLength 1
@@ -2632,166 +1399,10 @@ export type MoveFileParams = {
   newPath: string;
 };
 
-export type UpdateQuestionPointsParams = {
-  /**
-   */
-  points: number;
-};
-
-export type UpdateTimeLimitParams = {
-  /**
-   */
-  timeLimit: number;
-};
-
-export type ShuffleQuestionOptionsParams = {
-  shuffle: boolean;
-};
-
-export type RemoveTagParams = {
-  /**
-   * @minLength 1
-   */
-  tag: string;
-};
-
-export type UpdatePointsParams = {
-  /**
-   */
-  points: number;
-};
-
-export type UpdateQuestionOrderParams = {
-  /**
-   */
-  newOrder: number;
-};
-
-export type LinkTemplateParams = {
-  /**
-   * @minLength 1
-   */
-  templateId: string;
-};
-
-export type AddTagParams = {
-  /**
-   * @minLength 1
-   */
-  tag: string;
-};
-
-export type UpdateTemplateReferencesParams = {
-  /**
-   * @minLength 1
-   */
-  oldTemplateId: string;
-  /**
-   * @minLength 1
-   */
-  newTemplateId: string;
-};
-
-export type BulkUpdateTimeLimitParams = {
-  /**
-   */
-  timeLimit: number;
-};
-
-export type BulkUpdatePointsParams = {
-  /**
-   */
-  points: number;
-};
-
-export type AssignSkillParams = {
-  skill: AssignSkillSkill;
-};
-
-export type AssignSkillSkill =
-  (typeof AssignSkillSkill)[keyof typeof AssignSkillSkill];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AssignSkillSkill = {
-  SPEAKING: "SPEAKING",
-  WRITING: "WRITING",
-  LISTENING: "LISTENING",
-  READING: "READING",
-  GRAMMAR: "GRAMMAR",
-  VOCABULARY: "VOCABULARY",
-  PRONUNCIATION: "PRONUNCIATION",
-  FLUENCY: "FLUENCY",
-  COMPREHENSION: "COMPREHENSION",
-} as const;
-
-export type UpdatePartOrderParams = {
-  /**
-   */
-  newOrder: number;
-};
-
-export type ReorderParts1Params = {
-  /**
-   * @minLength 1
-   */
-  examId: string;
-};
-
 export type RevertToVersionParams = {
   /**
    */
   version: number;
-};
-
-export type ReorderContents200ItemStatus =
-  (typeof ReorderContents200ItemStatus)[keyof typeof ReorderContents200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ReorderContents200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type ReorderContents200ItemLevel =
-  (typeof ReorderContents200ItemLevel)[keyof typeof ReorderContents200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ReorderContents200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type ReorderContents200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: ReorderContents200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: ReorderContents200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
 };
 
 export type UpdateContentOrderParams = {
@@ -2860,77 +1471,6 @@ export type UploadFileWithMetadataBody = {
   file: Blob;
 };
 
-export type AddQuestionToExamParams = {
-  /**
-   * @minLength 1
-   */
-  templateId: string;
-  order?: number;
-  /**
-   */
-  points?: number;
-};
-
-export type AddQuestionsFromTemplatesParams = {
-  partId?: string;
-};
-
-export type DuplicateExamParams = {
-  /**
-   * @minLength 1
-   */
-  newName: string;
-};
-
-export type DuplicateTemplateParams = {
-  /**
-   * @minLength 1
-   */
-  newTitle: string;
-};
-
-export type GetTemplateMap200 = { [key: string]: BaseQuestionTemplateDto };
-
-export type ResolveTemplates200 = { [key: string]: BaseQuestionTemplateDto };
-
-export type CreateQuestionsFromTemplatesParams = {
-  partId?: string;
-};
-
-export type CreateQuestionFromTemplateParams = {
-  /**
-   * @minLength 1
-   */
-  templateId: string;
-  partId?: string;
-  order?: number;
-  points?: number;
-};
-
-export type DuplicateQuestionsParams = {
-  /**
-   * @minLength 1
-   */
-  targetExamId: string;
-};
-
-export type DuplicatePartParams = {
-  /**
-   * @minLength 1
-   */
-  newName: string;
-};
-
-export type DuplicateMultiplePartsParams = {
-  namePrefix?: string;
-};
-
-export type SubmitAnswerBody = { [key: string]: unknown };
-
-export type SaveAnswerBody = { [key: string]: unknown };
-
-export type SaveMultipleAnswersBody = { [key: string]: unknown };
-
 export type DuplicateCurriculumParams = {
   /**
    * @minLength 1
@@ -2968,147 +1508,6 @@ export type DeleteFileByPathParams = {
    */
   filePath: string;
 };
-
-export type GetExamDistributionByLevel200 = { [key: string]: number };
-
-export type GetExamDistributionByCategory200 = { [key: string]: number };
-
-export type SearchExamsParams = {
-  /**
-   * @minLength 1
-   */
-  keyword: string;
-};
-
-export type GetRecentExamsParams = {
-  /**
-   */
-  limit?: number;
-};
-
-export type GetPopularExamsParams = {
-  /**
-   */
-  limit?: number;
-};
-
-export type FindByCodeParams = {
-  /**
-   * @minLength 1
-   */
-  code: string;
-};
-
-export type ExistsByNameParams = {
-  /**
-   * @minLength 1
-   */
-  name: string;
-  category: ExistsByNameCategory;
-};
-
-export type ExistsByNameCategory =
-  (typeof ExistsByNameCategory)[keyof typeof ExistsByNameCategory];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExistsByNameCategory = {
-  IELTS: "IELTS",
-  TOEFL: "TOEFL",
-} as const;
-
-export type ExistsByCodeParams = {
-  /**
-   * @minLength 1
-   */
-  code: string;
-};
-
-export type GetTemplateTypeStatistics200 = { [key: string]: number };
-
-export type SearchTemplatesParams = {
-  /**
-   * @minLength 1
-   */
-  keyword: string;
-};
-
-export type GetRecentTemplatesParams = {
-  limit?: number;
-};
-
-export type GetMostUsedTemplatesParams = {
-  limit?: number;
-};
-
-export type GetQuestionTypeDistribution200 = { [key: string]: number };
-
-export type GetQuestionSkillDistribution200 = { [key: string]: number };
-
-export type SearchQuestionsParams = {
-  /**
-   * @minLength 1
-   */
-  keyword: string;
-};
-
-export type GetMostRecentlyUpdatedParams = {
-  limit?: number;
-};
-
-export type GetRecentQuestionsParams = {
-  limit?: number;
-};
-
-export type GetQuestionsPaginatedParams = {
-  page?: number;
-  size?: number;
-  sortBy?: string;
-  sortDirection?: string;
-};
-
-export type GetPartQuestionTypes200 = { [key: string]: number };
-
-export type GetPartDistributionBySkill200 = { [key: string]: number };
-
-export type SearchPartsParams = {
-  /**
-   * @minLength 1
-   */
-  keyword: string;
-};
-
-export type GetRecentPartsParams = {
-  limit?: number;
-};
-
-export type GetPartsPaginatedParams = {
-  page?: number;
-  size?: number;
-  sortBy?: string;
-  sortDirection?: string;
-};
-
-export type GetMostUsedPartsParams = {
-  limit?: number;
-};
-
-export type FindByNameParams = {
-  /**
-   * @minLength 1
-   */
-  name: string;
-};
-
-export type ExistsByName1Params = {
-  /**
-   * @minLength 1
-   */
-  name: string;
-};
-
-export type GetTimeSpentByQuestion200 = { [key: string]: number };
-
-export type GetAnswerStatistics200 = { [key: string]: number };
 
 export type GetCurriculumVersionsParams = {
   /**
@@ -3149,7 +1548,7 @@ export type SearchCurriculumsPaginatedParams = {
   sortDirection?: string;
 };
 
-export type GetMostRecentlyUpdated1Params = {
+export type GetMostRecentlyUpdatedParams = {
   /**
    */
   limit?: number;
@@ -3206,73 +1605,22 @@ export const FindByNameAndCategoryCategory = {
   TOEFL: "TOEFL",
 } as const;
 
-export type ExistsByName2Params = {
+export type ExistsByNameParams = {
   /**
    * @minLength 1
    */
   name: string;
-  category: ExistsByName2Category;
+  category: ExistsByNameCategory;
 };
 
-export type ExistsByName2Category =
-  (typeof ExistsByName2Category)[keyof typeof ExistsByName2Category];
+export type ExistsByNameCategory =
+  (typeof ExistsByNameCategory)[keyof typeof ExistsByNameCategory];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ExistsByName2Category = {
+export const ExistsByNameCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
 } as const;
-
-export type GetChildrenContents200ItemStatus =
-  (typeof GetChildrenContents200ItemStatus)[keyof typeof GetChildrenContents200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetChildrenContents200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type GetChildrenContents200ItemLevel =
-  (typeof GetChildrenContents200ItemLevel)[keyof typeof GetChildrenContents200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetChildrenContents200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type GetChildrenContents200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: GetChildrenContents200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: GetChildrenContents200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
-};
 
 export type SearchContentsByCurriculumParams = {
   /**
@@ -3281,211 +1629,7 @@ export type SearchContentsByCurriculumParams = {
   keyword: string;
 };
 
-export type SearchContentsByCurriculum200ItemStatus =
-  (typeof SearchContentsByCurriculum200ItemStatus)[keyof typeof SearchContentsByCurriculum200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchContentsByCurriculum200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type SearchContentsByCurriculum200ItemLevel =
-  (typeof SearchContentsByCurriculum200ItemLevel)[keyof typeof SearchContentsByCurriculum200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchContentsByCurriculum200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type SearchContentsByCurriculum200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: SearchContentsByCurriculum200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: SearchContentsByCurriculum200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
-};
-
-export type GetRootContents200ItemStatus =
-  (typeof GetRootContents200ItemStatus)[keyof typeof GetRootContents200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetRootContents200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type GetRootContents200ItemLevel =
-  (typeof GetRootContents200ItemLevel)[keyof typeof GetRootContents200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetRootContents200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type GetRootContents200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: GetRootContents200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: GetRootContents200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
-};
-
-export type GetContentHierarchy200ItemStatus =
-  (typeof GetContentHierarchy200ItemStatus)[keyof typeof GetContentHierarchy200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentHierarchy200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type GetContentHierarchy200ItemLevel =
-  (typeof GetContentHierarchy200ItemLevel)[keyof typeof GetContentHierarchy200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentHierarchy200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type GetContentHierarchy200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: GetContentHierarchy200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: GetContentHierarchy200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
-};
-
 export type GetContentDistributionByLevel200 = { [key: string]: number };
-
-export type GetContentPath200ItemStatus =
-  (typeof GetContentPath200ItemStatus)[keyof typeof GetContentPath200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentPath200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type GetContentPath200ItemLevel =
-  (typeof GetContentPath200ItemLevel)[keyof typeof GetContentPath200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentPath200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type GetContentPath200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: GetContentPath200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: GetContentPath200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
-};
 
 export type SearchContentsParams = {
   /**
@@ -3494,215 +1638,11 @@ export type SearchContentsParams = {
   keyword: string;
 };
 
-export type SearchContents200ItemStatus =
-  (typeof SearchContents200ItemStatus)[keyof typeof SearchContents200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchContents200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type SearchContents200ItemLevel =
-  (typeof SearchContents200ItemLevel)[keyof typeof SearchContents200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchContents200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type SearchContents200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: SearchContents200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: SearchContents200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
-};
-
 export type FindContentByPathParams = {
   /**
    * @minLength 1
    */
   pathString: string;
-};
-
-export type GetContentsByParent200ItemStatus =
-  (typeof GetContentsByParent200ItemStatus)[keyof typeof GetContentsByParent200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentsByParent200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type GetContentsByParent200ItemLevel =
-  (typeof GetContentsByParent200ItemLevel)[keyof typeof GetContentsByParent200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentsByParent200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type GetContentsByParent200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: GetContentsByParent200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: GetContentsByParent200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
-};
-
-export type GetContentsByLevel200ItemStatus =
-  (typeof GetContentsByLevel200ItemStatus)[keyof typeof GetContentsByLevel200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentsByLevel200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type GetContentsByLevel200ItemLevel =
-  (typeof GetContentsByLevel200ItemLevel)[keyof typeof GetContentsByLevel200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentsByLevel200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type GetContentsByLevel200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: GetContentsByLevel200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: GetContentsByLevel200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
-};
-
-export type GetContentsByCurriculumId200ItemStatus =
-  (typeof GetContentsByCurriculumId200ItemStatus)[keyof typeof GetContentsByCurriculumId200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentsByCurriculumId200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type GetContentsByCurriculumId200ItemLevel =
-  (typeof GetContentsByCurriculumId200ItemLevel)[keyof typeof GetContentsByCurriculumId200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentsByCurriculumId200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type GetContentsByCurriculumId200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: GetContentsByCurriculumId200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: GetContentsByCurriculumId200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
 };
 
 export type GetContentsByCurriculumAndLevelParams = {
@@ -3723,105 +1663,3 @@ export const GetContentsByCurriculumAndLevelLevel = {
   SUB_TOPIC: "SUB_TOPIC",
   GAIN: "GAIN",
 } as const;
-
-export type GetContentsByCurriculumAndLevel200ItemStatus =
-  (typeof GetContentsByCurriculumAndLevel200ItemStatus)[keyof typeof GetContentsByCurriculumAndLevel200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentsByCurriculumAndLevel200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type GetContentsByCurriculumAndLevel200ItemLevel =
-  (typeof GetContentsByCurriculumAndLevel200ItemLevel)[keyof typeof GetContentsByCurriculumAndLevel200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentsByCurriculumAndLevel200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type GetContentsByCurriculumAndLevel200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: GetContentsByCurriculumAndLevel200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: GetContentsByCurriculumAndLevel200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
-};
-
-export type GetContentsByCode200ItemStatus =
-  (typeof GetContentsByCode200ItemStatus)[keyof typeof GetContentsByCode200ItemStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentsByCode200ItemStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type GetContentsByCode200ItemLevel =
-  (typeof GetContentsByCode200ItemLevel)[keyof typeof GetContentsByCode200ItemLevel];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetContentsByCode200ItemLevel = {
-  UNIT: "UNIT",
-  TOPIC: "TOPIC",
-  SUB_TOPIC: "SUB_TOPIC",
-  GAIN: "GAIN",
-} as const;
-
-export type GetContentsByCode200Item = {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: GetContentsByCode200ItemStatus;
-  createdById?: string;
-  deletedById?: string;
-  code?: string;
-  curriculum?: CurriculumDto;
-  level?: GetContentsByCode200ItemLevel;
-  content?: string;
-  orderNumber?: number;
-  parentId?: string;
-  children?: unknown[];
-  updatedAt?: string;
-  version?: number;
-};

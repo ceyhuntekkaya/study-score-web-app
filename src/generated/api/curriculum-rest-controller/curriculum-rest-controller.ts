@@ -25,12 +25,12 @@ import type {
   CurriculumDto,
   CurriculumFilterDto,
   DuplicateCurriculumParams,
-  ExistsByName2Params,
+  ExistsByNameParams,
   FindByNameAndCategoryParams,
   GetCurriculumVersionsParams,
   GetCurriculumsPaginatedParams,
   GetLatestVersionParams,
-  GetMostRecentlyUpdated1Params,
+  GetMostRecentlyUpdatedParams,
   GetRecentCurriculumsParams,
   PageCurriculumDto,
   RevertToVersionParams,
@@ -1880,8 +1880,8 @@ export function useSearchCurriculumsPaginated<
   return query;
 }
 
-export const getMostRecentlyUpdated1 = (
-  params?: GetMostRecentlyUpdated1Params,
+export const getMostRecentlyUpdated = (
+  params?: GetMostRecentlyUpdatedParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
@@ -1891,21 +1891,21 @@ export const getMostRecentlyUpdated1 = (
   );
 };
 
-export const getGetMostRecentlyUpdated1QueryKey = (
-  params?: GetMostRecentlyUpdated1Params,
+export const getGetMostRecentlyUpdatedQueryKey = (
+  params?: GetMostRecentlyUpdatedParams,
 ) => {
   return [`/curriculum/recently-updated`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetMostRecentlyUpdated1QueryOptions = <
-  TData = Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+export const getGetMostRecentlyUpdatedQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
   TError = unknown,
 >(
-  params?: GetMostRecentlyUpdated1Params,
+  params?: GetMostRecentlyUpdatedParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+        Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
         TError,
         TData
       >
@@ -1916,42 +1916,42 @@ export const getGetMostRecentlyUpdated1QueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetMostRecentlyUpdated1QueryKey(params);
+    queryOptions?.queryKey ?? getGetMostRecentlyUpdatedQueryKey(params);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getMostRecentlyUpdated1>>
-  > = ({ signal }) => getMostRecentlyUpdated1(params, requestOptions, signal);
+    Awaited<ReturnType<typeof getMostRecentlyUpdated>>
+  > = ({ signal }) => getMostRecentlyUpdated(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+    Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetMostRecentlyUpdated1QueryResult = NonNullable<
-  Awaited<ReturnType<typeof getMostRecentlyUpdated1>>
+export type GetMostRecentlyUpdatedQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMostRecentlyUpdated>>
 >;
-export type GetMostRecentlyUpdated1QueryError = unknown;
+export type GetMostRecentlyUpdatedQueryError = unknown;
 
-export function useGetMostRecentlyUpdated1<
-  TData = Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+export function useGetMostRecentlyUpdated<
+  TData = Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
   TError = unknown,
 >(
-  params: undefined | GetMostRecentlyUpdated1Params,
+  params: undefined | GetMostRecentlyUpdatedParams,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+        Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+          Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
           TError,
-          Awaited<ReturnType<typeof getMostRecentlyUpdated1>>
+          Awaited<ReturnType<typeof getMostRecentlyUpdated>>
         >,
         "initialData"
       >;
@@ -1961,24 +1961,24 @@ export function useGetMostRecentlyUpdated1<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetMostRecentlyUpdated1<
-  TData = Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+export function useGetMostRecentlyUpdated<
+  TData = Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
   TError = unknown,
 >(
-  params?: GetMostRecentlyUpdated1Params,
+  params?: GetMostRecentlyUpdatedParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+        Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+          Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
           TError,
-          Awaited<ReturnType<typeof getMostRecentlyUpdated1>>
+          Awaited<ReturnType<typeof getMostRecentlyUpdated>>
         >,
         "initialData"
       >;
@@ -1988,15 +1988,15 @@ export function useGetMostRecentlyUpdated1<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetMostRecentlyUpdated1<
-  TData = Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+export function useGetMostRecentlyUpdated<
+  TData = Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
   TError = unknown,
 >(
-  params?: GetMostRecentlyUpdated1Params,
+  params?: GetMostRecentlyUpdatedParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+        Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
         TError,
         TData
       >
@@ -2008,15 +2008,15 @@ export function useGetMostRecentlyUpdated1<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetMostRecentlyUpdated1<
-  TData = Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+export function useGetMostRecentlyUpdated<
+  TData = Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
   TError = unknown,
 >(
-  params?: GetMostRecentlyUpdated1Params,
+  params?: GetMostRecentlyUpdatedParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getMostRecentlyUpdated1>>,
+        Awaited<ReturnType<typeof getMostRecentlyUpdated>>,
         TError,
         TData
       >
@@ -2027,7 +2027,7 @@ export function useGetMostRecentlyUpdated1<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetMostRecentlyUpdated1QueryOptions(params, options);
+  const queryOptions = getGetMostRecentlyUpdatedQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -2678,8 +2678,8 @@ export function useFindByNameAndCategory<
   return query;
 }
 
-export const existsByName2 = (
-  params: ExistsByName2Params,
+export const existsByName = (
+  params: ExistsByNameParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
@@ -2689,56 +2689,56 @@ export const existsByName2 = (
   );
 };
 
-export const getExistsByName2QueryKey = (params?: ExistsByName2Params) => {
+export const getExistsByNameQueryKey = (params?: ExistsByNameParams) => {
   return [`/curriculum/exists`, ...(params ? [params] : [])] as const;
 };
 
-export const getExistsByName2QueryOptions = <
-  TData = Awaited<ReturnType<typeof existsByName2>>,
+export const getExistsByNameQueryOptions = <
+  TData = Awaited<ReturnType<typeof existsByName>>,
   TError = unknown,
 >(
-  params: ExistsByName2Params,
+  params: ExistsByNameParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof existsByName2>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof existsByName>>, TError, TData>
     >;
     request?: SecondParameter<typeof customInstance>;
   },
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getExistsByName2QueryKey(params);
+  const queryKey = queryOptions?.queryKey ?? getExistsByNameQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof existsByName2>>> = ({
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof existsByName>>> = ({
     signal,
-  }) => existsByName2(params, requestOptions, signal);
+  }) => existsByName(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof existsByName2>>,
+    Awaited<ReturnType<typeof existsByName>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type ExistsByName2QueryResult = NonNullable<
-  Awaited<ReturnType<typeof existsByName2>>
+export type ExistsByNameQueryResult = NonNullable<
+  Awaited<ReturnType<typeof existsByName>>
 >;
-export type ExistsByName2QueryError = unknown;
+export type ExistsByNameQueryError = unknown;
 
-export function useExistsByName2<
-  TData = Awaited<ReturnType<typeof existsByName2>>,
+export function useExistsByName<
+  TData = Awaited<ReturnType<typeof existsByName>>,
   TError = unknown,
 >(
-  params: ExistsByName2Params,
+  params: ExistsByNameParams,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof existsByName2>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof existsByName>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof existsByName2>>,
+          Awaited<ReturnType<typeof existsByName>>,
           TError,
-          Awaited<ReturnType<typeof existsByName2>>
+          Awaited<ReturnType<typeof existsByName>>
         >,
         "initialData"
       >;
@@ -2748,20 +2748,20 @@ export function useExistsByName2<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useExistsByName2<
-  TData = Awaited<ReturnType<typeof existsByName2>>,
+export function useExistsByName<
+  TData = Awaited<ReturnType<typeof existsByName>>,
   TError = unknown,
 >(
-  params: ExistsByName2Params,
+  params: ExistsByNameParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof existsByName2>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof existsByName>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof existsByName2>>,
+          Awaited<ReturnType<typeof existsByName>>,
           TError,
-          Awaited<ReturnType<typeof existsByName2>>
+          Awaited<ReturnType<typeof existsByName>>
         >,
         "initialData"
       >;
@@ -2771,14 +2771,14 @@ export function useExistsByName2<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useExistsByName2<
-  TData = Awaited<ReturnType<typeof existsByName2>>,
+export function useExistsByName<
+  TData = Awaited<ReturnType<typeof existsByName>>,
   TError = unknown,
 >(
-  params: ExistsByName2Params,
+  params: ExistsByNameParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof existsByName2>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof existsByName>>, TError, TData>
     >;
     request?: SecondParameter<typeof customInstance>;
   },
@@ -2787,14 +2787,14 @@ export function useExistsByName2<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useExistsByName2<
-  TData = Awaited<ReturnType<typeof existsByName2>>,
+export function useExistsByName<
+  TData = Awaited<ReturnType<typeof existsByName>>,
   TError = unknown,
 >(
-  params: ExistsByName2Params,
+  params: ExistsByNameParams,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof existsByName2>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof existsByName>>, TError, TData>
     >;
     request?: SecondParameter<typeof customInstance>;
   },
@@ -2802,7 +2802,7 @@ export function useExistsByName2<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getExistsByName2QueryOptions(params, options);
+  const queryOptions = getExistsByNameQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,

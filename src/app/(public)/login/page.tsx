@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/i18n';
 import { useLogin } from '@/generated/api/auth-rest-controller/auth-rest-controller';
-import { mapGeneratedUserToLocal } from '@/utils/userMapper';
+import { mapUserDtoToLocal } from '@/utils/userMapper';
+import { AuthenticationResponse } from '@/generated/api/openAPIDefinition.schemas';
 import { getErrorMessage } from '@/utils/errorHandler';
 
 /**
@@ -22,14 +23,14 @@ export default function LoginPage() {
       onSuccess: (response) => {
         try {
           // customInstance already extracts data, so response is AuthenticationResponse
-          const authResponse = response as any;
+          const authResponse = response as AuthenticationResponse;
           
           if (!authResponse?.user || !authResponse?.accessToken || !authResponse?.refreshToken) {
             throw new Error('Invalid response from server: missing user, accessToken, or refreshToken');
           }
 
-          // Map generated user to local user type
-          const localUser = mapGeneratedUserToLocal(authResponse.user);
+          // Map UserDto to local User type
+          const localUser = mapUserDtoToLocal(authResponse.user);
 
           // Set tokens
           const tokens = {

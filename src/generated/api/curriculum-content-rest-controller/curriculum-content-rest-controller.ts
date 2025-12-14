@@ -24,21 +24,9 @@ import type {
   CurriculumContent,
   CurriculumContentDto,
   FindContentByPathParams,
-  GetChildrenContents200Item,
   GetContentDistributionByLevel200,
-  GetContentHierarchy200Item,
-  GetContentPath200Item,
-  GetContentsByCode200Item,
-  GetContentsByCurriculumAndLevel200Item,
   GetContentsByCurriculumAndLevelParams,
-  GetContentsByCurriculumId200Item,
-  GetContentsByLevel200Item,
-  GetContentsByParent200Item,
-  GetRootContents200Item,
   MoveContentParams,
-  ReorderContents200Item,
-  SearchContents200Item,
-  SearchContentsByCurriculum200Item,
   SearchContentsByCurriculumParams,
   SearchContentsParams,
   UpdateContentOrderParams,
@@ -53,7 +41,7 @@ export const reorderContents = (
   reorderContentsBody: string[],
   options?: SecondParameter<typeof customInstance>,
 ) => {
-  return customInstance<ReorderContents200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     {
       url: `/curriculum-content/${parentId}/reorder`,
       method: "PUT",
@@ -828,7 +816,7 @@ export const getChildrenContents = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<GetChildrenContents200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     { url: `/curriculum-content/${parentId}/children`, method: "GET", signal },
     options,
   );
@@ -991,7 +979,7 @@ export const searchContentsByCurriculum = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<SearchContentsByCurriculum200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     {
       url: `/curriculum-content/${curriculumId}/search`,
       method: "GET",
@@ -1175,7 +1163,7 @@ export const getRootContents = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<GetRootContents200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     {
       url: `/curriculum-content/${curriculumId}/root-contents`,
       method: "GET",
@@ -1487,7 +1475,7 @@ export const getContentHierarchy = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<GetContentHierarchy200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     {
       url: `/curriculum-content/${curriculumId}/hierarchy`,
       method: "GET",
@@ -2002,7 +1990,7 @@ export const getContentPath = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<GetContentPath200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     { url: `/curriculum-content/${contentId}/path`, method: "GET", signal },
     options,
   );
@@ -2943,7 +2931,7 @@ export const searchContents = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<SearchContents200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     { url: `/curriculum-content/search`, method: "GET", params, signal },
     options,
   );
@@ -3241,7 +3229,7 @@ export const getContentsByParent = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<GetContentsByParent200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     { url: `/curriculum-content/by-parent/${parentId}`, method: "GET", signal },
     options,
   );
@@ -3403,7 +3391,7 @@ export const getContentsByLevel = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<GetContentsByLevel200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     { url: `/curriculum-content/by-level/${level}`, method: "GET", signal },
     options,
   );
@@ -3567,7 +3555,7 @@ export const getContentsByCurriculumId = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<GetContentsByCurriculumId200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     {
       url: `/curriculum-content/by-curriculum/${curriculumId}`,
       method: "GET",
@@ -3738,7 +3726,7 @@ export const getContentsByCurriculumAndLevel = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<GetContentsByCurriculumAndLevel200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     {
       url: `/curriculum-content/by-curriculum-level`,
       method: "GET",
@@ -3910,7 +3898,7 @@ export const getContentsByCode = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<GetContentsByCode200Item[]>(
+  return customInstance<CurriculumContentDto[]>(
     { url: `/curriculum-content/by-code/${code}`, method: "GET", signal },
     options,
   );

@@ -1,32 +1,39 @@
 /**
  * User Mapper Utility
- * Maps generated API User type to local User type
+ * Maps generated API UserDto type to local User type
  */
 
 import { User as LocalUser, UserRole } from '@/types';
-import { User as GeneratedUser, UserRoleSetItem } from '@/generated/api/openAPIDefinition.schemas';
+import { UserDto, UserDtoRolesItem } from '@/generated/api/openAPIDefinition.schemas';
 
 /**
- * Maps backend UserRoleSetItem to frontend UserRole
+ * Maps backend UserDtoRolesItem to frontend UserRole
+ * Yeni yapıda TUTOR, MANAGER, WRITER direkt var
  */
-function mapRole(roleSet?: UserRoleSetItem[]): UserRole {
-  if (!roleSet || roleSet.length === 0) {
+function mapRole(roles?: UserDtoRolesItem[]): UserRole {
+  if (!roles || roles.length === 0) {
     return 'learner'; // Default role
   }
 
   // Get the first role and map it
-  const role = roleSet[0];
+  const role = roles[0];
   
   switch (role) {
     case 'LEARNER':
       return 'learner';
-    case 'INSTRUCTOR':
+    case 'TUTOR':
+      return 'tutor';
+    case 'INSTRUCTOR': // Fallback for backward compatibility
       return 'tutor';
     case 'ADMIN':
       return 'admin';
-    case 'OBSERVER':
+    case 'MANAGER':
       return 'manager';
-    case 'USER':
+    case 'OBSERVER': // Fallback for backward compatibility
+      return 'manager';
+    case 'WRITER':
+      return 'writer';
+    case 'USER': // Fallback for backward compatibility
       return 'writer';
     default:
       return 'learner';
@@ -34,19 +41,38 @@ function mapRole(roleSet?: UserRoleSetItem[]): UserRole {
 }
 
 /**
- * Maps generated User to local User type
+ * Maps generated UserDto to local User type
  */
-export function mapGeneratedUserToLocal(generatedUser: GeneratedUser): LocalUser {
-  if (!generatedUser.id || !generatedUser.email || !generatedUser.name) {
-    throw new Error('Invalid user data: missing required fields');
+export function mapUserDtoToLocal(userDto: UserDto): LocalUser {
+  if (!userDto.id) {
+    throw new Error('Invalid user data: missing id');
   }
 
+  // Email veya username olabilir
+  const email = userDto.email || userDto.username || '';
+  if (!email) {
+    throw new Error('Invalid user data: missing email or username');
+  }
+
+  // Name: name + lastName veya sadece name veya username
+  const fullName = userDto.name 
+    ? (userDto.lastName ? `${userDto.name} ${userDto.lastName}` : userDto.name)
+    : userDto.username || 'User';
+
   return {
-    id: generatedUser.id,
-    email: generatedUser.email,
-    name: generatedUser.name || generatedUser.username || 'User',
-    role: mapRole(generatedUser.roleSet),
+    id: userDto.id,
+    email: email,
+    name: fullName,
+    role: mapRole(userDto.roles),
     avatar: undefined, // Backend doesn't provide avatar yet
   };
+}
+
+/**
+ * @deprecated Use mapUserDtoToLocal instead
+ * Kept for backward compatibility
+ */
+export function mapGeneratedUserToLocal(userDto: UserDto): LocalUser {
+  return mapUserDtoToLocal(userDto);
 }
 
