@@ -131,7 +131,7 @@ export default function TutorSettingsPage() {
         {/* Profile Tab */}
         <div className={`tab-pane fade ${activeTab === 'profile' ? 'active show' : ''}`}>
           <div className="rbt-dashboard-content-wrapper mb--30">
-            <div className="tutor-bg-photo bg_image bg_image--23 height-245"></div>
+            <div className="tutor-bg-photo bg_image7 height-245"></div>
             <div className="rbt-tutor-information">
               <div className="rbt-tutor-information-left">
                 <div className="thumbnail rbt-avatars size-lg position-relative">

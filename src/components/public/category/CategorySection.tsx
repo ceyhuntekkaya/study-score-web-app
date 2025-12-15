@@ -6,6 +6,8 @@ import { Navigation } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useGetAllCourses } from '@/generated/api/course-rest-controller/course-rest-controller';
+import type { Course } from '@/generated/api/openAPIDefinition.schemas';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -17,36 +19,9 @@ import 'swiper/css/navigation';
 export default function CategorySection() {
   const swiperRef = useRef<SwiperType | null>(null);
 
-  const categories = [
-    {
-      id: 1,
-      image: '/assets/images/category/image/web-design.jpg',
-      title: 'Web Design',
-      description: 'Web App Application',
-      courseCount: '20 Courses',
-    },
-    {
-      id: 2,
-      image: '/assets/images/category/image/graphic-design.jpg',
-      title: 'Graphic Design',
-      description: 'Design is Art',
-      courseCount: '15 Courses',
-    },
-    {
-      id: 3,
-      image: '/assets/images/category/image/personal-development.jpg',
-      title: 'Personal Development',
-      description: 'Web App Application',
-      courseCount: '9 Courses',
-    },
-    {
-      id: 4,
-      image: '/assets/images/category/image/software.jpg',
-      title: 'IT and Software',
-      description: 'Web App Application',
-      courseCount: '15 Courses',
-    },
-  ];
+  const { data: courses, isLoading, error } = useGetAllCourses();
+  
+  const coursesList: Course[] = courses || [];
 
   return (
     <div className="rbt-categories-area rbt-section-gap">
@@ -97,36 +72,60 @@ export default function CategorySection() {
                 swiperRef.current = swiper;
               }}
             >
-              {categories.map((category) => (
-                <SwiperSlide key={category.id}>
+              {isLoading && (
+                <SwiperSlide>
+                  <div className="text-center p--40">
+                    <p>Loading courses...</p>
+                  </div>
+                </SwiperSlide>
+              )}
+              {error ? (
+                <SwiperSlide>
+                  <div className="text-center p--40">
+                    <p className="text-danger">
+                      Error loading courses. Please try again later.
+                      {error instanceof Error && ` (${error.message})`}
+                    </p>
+                  </div>
+                </SwiperSlide>
+              ) : null}
+              {!isLoading && !error && coursesList.length > 0 && coursesList.map((course) => (
+                <SwiperSlide key={course.id}>
                   <div className="rbt-cat-box rbt-cat-box-1 variation-3 text-center">
                     <div className="inner">
                       <div className="thumbnail">
-                        <Link href="/courses">
+                        <Link href={`/courses/${course.id}`}>
                           <Image 
-                            src={category.image} 
-                            alt={category.title} 
+                            src={'/assets/'+course.imageUrl || '/assets/images/category/image/default.jpg'} 
+                            alt={course.name || 'Course'} 
                             width={300} 
                             height={200}
                             style={{ objectFit: 'cover' }}
                           />
                           <div className="read-more-btn">
                             <span className="rbt-btn btn-sm btn-white radius-round">
-                              {category.courseCount}
+                              {course.level || 'N/A'}
                             </span>
                           </div>
                         </Link>
                       </div>
                       <div className="content">
                         <h5 className="title">
-                          <Link href="/courses">{category.title}</Link>
+                          <Link href={`/courses/${course.id}`}>{course.name || 'Untitled Course'}</Link>
                         </h5>
-                        <p className="description">{category.description}</p>
+                        <p className="description">{course.description || 'No description available'}</p>
                       </div>
                     </div>
                   </div>
                 </SwiperSlide>
               ))}
+              {!isLoading && !error && coursesList.length === 0 && (
+                <SwiperSlide>
+                  <div className="text-center p--40">
+                    <p>No courses available.</p>
+                  </div>
+                </SwiperSlide>
+              )}
             </Swiper>
           </div>
           {/* Navigation */}

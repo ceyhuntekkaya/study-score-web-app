@@ -272,7 +272,7 @@ export const useUpdateCoursePart = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
-export const deleteActivity4 = (
+export const deleteActivity3 = (
   coursePartId: string,
   options?: SecondParameter<typeof customInstance>,
 ) => {
@@ -282,24 +282,24 @@ export const deleteActivity4 = (
   );
 };
 
-export const getDeleteActivity4MutationOptions = <
+export const getDeleteActivity3MutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteActivity4>>,
+    Awaited<ReturnType<typeof deleteActivity3>>,
     TError,
     { coursePartId: string },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteActivity4>>,
+  Awaited<ReturnType<typeof deleteActivity3>>,
   TError,
   { coursePartId: string },
   TContext
 > => {
-  const mutationKey = ["deleteActivity4"];
+  const mutationKey = ["deleteActivity3"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -309,27 +309,27 @@ export const getDeleteActivity4MutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteActivity4>>,
+    Awaited<ReturnType<typeof deleteActivity3>>,
     { coursePartId: string }
   > = (props) => {
     const { coursePartId } = props ?? {};
 
-    return deleteActivity4(coursePartId, requestOptions);
+    return deleteActivity3(coursePartId, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type DeleteActivity4MutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteActivity4>>
+export type DeleteActivity3MutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteActivity3>>
 >;
 
-export type DeleteActivity4MutationError = unknown;
+export type DeleteActivity3MutationError = unknown;
 
-export const useDeleteActivity4 = <TError = unknown, TContext = unknown>(
+export const useDeleteActivity3 = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteActivity4>>,
+      Awaited<ReturnType<typeof deleteActivity3>>,
       TError,
       { coursePartId: string },
       TContext
@@ -338,12 +338,12 @@ export const useDeleteActivity4 = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof deleteActivity4>>,
+  Awaited<ReturnType<typeof deleteActivity3>>,
   TError,
   { coursePartId: string },
   TContext
 > => {
-  const mutationOptions = getDeleteActivity4MutationOptions(options);
+  const mutationOptions = getDeleteActivity3MutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

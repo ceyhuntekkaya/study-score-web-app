@@ -1,88 +1,132 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
+import { useGetDashboard } from '@/generated/api/learner-activity-rest-controller/learner-activity-rest-controller';
+
+// Type definition for ReviewFromTeacher
+type ReviewFromTeacher = {
+  id?: string | number;
+  reviewTitle?: string;
+  review?: string;
+  aim?: string;
+  createdAt?: string;
+  teacherName?: string;
+};
 
 /**
- * Learner Reviews Page
- * Template content converted to React components
+ * Learner Reviews From Teacher Page
+ * Displays feedback and reviews from teachers
  */
 export default function ReviewsPage() {
-  const reviews = [
-    {
-      id: 1,
-      courseTitle: 'React Front To Back',
-      courseImage: '/assets/images/course/course-online-01.jpg',
-      rating: 5,
-      comment: 'Great course! Very comprehensive and well-structured.',
-      date: 'March 15, 2025',
-    },
-    {
-      id: 2,
-      courseTitle: 'PHP Beginner + Advanced',
-      courseImage: '/assets/images/course/course-online-02.jpg',
-      rating: 4,
-      comment: 'Good content but could use more examples.',
-      date: 'March 10, 2025',
-    },
-    {
-      id: 3,
-      courseTitle: 'Angular Zero to Mastery',
-      courseImage: '/assets/images/course/course-online-03.jpg',
-      rating: 5,
-      comment: 'Excellent instructor and clear explanations.',
-      date: 'March 5, 2025',
-    },
-  ];
+  const { data, isLoading, error } = useGetDashboard();
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }).map((_, i) => (
-      <i key={i} className={`fas fa-star ${i < rating ? '' : 'empty'}`}></i>
-    ));
+  const reviewsFromTeacher = (Array.isArray(data?.reviewsFromTeacher) ? data.reviewsFromTeacher : []) as ReviewFromTeacher[];
+
+  // Format date
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch {
+      return dateString;
+    }
   };
+
+  if (isLoading) {
+    return (
+      <>
+        <div className="section-title">
+          <h4 className="rbt-title-style-3">Reviews From Teacher</h4>
+        </div>
+        <div className="text-center p--40">
+          <p>Loading reviews...</p>
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <div className="section-title">
+          <h4 className="rbt-title-style-3">Reviews From Teacher</h4>
+        </div>
+        <div className="text-center p--40">
+          <p className="text-danger">Error loading reviews. Please try again later.</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
       <div className="section-title">
-        <h4 className="rbt-title-style-3">Reviews</h4>
+        <h4 className="rbt-title-style-3">Reviews From Teacher</h4>
       </div>
 
-      <div className="row g-5">
-        {reviews.map((review) => (
-          <div key={review.id} className="col-lg-12">
-            <div className="rbt-card variation-01 rbt-hover">
-              <div className="rbt-card-body">
-                <div className="row align-items-center">
-                  <div className="col-lg-3 col-md-4">
-                    <div className="rbt-card-img">
-                      <Link href="/courses/course-details">
-                        <Image
-                          src={review.courseImage}
-                          alt={review.courseTitle}
-                          width={200}
-                          height={150}
-                        />
-                      </Link>
+      {reviewsFromTeacher.length > 0 ? (
+        <div className="row g-5">
+          {reviewsFromTeacher.map((review) => (
+            <div key={review.id} className="col-lg-12">
+              <div className="rbt-card variation-01 rbt-hover">
+                <div className="rbt-card-body p--30">
+                  {/* Header Section */}
+                  <div className="d-flex justify-content-between align-items-start mb--20">
+                    <div className="flex-grow-1">
+                      <h5 className="rbt-card-title mb--10">
+                        {review.reviewTitle || 'Teacher Feedback'}
+                      </h5>
+                      {review.teacherName && (
+                        <p className="rbt-title-style-2 mb--5" style={{ fontSize: '14px', color: 'var(--color-body)' }}>
+                          <i className="feather-user me-2"></i>
+                          {review.teacherName}
+                        </p>
+                      )}
+                      {review.createdAt && (
+                        <p className="rbt-title-style-2" style={{ fontSize: '12px', color: 'var(--color-body)' }}>
+                          <i className="feather-calendar me-2"></i>
+                          {formatDate(review.createdAt)}
+                        </p>
+                      )}
                     </div>
-                  </div>
-                  <div className="col-lg-9 col-md-8">
-                    <h5 className="rbt-card-title">
-                      <Link href="/courses/course-details">{review.courseTitle}</Link>
-                    </h5>
-                    <div className="rbt-review mb--10">
-                      <div className="rating">
-                        {renderStars(review.rating)}
+                    {review.aim && (
+                      <div className="ms-3">
+                        <span className="rbt-badge variation-02 bg-primary-opacity color-primary">
+                          {review.aim}
+                        </span>
                       </div>
-                      <span className="rating-count"> {review.date}</span>
-                    </div>
-                    <p className="rbt-card-text">{review.comment}</p>
+                    )}
                   </div>
+
+                  {/* Review Content */}
+                  {review.review && (
+                    <div className="rbt-card-text">
+                      <div 
+                        className="review-content" 
+                        style={{ 
+                          lineHeight: '1.8',
+                          color: 'var(--color-body)',
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word'
+                        }}
+                      >
+                        {review.review}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center p--40">
+          <p>No reviews from teachers yet. You will see feedback and reviews here when your teachers provide them.</p>
+        </div>
+      )}
     </>
   );
 }

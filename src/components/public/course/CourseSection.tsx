@@ -12,13 +12,52 @@ export default function CourseSection() {
   const [activeTab, setActiveTab] = useState('development');
 
   const tabs = [
-    { id: 'development', label: 'Domestic Admission' },
-    { id: 'ui-ux', label: 'Graduate Program' },
-    { id: 'marketing', label: 'Post-Graduate' },
-    { id: 'business', label: 'Online Program' },
+    { id: 'development', label: 'AI Smart Tutor' },
+    { id: 'ui-ux', label: 'Hyper-Personalized' },
+    { id: 'marketing', label: 'Micro-Precision Analysis' },
+    { id: 'business', label: 'Exam-Specific Mastery' },
   ];
 
   const courses = [
+    {
+      id: 1,
+      image: '/assets/images/course/university-01.jpg',
+      title: 'AI-Powered Adaptive Learning',
+      description: 'Your personal AI tutor adapts the curriculum in real-time based on your performance, ensuring you focus exactly on what you need to improve.',
+      lessons: 'Dynamic Content',
+      students: 'Personal Plan',
+      rating: 5,
+      reviews: 1,
+      currentPrice: '',
+      oldPrice: '',
+    },
+    {
+      id: 2,
+      image: '/assets/images/course/university-02.jpg',
+      title: 'Real-Time Progress Tracking',
+      description: 'Track your growth with microscopic precision. Our dashboard highlights your exact weak points so you can turn them into strengths instantly.',
+      lessons: 'Deep Analysis',
+      students: 'Success Map',
+      rating: 5,
+      reviews: 1,
+      currentPrice: '',
+      oldPrice: '',
+    },
+    {
+      id: 3,
+      image: '/assets/images/course/university-03.jpg',
+      title: 'Instant Smart Feedback',
+      description: 'Receive immediate, detailed critiques on your writing and speaking tasks, just like a private tutor sitting right beside you.',
+      lessons: 'Real Simulations',
+      students: 'Instant Grade',
+      rating: 5,
+      reviews: 1,
+      currentPrice: '',
+      oldPrice: '',
+    },
+  ];
+
+  const courses2 = [
     {
       id: 1,
       image: '/assets/images/course/university-01.jpg',
@@ -28,8 +67,8 @@ export default function CourseSection() {
       students: '01 Students',
       rating: 5,
       reviews: 1,
-      currentPrice: '$199',
-      oldPrice: '$590',
+      currentPrice: '',
+      oldPrice: '',
     },
     {
       id: 2,
@@ -40,8 +79,8 @@ export default function CourseSection() {
       students: '01 Students',
       rating: 5,
       reviews: 1,
-      currentPrice: '$159',
-      oldPrice: '$490',
+      currentPrice: '',
+      oldPrice: '',
     },
     {
       id: 3,
@@ -52,8 +91,8 @@ export default function CourseSection() {
       students: '01 Students',
       rating: 5,
       reviews: 1,
-      currentPrice: '$145',
-      oldPrice: '$308',
+      currentPrice: '',
+      oldPrice: '',
     },
   ];
 
@@ -151,7 +190,7 @@ export default function CourseSection() {
                                 <h6 className="current-price mb-0">{course.currentPrice}</h6>
                                 <span className="off-price version-02">{course.oldPrice}</span>
                               </div>
-                              <Link className="rbt-btn-link color-primary" href="/course-details">
+                              <Link className="rbt-btn-link color-primary" href="/login">
                                 Enroll Course<i className="feather-arrow-right"></i>
                               </Link>
                             </div>

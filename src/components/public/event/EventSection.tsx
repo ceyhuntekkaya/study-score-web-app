@@ -12,30 +12,34 @@ export default function EventSection() {
     {
       id: 1,
       image: '/assets/images/event/grid-type-01.jpg',
-      title: 'International Education Fair 2024',
-      date: '11 Jan, 2024',
-      location: 'IAC Building',
+      title: 'The Future of Exam Prep: AI Revolution',
+      date: '15 Jan, 2026',
+      time: '10:00 am - 2:00 pm',
+      location: 'ANKÜ Teknokent',
     },
     {
       id: 2,
       image: '/assets/images/event/grid-type-02.jpg',
-      title: 'Painting Art Contest 2020',
-      location: 'Vancouver',
-      time: '8:00 am - 5:00 pm',
+      title: 'Mastering IELTS with Your Personal AI Tutor',
+      date: '22 Jan, 2026',
+      time: '1:00 pm - 4:00 pm',
+      location: 'ANKÜ Teknokent',
     },
     {
       id: 3,
       image: '/assets/images/event/grid-type-03.jpg',
-      title: 'Study Score Education Fair 2024',
-      location: 'Paris',
-      time: '8:00 am - 5:00 pm',
+      title: 'SAT & TOEFL Strategy Summit',
+      date: '05 Feb, 2026',
+      time: '9:00 am - 5:00 pm',
+      location: 'ANKÜ Teknokent',
     },
     {
       id: 4,
       image: '/assets/images/event/grid-type-04.jpg',
-      title: 'Elegant Light Box Paper Cut Dioramas',
-      location: 'IAC Building',
-      time: '8:00 am - 5:00 pm',
+      title: 'Next-Gen EdTech: Personalized Learning',
+      date: '12 Feb, 2026',
+      time: '10:00 am - 3:00 pm',
+      location: 'ANKÜ Teknokent',
     },
   ];
 
@@ -88,9 +92,9 @@ export default function EventSection() {
                     <Link href="/event-details">{event.title}</Link>
                   </h4>
                   <div className="read-more-btn">
-                    <Link className="rbt-btn btn-border hover-icon-reverse btn-sm radius-round" href="/event-details">
+                    <Link className="rbt-btn btn-border hover-icon-reverse btn-sm radius-round" href="/login">
                       <span className="icon-reverse-wrapper">
-                        <span className="btn-text">Get Ticket</span>
+                        <span className="btn-text">Join Event</span>
                         <span className="btn-icon"><i className="feather-arrow-right"></i></span>
                         <span className="btn-icon"><i className="feather-arrow-right"></i></span>
                       </span>

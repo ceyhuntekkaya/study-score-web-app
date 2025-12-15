@@ -114,7 +114,6 @@ export default function PublicFooter() {
                 <h5 className="ft-title">Our Company</h5>
                 <ul className="ft-link">
                   <li><Link href="/contact">Contact Us</Link></li>
-                  <li><Link href="/become-teacher">Become Teacher</Link></li>
                   <li><Link href="/blog">Blog</Link></li>
                   <li><Link href="/login">Instructor</Link></li>
                   <li><Link href="/events">Events</Link></li>

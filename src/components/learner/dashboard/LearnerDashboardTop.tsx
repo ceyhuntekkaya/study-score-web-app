@@ -13,7 +13,7 @@ export default function LearnerDashboardTop() {
 
   return (
     <div className="rbt-dashboard-content-wrapper">
-      <div className="tutor-bg-photo bg_image bg_image--23 height-350"></div>
+      <div className="tutor-bg-photo bg_image bg_image--7 height-350"></div>
       {/* Tutor Information */}
       <div className="rbt-tutor-information">
         <div className="rbt-tutor-information-left">

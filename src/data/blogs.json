@@ -1,183 +1,182 @@
 [
   {
     "id": "1",
-    "title": "React",
-    "slug": "react",
+    "title": "The End of \"One-Size-Fits-All\" Learning: Why AI is the Future",
+    "slug": "ai-future-of-learning",
     "image": "/assets/images/blog/blog-card-01.jpg",
-    "excerpt": "It is a long established fact that a reader.",
-    "content": "There are many variations of passages of Lorem Ipsum available, but the majority have suffered strike out text alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum.",
+    "excerpt": "Traditional classrooms treat everyone the same. Discover how Adaptive AI is changing the game.",
+    "content": "Imagine a classroom where the teacher speaks only to you, knows exactly what you forgot yesterday, and predicts what you'll struggle with tomorrow. This isn't science fiction; it's Adaptive AI. In this article, we explore how Study Score AI customizes every lesson to fit your unique learning curve.",
     "author": {
-      "name": "Jone Song",
+      "name": "Dr. Sarah Jenkin",
       "avatar": "/assets/images/testimonial/client-06.png",
-      "role": "Sr. UX Designer"
+      "role": "Chief AI Architect"
     },
-    "category": "Design",
-    "date": "20 Aug 2021",
+    "category": "Technology",
+    "date": "10 Jan 2024",
     "readTime": "5 min read",
-    "tags": ["Education", "Life Style", "React", "Javascript", "Web App", "Application"],
+    "tags": ["AI Learning", "EdTech", "Future", "Adaptive"],
     "featured": true
   },
   {
     "id": "2",
-    "title": "Why Is Education So Famous?",
-    "slug": "why-is-education-so-famous",
+    "title": "Stuck at Band 6.5? Here is How Micro-Analysis Helps",
+    "slug": "stuck-at-band-6-5-ielts",
     "image": "/assets/images/blog/blog-card-02.jpg",
-    "excerpt": "Discover the reasons behind education's popularity and impact.",
-    "content": "Education has become one of the most important aspects of modern society. It shapes our understanding of the world and provides us with the tools we need to succeed. In this article, we explore why education has gained such prominence and how it continues to evolve.",
+    "excerpt": "Breaking the plateau in IELTS requires more than just practice. It requires deep data analysis.",
+    "content": "Many students get stuck at Band 6.5 in IELTS Writing. The problem isn't usually grammar; it's subtle coherence issues or vocabulary choices. Our AI Tutor analyzes your essays with microscopic precision to find the exact 0.5 points you are missing.",
     "author": {
-      "name": "Angela",
+      "name": "James Wilson",
       "avatar": "/assets/images/client/avatar-02.png",
-      "role": "Education Specialist"
+      "role": "IELTS Strategist"
     },
-    "category": "Education",
-    "date": "15 Sep 2021",
+    "category": "IELTS Prep",
+    "date": "15 Jan 2024",
     "readTime": "7 min read",
-    "tags": ["Education", "Learning", "Development"],
+    "tags": ["IELTS", "Writing", "Exam Tips"],
     "featured": false
   },
   {
     "id": "3",
-    "title": "Difficult Things About Education",
-    "slug": "difficult-things-about-education",
+    "title": "SAT Prep in 2025: Work Smarter, Not Harder",
+    "slug": "sat-prep-work-smarter",
     "image": "/assets/images/blog/blog-card-03.jpg",
-    "excerpt": "Exploring the challenges students and educators face in modern education.",
-    "content": "Education is not without its challenges. From adapting to new technologies to addressing diverse learning needs, educators and students face numerous obstacles. This article delves into the most significant difficulties in today's educational landscape.",
+    "excerpt": "Stop wasting time on topics you already know. Optimization is the key to a 1500+ score.",
+    "content": "The biggest mistake students make is studying everything equally. Efficient prep means skipping what you know and drilling what you don't. Learn how our Smart Tutor builds a dynamic schedule that respects your time and maximizes your score.",
     "author": {
       "name": "David Lee",
       "avatar": "/assets/images/team/team-04.jpg",
-      "role": "Education Consultant"
+      "role": "SAT Consultant"
     },
-    "category": "Education",
-    "date": "10 Oct 2021",
+    "category": "SAT",
+    "date": "20 Jan 2024",
     "readTime": "6 min read",
-    "tags": ["Education", "Challenges", "Teaching"],
+    "tags": ["SAT", "Efficiency", "Time Management"],
     "featured": false
   },
   {
     "id": "4",
-    "title": "Education Is So Famous, But Why?",
-    "slug": "education-is-so-famous-but-why",
+    "title": "Private Tutor vs. AI Coach: Which is Worth the Investment?",
+    "slug": "private-tutor-vs-ai-coach",
     "image": "/assets/images/blog/blog-card-04.jpg",
-    "excerpt": "Understanding the factors that make education a cornerstone of society.",
-    "content": "Education's prominence in society is undeniable. It serves as the foundation for personal growth, career development, and social progress. This article examines the key factors that contribute to education's essential role in our lives.",
+    "excerpt": "Comparing the costs and benefits of human tutoring versus 24/7 AI assistance.",
+    "content": "Private tutors are great, but they are expensive and not available at 3 AM. AI Coaches offer unlimited patience, instant feedback, and data-driven insights at a fraction of the cost. We break down the ROI for parents and students.",
     "author": {
-      "name": "Sarah Johnson",
+      "name": "Emily Brown",
       "avatar": "/assets/images/testimonial/testimonial-4.jpg",
-      "role": "Academic Researcher"
+      "role": "Education Analyst"
     },
-    "category": "Education",
-    "date": "5 Nov 2021",
+    "category": "Parents Guide",
+    "date": "05 Feb 2024",
     "readTime": "8 min read",
-    "tags": ["Education", "Society", "Growth"],
+    "tags": ["Budget", "ROI", "Tutoring", "Parents"],
     "featured": false
   },
   {
     "id": "5",
-    "title": "The Latest Trend In Education",
-    "slug": "the-latest-trend-in-education",
+    "title": "Overcoming Exam Anxiety with Real Simulations",
+    "slug": "overcoming-exam-anxiety",
     "image": "/assets/images/blog/blog-grid-01.jpg",
-    "excerpt": "It is a long established fact that a reader.",
-    "content": "The educational landscape is constantly evolving. New technologies, teaching methods, and learning approaches are reshaping how we educate and learn. This article explores the latest trends that are transforming education today.",
+    "excerpt": "How realistic exam simulations can help you stay calm on the big day.",
+    "content": "Anxiety often comes from the unknown. By practicing with Study Score AI's realistic exam simulations—complete with time pressure and adaptive difficulty—you can train your brain to stay calm and focused when it really matters.",
     "author": {
       "name": "Michael Chen",
       "avatar": "/assets/images/team/team-01.jpg",
-      "role": "Tech Educator"
+      "role": "Student Psychology"
     },
-    "category": "Technology",
-    "date": "1 Dec 2021",
+    "category": "Mental Health",
+    "date": "12 Feb 2024",
     "readTime": "5 min read",
-    "tags": ["Technology", "Education", "Innovation"],
+    "tags": ["Anxiety", "Psychology", "Simulation"],
     "featured": false
   },
   {
     "id": "6",
-    "title": "The Modern Rules Of Education",
-    "slug": "the-modern-rules-of-education",
+    "title": "The \"Instant Feedback\" Loop: Why Speed Matters",
+    "slug": "instant-feedback-loop",
     "image": "/assets/images/blog/blog-grid-02.jpg",
-    "excerpt": "It is a long established fact that a reader.",
-    "content": "Modern education follows new principles and methodologies that differ significantly from traditional approaches. This article outlines the key rules and guidelines that define contemporary educational practices.",
+    "excerpt": "Why waiting a week for your essay grade is killing your progress.",
+    "content": "In traditional learning, you write an essay and get feedback days later. By then, you've forgotten your thought process. With Instant Smart Feedback, you correct your mistakes the moment you make them, cementing the correct logic in your brain.",
     "author": {
-      "name": "Emily Brown",
+      "name": "Lisa Anderson",
       "avatar": "/assets/images/team/team-02.jpg",
-      "role": "Curriculum Designer"
+      "role": "Learning Specialist"
     },
-    "category": "Education",
-    "date": "20 Dec 2021",
+    "category": "Methodology",
+    "date": "20 Feb 2024",
     "readTime": "6 min read",
-    "tags": ["Education", "Modern", "Methodology"],
+    "tags": ["Learning", "Feedback", "Speed"],
     "featured": false
   },
   {
     "id": "7",
-    "title": "Why Is Education So Famous?",
-    "slug": "why-is-education-so-famous-2",
+    "title": "Your Roadmap to Ivy League Admissions",
+    "slug": "roadmap-to-ivy-league",
     "image": "/assets/images/blog/blog-grid-03.jpg",
-    "excerpt": "It is a long established fact that a reader.",
-    "content": "Education's importance cannot be overstated. It empowers individuals, drives economic growth, and fosters social cohesion. This article explores why education remains one of the most valued aspects of human development.",
+    "excerpt": "High scores are just the beginning. How to position yourself for top universities.",
+    "content": "Getting into Harvard or MIT requires more than just good grades. It requires a strategic approach to standardized testing. We discuss how high TOEFL and SAT scores act as the gatekeepers for your application and how to clear them early.",
     "author": {
-      "name": "James Wilson",
+      "name": "Robert Taylor",
       "avatar": "/assets/images/team/team-03.jpg",
-      "role": "Education Policy Expert"
+      "role": "Admissions Expert"
     },
-    "category": "Education",
-    "date": "15 Jan 2022",
+    "category": "Study Abroad",
+    "date": "01 Mar 2024",
     "readTime": "7 min read",
-    "tags": ["Education", "Policy", "Development"],
+    "tags": ["Ivy League", "Study Abroad", "USA"],
     "featured": false
   },
   {
     "id": "8",
-    "title": "Industry Insiders Say Education",
-    "slug": "industry-insiders-say-education",
+    "title": "The 3 AM Study Session: The Power of 24/7 Access",
+    "slug": "power-of-24-7-access",
     "image": "/assets/images/blog/blog-grid-04.jpg",
-    "excerpt": "Industry a long established that a reader.",
-    "content": "Industry professionals share their insights on the current state of education. From corporate training to academic institutions, experts weigh in on what makes education effective and how it can be improved.",
+    "excerpt": "Night owls rejoice. Your AI tutor is awake whenever you are.",
+    "content": "Not everyone learns best at 9 AM. Whether you are a night owl or balancing school and hobbies, having a tutor that is ready whenever you open your laptop changes the dynamic of studying. Consistency beats intensity.",
     "author": {
-      "name": "Lisa Anderson",
+      "name": "Jone Song",
       "avatar": "/assets/images/client/avatar-03.png",
-      "role": "Corporate Trainer"
+      "role": "Productivity Coach"
     },
-    "category": "Business",
-    "date": "10 Feb 2022",
+    "category": "Lifestyle",
+    "date": "10 Mar 2024",
     "readTime": "5 min read",
-    "tags": ["Business", "Education", "Training"],
+    "tags": ["Productivity", "Flexible", "Study Tips"],
     "featured": false
   },
   {
     "id": "9",
-    "title": "Make You Love And Hate Education",
-    "slug": "make-you-love-and-hate-education",
+    "title": "TOEFL Speaking: Practicing Without Fear of Judgement",
+    "slug": "toefl-speaking-no-fear",
     "image": "/assets/images/blog/blog-grid-05.jpg",
-    "excerpt": "Make a long established fact a reader.",
-    "content": "Education is a complex journey that evokes both passion and frustration. This article explores the dual nature of our relationship with education - the love for learning and the challenges that come with it.",
+    "excerpt": "Shy about your accent? AI doesn't judge. It just helps you improve.",
+    "content": "Speaking exams are terrifying for many. Practicing with a human can feel embarrassing if you are unsure of your accent. AI provides a safe, judgment-free zone to practice speaking for hours until you find your voice and confidence.",
     "author": {
-      "name": "Robert Taylor",
+      "name": "Maria Garcia",
       "avatar": "/assets/images/client/avatar-04.png",
-      "role": "Educational Psychologist"
+      "role": "Language Coach"
     },
-    "category": "Psychology",
-    "date": "5 Mar 2022",
+    "category": "TOEFL",
+    "date": "15 Mar 2024",
     "readTime": "6 min read",
-    "tags": ["Psychology", "Education", "Learning"],
+    "tags": ["TOEFL", "Speaking", "Confidence"],
     "featured": false
   },
   {
     "id": "10",
-    "title": "Education Only A Handful Of People",
-    "slug": "education-only-a-handful-of-people",
+    "title": "For Parents: Tracking Progress Without Being \"That\" Parent",
+    "slug": "parents-tracking-progress",
     "image": "/assets/images/blog/blog-grid-06.jpg",
-    "excerpt": "Education established fact that a reader.",
-    "content": "Access to quality education remains limited for many people around the world. This article examines the barriers to education and discusses initiatives aimed at making learning accessible to everyone.",
+    "excerpt": "How to use data dashboards to support your child without micromanaging.",
+    "content": "You want your child to succeed, but nagging about studying causes conflict. Our 'Parent Dashboard' lets you see real-time progress, completed modules, and predicted scores, so you can offer support exactly when it's needed.",
     "author": {
-      "name": "Maria Garcia",
+      "name": "Angela Smith",
       "avatar": "/assets/images/testimonial/testimonial-4.jpg",
-      "role": "Education Advocate"
+      "role": "Parenting Guide"
     },
-    "category": "Social",
-    "date": "1 Apr 2022",
+    "category": "Parents Guide",
+    "date": "20 Mar 2024",
     "readTime": "8 min read",
-    "tags": ["Social", "Education", "Accessibility"],
+    "tags": ["Parenting", "Monitoring", "Support"],
     "featured": false
   }
 ]
-

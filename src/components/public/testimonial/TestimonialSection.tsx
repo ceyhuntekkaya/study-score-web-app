@@ -11,28 +11,28 @@ export default function TestimonialSection() {
     {
       id: 1,
       image: '/assets/images/testimonial/client-01.png',
-      name: 'Martha Maldonado',
-      position: 'Executive Chairman',
-      company: '@ Google',
-      text: 'After the launch, vulputate at sapien sit amet, auctor iaculis lorem. In vel hend rerit nisi. Vestibulum eget risus velit.',
+      name: 'Zeynep Yılmaz',
+      position: '12th Grade Student',
+      company: '@ Robert College',
+      text: 'I was stuck at band 6.5 in IELTS. The AI tutor analyzed my essays and told me exactly where I lost points. It felt like having a private teacher 24/7. I finally reached 8.0!',
       rating: 5,
     },
     {
       id: 2,
       image: '/assets/images/testimonial/client-02.png',
-      name: 'Michael D. Lovelady',
-      position: 'CEO',
-      company: '@ Google',
-      text: 'Study Score education, vulputate at sapien sit amet, auctor iaculis lorem. In vel hend rerit nisi. Vestibulum eget.',
+      name: 'Caner Demir',
+      position: '11th Grade Student',
+      company: '@ Galatasaray High School',
+      text: 'I didn’t have time for long courses. Study Score AI created a custom plan for my SAT prep. It skipped what I already knew and focused only on my weak spots. Pure efficiency.',
       rating: 5,
     },
     {
       id: 3,
       image: '/assets/images/testimonial/client-03.png',
-      name: 'Valerie J. Creasman',
-      position: 'Executive Designer',
-      company: '@ Google',
-      text: 'Our educational, vulputate at sapien sit amet, auctor iaculis lorem. In vel hend rerit nisi. Vestibulum eget.',
+      name: 'Elif Kaya',
+      position: '12th Grade Student',
+      company: '@ TED Ankara College',
+      text: 'The instant feedback on my speaking tasks was a game changer. I used to be nervous, but the realistic simulations made me feel fully ready for the real exam environment.',
       rating: 5,
     },
   ];
@@ -104,7 +104,7 @@ export default function TestimonialSection() {
           <div className="rbt-brand-title-wrap">
             <h5 className="rbt-brand-title w-600 text-center mb-0">
               Making <span className="theme-gradient">sensitive clients</span> more valuable for{' '}
-              <span className="theme-gradient">companies</span> like
+              <span className="theme-gradient">schools</span> like
             </h5>
           </div>
           <ul className="brand-list brand-style-3 justify-content-start justify-content-lg-between mt--30">

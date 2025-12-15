@@ -15,12 +15,14 @@ export default function VideoSection() {
           <div className="col-lg-6 order-2 order-lg-1">
             <div className="inner pr--50">
               <div className="section-title text-start">
-                <span className="subtitle bg-primary-opacity">How We Work</span>
-                <h2 className="title">Build your Career And Upgrade Your Life</h2>
-                <p className="description mt--30">
-                  Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. 
-                  Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.
-                </p>
+              <span className="subtitle bg-primary-opacity">How It Works</span>
+<h2 className="title">Data-Driven Success, <br /> Engineered for You.</h2>
+<p className="description mt--30">
+  We don't guess; we analyze. Unlike traditional courses that teach everyone the same way, 
+  Study Score AI identifies your learning gaps with microscopic precision. 
+  Our "Smart Tutor" engine continuously adapts your curriculum, focusing 100% on your weak points 
+  to ensure you reach your target score in the shortest time possible.
+</p>
                 <div className="read-more-btn">
                   <Link className="rbt-moderbt-btn" href="/about">
                     <span className="moderbt-btn-text">Learn More About Us</span>

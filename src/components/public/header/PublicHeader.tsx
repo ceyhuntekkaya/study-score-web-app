@@ -7,6 +7,8 @@ import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import { getHeaderMenu } from '@/lib/menus';
 import { useTranslation } from '@/i18n';
 import { getPrimaryPhone } from '@/lib/contact';
+import { useAuth } from '@/contexts/AuthContext';
+import { ROLE_ROUTES } from '@/constants';
 
 /**
  * Public Header Component
@@ -16,8 +18,31 @@ export default function PublicHeader() {
   const [isSticky, setIsSticky] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useTranslation();
+  const { user, role, clearAuth } = useAuth();
   const menu = getHeaderMenu('public');
   const phone = getPrimaryPhone();
+
+  const handleLogout = () => {
+    clearAuth();
+  };
+
+  // Filter menu items - show My Account only if user is logged in
+  const filteredTopMenuRight = menu.topMenu?.right?.filter((item) => {
+    // If it's My Account, only show if user is logged in
+    if (item.labelKey === 'menu.myAccount') {
+      return !!user && !!role;
+    }
+    return true;
+  }).map((item) => {
+    // If it's My Account and user is logged in, set href to role-based dashboard
+    if (item.labelKey === 'menu.myAccount' && user && role) {
+      return {
+        ...item,
+        href: ROLE_ROUTES[role] || '/my-account',
+      };
+    }
+    return item;
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,7 +110,7 @@ export default function PublicHeader() {
               <div className="rbt-header-content">
                 <div className="header-info">
                   <ul className="rbt-secondary-menu">
-                    {menu.topMenu?.right?.map((item) => {
+                    {filteredTopMenuRight?.map((item) => {
                       const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
                       return (
                         <li key={item.href}>
@@ -101,11 +126,24 @@ export default function PublicHeader() {
                 </div>
                 <div className="rbt-separator"></div>
                 <div className="header-info">
-                  <div className="header-right-btn d-flex">
-                    <Link className="rbt-btn rbt-switch-btn btn-gradient btn-xs" href="/register">
-                      <span data-text={t('menu.registerNow')}>{t('menu.registerNow')}</span>
-                    </Link>
+                  <div className="header-right-btn d-flex align-items-center">
+                    {user ? (
+                      <button 
+                        className="rbt-btn rbt-switch-btn btn-gradient btn-xs" 
+                        onClick={handleLogout}
+                      >
+                        <span data-text={t('common.logout')}>{t('common.logout')}</span>
+                      </button>
+                    ) : (
+                      <Link className="rbt-btn rbt-switch-btn btn-gradient btn-xs" href="/login">
+                        <span data-text="Login">Login</span>
+                      </Link>
+                    )}
                   </div>
+                </div>
+                <div className="rbt-separator"></div>
+                <div className="header-info">
+                  <LanguageSwitcher />
                 </div>
               </div>
             </div>
@@ -182,10 +220,6 @@ export default function PublicHeader() {
                     <span className="rbt-cart-count">0</span>
                   </button>
                 </div>
-                <Link href="/login" className="rbt-btn btn-border-gradient radius-round btn-sm">
-                  <span data-text="Login">Login</span>
-                </Link>
-                <LanguageSwitcher />
                 {/* Mobile Menu Toggle */}
                 <button 
                   className="mobile-menu-btn d-block d-xl-none" 

@@ -111,28 +111,7 @@ export default function LearnerDashboardHeader() {
                     <LanguageSwitcher />
                   </div>
 
-                  <div className="header-info">
-                    <ul className="rbt-dropdown-menu currency-menu">
-                      <li className="has-child-menu">
-                        <a href="#">
-                          <span className="menu-item">USD</span>
-                          <i className="right-icon feather-chevron-down"></i>
-                        </a>
-                        <ul className="sub-menu hover-reverse">
-                          <li>
-                            <a href="#">
-                              <span className="menu-item">EUR</span>
-                            </a>
-                          </li>
-                          <li>
-                            <a href="#">
-                              <span className="menu-item">GBP</span>
-                            </a>
-                          </li>
-                        </ul>
-                      </li>
-                    </ul>
-                  </div>
+                  
                 </div>
               </div>
             </div>

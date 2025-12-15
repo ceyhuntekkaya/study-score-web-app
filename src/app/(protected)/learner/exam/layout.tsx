@@ -22,49 +22,51 @@ function ExamLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f0f4ff' }}>
-      {/* Top Bar - Exam Style */}
-      <header style={{
-        backgroundColor: '#4d79ff',
-        color: 'white',
-        padding: '20px 30px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <h1 style={{ margin: 0, fontSize: '28px', fontWeight: 'bold' }}>📝 Exam Center</h1>
-          {user && (
-            <span style={{ fontSize: '14px', opacity: 0.9 }}>👤 {user.name}</span>
-          )}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <div style={{
-            backgroundColor: 'rgba(255,255,255,0.2)',
-            padding: '8px 16px',
-            borderRadius: '20px',
-            fontSize: '14px',
-            fontWeight: 'bold'
-          }}>
-            Progress: {examProgress}%
+      {/* Top Bar - Exam Style (hidden on take page) */}
+      {!isTakePage && (
+        <header style={{
+          backgroundColor: '#4d79ff',
+          color: 'white',
+          padding: '20px 30px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <h1 style={{ margin: 0, fontSize: '28px', fontWeight: 'bold' }}>📝 Exam Center</h1>
+            {user && (
+              <span style={{ fontSize: '14px', opacity: 0.9 }}>👤 {user.name}</span>
+            )}
           </div>
-          <LanguageSwitcher />
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: '8px 16px',
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <div style={{
               backgroundColor: 'rgba(255,255,255,0.2)',
-              color: 'white',
-              border: '1px solid rgba(255,255,255,0.3)',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
-          >
-            Logout
-          </button>
-        </div>
-      </header>
+              padding: '8px 16px',
+              borderRadius: '20px',
+              fontSize: '14px',
+              fontWeight: 'bold'
+            }}>
+              Progress: {examProgress}%
+            </div>
+            <LanguageSwitcher />
+            <button
+              onClick={handleLogout}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                color: 'white',
+                border: '1px solid rgba(255,255,255,0.3)',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        </header>
+      )}
 
       {/* Exam Navigation - Horizontal Tabs */}
       {!isTakePage && (

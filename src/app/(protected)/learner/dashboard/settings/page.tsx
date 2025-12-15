@@ -18,10 +18,7 @@ export default function SettingsPage() {
     firstName: user?.name?.split(' ')[0] || 'John',
     lastName: user?.name?.split(' ')[1] || 'Due',
     username: user?.email?.split('@')[0] || 'johndue',
-    phone: defaultPhone.display,
-    skill: 'Full Stack Developer',
-    displayName: 'Emily Hannah',
-    bio: "I'm the Front-End Developer for #Rainbow IT in Bangladesh, OR. I have serious passion for UI effects, animations and creating intuitive, dynamic user experiences.",
+    phone: defaultPhone.display
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -30,13 +27,7 @@ export default function SettingsPage() {
     retypePassword: '',
   });
 
-  const [socialData, setSocialData] = useState({
-    facebook: '',
-    twitter: '',
-    linkedin: '',
-    website: '',
-    github: '',
-  });
+
 
   const handleProfileSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,11 +41,7 @@ export default function SettingsPage() {
     // TODO: Implement password update
   };
 
-  const handleSocialSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log('Social links updated:', socialData);
-    // TODO: Implement social links update
-  };
+
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setProfileData({
@@ -70,12 +57,6 @@ export default function SettingsPage() {
     });
   };
 
-  const handleSocialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSocialData({
-      ...socialData,
-      [e.target.name]: e.target.value,
-    });
-  };
 
   return (
     <>
@@ -113,20 +94,7 @@ export default function SettingsPage() {
               <span className="title">Password</span>
             </a>
           </li>
-          <li role="presentation">
-            <a
-              href="#"
-              className={`tab-button ${activeTab === 'social' ? 'active' : ''}`}
-              onClick={(e) => {
-                e.preventDefault();
-                setActiveTab('social');
-              }}
-              role="tab"
-              style={{ color: activeTab === 'social' ? undefined : '#333' }}
-            >
-              <span className="title">Social Share</span>
-            </a>
-          </li>
+          
         </ul>
       </div>
 
@@ -134,7 +102,7 @@ export default function SettingsPage() {
         {/* Profile Tab */}
         <div className={`tab-pane fade ${activeTab === 'profile' ? 'active show' : ''}`}>
           <div className="rbt-dashboard-content-wrapper mb--30">
-            <div className="tutor-bg-photo bg_image bg_image--23 height-245"></div>
+            <div className="tutor-bg-photo bg_image bg_image--7 height-245"></div>
             <div className="rbt-tutor-information">
               <div className="rbt-tutor-information-left">
                 <div className="thumbnail rbt-avatars size-lg position-relative">
@@ -210,49 +178,6 @@ export default function SettingsPage() {
                 />
               </div>
             </div>
-            <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-              <div className="rbt-form-group">
-                <label htmlFor="skill">Skill/Occupation</label>
-                <input
-                  id="skill"
-                  name="skill"
-                  type="text"
-                  value={profileData.skill}
-                  onChange={handleProfileChange}
-                />
-              </div>
-            </div>
-            <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-              <div className="filter-select rbt-modern-select">
-                <label htmlFor="displayname">Display name publicly as</label>
-                <select
-                  id="displayname"
-                  name="displayName"
-                  className="w-100"
-                  value={profileData.displayName}
-                  onChange={handleProfileChange}
-                >
-                  <option>Emily Hannah</option>
-                  <option>John</option>
-                  <option>Due</option>
-                  <option>Due John</option>
-                  <option>johndue</option>
-                </select>
-              </div>
-            </div>
-            <div className="col-12">
-              <div className="rbt-form-group">
-                <label htmlFor="bio">Bio</label>
-                <textarea
-                  id="bio"
-                  name="bio"
-                  cols={20}
-                  rows={5}
-                  value={profileData.bio}
-                  onChange={handleProfileChange}
-                />
-              </div>
-            </div>
             <div className="col-12 mt--20">
               <div className="rbt-form-group">
                 <button type="submit" className="rbt-btn btn-gradient">
@@ -315,93 +240,7 @@ export default function SettingsPage() {
           </form>
         </div>
 
-        {/* Social Share Tab */}
-        <div className={`tab-pane fade ${activeTab === 'social' ? 'active show' : ''}`}>
-          <form onSubmit={handleSocialSubmit} className="rbt-profile-row rbt-default-form row row--15">
-            <div className="col-12">
-              <div className="rbt-form-group">
-                <label htmlFor="facebook">
-                  <i className="feather-facebook"></i> Facebook
-                </label>
-                <input
-                  id="facebook"
-                  name="facebook"
-                  type="text"
-                  placeholder="https://facebook.com/"
-                  value={socialData.facebook}
-                  onChange={handleSocialChange}
-                />
-              </div>
-            </div>
-            <div className="col-12">
-              <div className="rbt-form-group">
-                <label htmlFor="twitter">
-                  <i className="feather-twitter"></i> Twitter
-                </label>
-                <input
-                  id="twitter"
-                  name="twitter"
-                  type="text"
-                  placeholder="https://twitter.com/"
-                  value={socialData.twitter}
-                  onChange={handleSocialChange}
-                />
-              </div>
-            </div>
-            <div className="col-12">
-              <div className="rbt-form-group">
-                <label htmlFor="linkedin">
-                  <i className="feather-linkedin"></i> Linkedin
-                </label>
-                <input
-                  id="linkedin"
-                  name="linkedin"
-                  type="text"
-                  placeholder="https://linkedin.com/"
-                  value={socialData.linkedin}
-                  onChange={handleSocialChange}
-                />
-              </div>
-            </div>
-            <div className="col-12">
-              <div className="rbt-form-group">
-                <label htmlFor="website">
-                  <i className="feather-globe"></i> Website
-                </label>
-                <input
-                  id="website"
-                  name="website"
-                  type="text"
-                  placeholder="https://website.com/"
-                  value={socialData.website}
-                  onChange={handleSocialChange}
-                />
-              </div>
-            </div>
-            <div className="col-12">
-              <div className="rbt-form-group">
-                <label htmlFor="github">
-                  <i className="feather-github"></i> Github
-                </label>
-                <input
-                  id="github"
-                  name="github"
-                  type="text"
-                  placeholder="https://github.com/"
-                  value={socialData.github}
-                  onChange={handleSocialChange}
-                />
-              </div>
-            </div>
-            <div className="col-12 mt--10">
-              <div className="rbt-form-group">
-                <button type="submit" className="rbt-btn btn-gradient">
-                  Update Profile
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
+     
       </div>
     </>
   );

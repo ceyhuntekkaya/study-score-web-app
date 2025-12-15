@@ -131,7 +131,7 @@ export default function ManagerSettingsPage() {
         {/* Profile Tab */}
         <div className={`tab-pane fade ${activeTab === 'profile' ? 'active show' : ''}`}>
           <div className="rbt-dashboard-content-wrapper mb--30">
-            <div className="manager-bg-photo bg_image bg_image--23 height-245"></div>
+            <div className="manager-bg-photo bg_image bg_image--7 height-245"></div>
             <div className="rbt-manager-information">
               <div className="rbt-manager-information-left">
                 <div className="thumbnail rbt-avatars size-lg position-relative">

@@ -8,28 +8,12 @@ export default function QuizAttemptsPage() {
   const attempts = [
     {
       id: 1,
-      quizName: 'JavaScript Fundamentals Quiz',
-      date: 'March 15, 2025',
+      quizName: 'EILTS Reading Quiz',
+      date: 'Now 15, 2025',
       score: 85,
       totalQuestions: 20,
       status: 'Completed',
-    },
-    {
-      id: 2,
-      quizName: 'React Basics Quiz',
-      date: 'March 10, 2025',
-      score: 92,
-      totalQuestions: 15,
-      status: 'Completed',
-    },
-    {
-      id: 3,
-      quizName: 'Node.js Advanced Quiz',
-      date: 'March 5, 2025',
-      score: 78,
-      totalQuestions: 25,
-      status: 'Completed',
-    },
+    }
   ];
 
   return (

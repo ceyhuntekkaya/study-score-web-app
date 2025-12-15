@@ -21,8 +21,8 @@
               "href": "/learner/dashboard/courses"
             },
             {
-              "icon": "feather-bookmark",
-              "labelKey": "menu.wishlist",
+              "icon": "feather-file-text",
+              "labelKey": "menu.exams",
               "href": "/learner/dashboard/wishlist"
             },
             {
@@ -34,17 +34,7 @@
               "icon": "feather-help-circle",
               "labelKey": "menu.myQuizAttempts",
               "href": "/learner/dashboard/quiz-attempts"
-            },
-            {
-              "icon": "feather-shopping-bag",
-              "labelKey": "menu.orderHistory",
-              "href": "/learner/dashboard/orders"
-            },
-            {
-              "icon": "feather-book",
-              "labelKey": "menu.content",
-              "href": "/learner/content/dummy-course-1"
-            }
+            } 
           ]
         },
         {
@@ -330,10 +320,6 @@
             {
               "labelKey": "menu.myQuizAttempts",
               "href": "/learner/dashboard/quiz-attempts"
-            },
-            {
-              "labelKey": "menu.orderHistory",
-              "href": "/learner/dashboard/orders"
             },
             {
               "labelKey": "nav.settings",

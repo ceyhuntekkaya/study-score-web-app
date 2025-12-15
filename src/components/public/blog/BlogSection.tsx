@@ -12,20 +12,20 @@ export default function BlogSection() {
     {
       id: 1,
       image: '/assets/images/blog/university-blog-01.png',
-      title: 'Difficult Things About Education.',
-      description: 'There are many variations of passages of Ipsum available,',
+      title: "Why 'One-Size-Fits-All' Exam Prep is Failing You",
+      description: 'Traditional courses force you to study what you already know. Discover how personalized AI focuses only on your weak points to maximize your score.',
     },
     {
       id: 2,
       image: '/assets/images/blog/coaching-blog-02.png',
-      title: 'Learn How More Money With lms.',
-      description: 'There are many variations of passages of Ipsum available,',
+      title: '7/24 Private Tutor: How AI is Democratizing Education',
+      description: 'Accessing a private tutor used to be a luxury. Now, advanced AI models offer elite-level coaching for IELTS and SAT at a fraction of the cost.',
     },
     {
       id: 3,
       image: '/assets/images/blog/university-blog-02.png',
-      title: 'Understand The Background Of lms.',
-      description: 'There are many variations of passages of Ipsum available,',
+      title: 'The Secret to High Scores: Micro-Precision Analysis',
+      description: 'It’s not about studying more; it’s about fixing the right errors. Learn how microscopic analysis of your mistakes can boost your band score in weeks.',
     },
   ];
 
@@ -63,7 +63,7 @@ export default function BlogSection() {
             <div key={blog.id} className="col-lg-4 col-md-6 col-sm-12 col-12">
               <div className="rbt-card variation-02 rbt-hover">
                 <div className="rbt-card-img">
-                  <Link href="/blog-details">
+                  <Link href="/login">
                     <Image 
                       src={blog.image} 
                       alt={blog.title} 
@@ -75,11 +75,11 @@ export default function BlogSection() {
                 </div>
                 <div className="rbt-card-body">
                   <h5 className="rbt-card-title">
-                    <Link href="/blog-details">{blog.title}</Link>
+                    <Link href="/login">{blog.title}</Link>
                   </h5>
                   <p className="rbt-card-text">{blog.description}</p>
                   <div className="rbt-card-bottom">
-                    <Link className="transparent-button" href="/blog-details">
+                    <Link className="transparent-button" href="/login">
                       Read More
                       <i>
                         <svg width="17" height="12" xmlns="http://www.w3.org/2000/svg">

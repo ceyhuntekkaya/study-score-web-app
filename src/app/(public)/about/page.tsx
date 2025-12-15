@@ -12,14 +12,14 @@ export default function AboutPage() {
     <>
       {/* Breadcrumb Section */}
       <BreadcrumbSection 
-        title="Take Challenge for Build Your Life. The World Most Lessons for Back to Your Life." 
-        subtitle="How We Work"
-        variant="about"
-        bgImage="/assets/images/bg/bg-image-11.jpg"
-        showButton={true}
-        buttonText="More About Us"
-        buttonLink="/about"
-      />
+    title="Achieve Your Dream Score with Your Personal AI Coach." 
+    subtitle="The Future of Exam Prep"
+    variant="about"
+    bgImage="/assets/images/bg/bg-image-11.jpg"
+    showButton={true}
+    buttonText="Start Your Journey"
+    buttonLink="/contact"
+/>
 
       {/* About Content Section */}
       <AboutPageContent />

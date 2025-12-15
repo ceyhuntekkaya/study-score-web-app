@@ -298,9 +298,9 @@ export interface User {
   roleSet?: UserRoleSetItem[];
   authoritySet?: UserAuthoritySetItem[];
   enabled?: boolean;
+  authorities?: GrantedAuthority[];
   institutionalLearner?: boolean;
   individualLearner?: boolean;
-  authorities?: GrantedAuthority[];
   accountNonExpired?: boolean;
   accountNonLocked?: boolean;
   credentialsNonExpired?: boolean;

@@ -26,7 +26,7 @@ import { customInstance } from "../../../lib/api-client";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
-export const getExamById = (
+export const getCourseById = (
   courseId: string,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
@@ -37,29 +37,29 @@ export const getExamById = (
   );
 };
 
-export const getGetExamByIdQueryKey = (courseId?: string) => {
+export const getGetCourseByIdQueryKey = (courseId?: string) => {
   return [`/course/${courseId}`] as const;
 };
 
-export const getGetExamByIdQueryOptions = <
-  TData = Awaited<ReturnType<typeof getExamById>>,
+export const getGetCourseByIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getCourseById>>,
   TError = unknown,
 >(
   courseId: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getExamById>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getCourseById>>, TError, TData>
     >;
     request?: SecondParameter<typeof customInstance>;
   },
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetExamByIdQueryKey(courseId);
+  const queryKey = queryOptions?.queryKey ?? getGetCourseByIdQueryKey(courseId);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getExamById>>> = ({
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getCourseById>>> = ({
     signal,
-  }) => getExamById(courseId, requestOptions, signal);
+  }) => getCourseById(courseId, requestOptions, signal);
 
   return {
     queryKey,
@@ -67,31 +67,31 @@ export const getGetExamByIdQueryOptions = <
     enabled: !!courseId,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getExamById>>,
+    Awaited<ReturnType<typeof getCourseById>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetExamByIdQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getExamById>>
+export type GetCourseByIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getCourseById>>
 >;
-export type GetExamByIdQueryError = unknown;
+export type GetCourseByIdQueryError = unknown;
 
-export function useGetExamById<
-  TData = Awaited<ReturnType<typeof getExamById>>,
+export function useGetCourseById<
+  TData = Awaited<ReturnType<typeof getCourseById>>,
   TError = unknown,
 >(
   courseId: string,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getExamById>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getCourseById>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getExamById>>,
+          Awaited<ReturnType<typeof getCourseById>>,
           TError,
-          Awaited<ReturnType<typeof getExamById>>
+          Awaited<ReturnType<typeof getCourseById>>
         >,
         "initialData"
       >;
@@ -101,20 +101,20 @@ export function useGetExamById<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetExamById<
-  TData = Awaited<ReturnType<typeof getExamById>>,
+export function useGetCourseById<
+  TData = Awaited<ReturnType<typeof getCourseById>>,
   TError = unknown,
 >(
   courseId: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getExamById>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getCourseById>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getExamById>>,
+          Awaited<ReturnType<typeof getCourseById>>,
           TError,
-          Awaited<ReturnType<typeof getExamById>>
+          Awaited<ReturnType<typeof getCourseById>>
         >,
         "initialData"
       >;
@@ -124,14 +124,14 @@ export function useGetExamById<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetExamById<
-  TData = Awaited<ReturnType<typeof getExamById>>,
+export function useGetCourseById<
+  TData = Awaited<ReturnType<typeof getCourseById>>,
   TError = unknown,
 >(
   courseId: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getExamById>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getCourseById>>, TError, TData>
     >;
     request?: SecondParameter<typeof customInstance>;
   },
@@ -140,14 +140,14 @@ export function useGetExamById<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetExamById<
-  TData = Awaited<ReturnType<typeof getExamById>>,
+export function useGetCourseById<
+  TData = Awaited<ReturnType<typeof getCourseById>>,
   TError = unknown,
 >(
   courseId: string,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getExamById>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getCourseById>>, TError, TData>
     >;
     request?: SecondParameter<typeof customInstance>;
   },
@@ -155,7 +155,7 @@ export function useGetExamById<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetExamByIdQueryOptions(courseId, options);
+  const queryOptions = getGetCourseByIdQueryOptions(courseId, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -167,7 +167,7 @@ export function useGetExamById<
   return query;
 }
 
-export const updateExam1 = (
+export const updateCourse = (
   courseId: string,
   course: Course,
   options?: SecondParameter<typeof customInstance>,
@@ -183,24 +183,24 @@ export const updateExam1 = (
   );
 };
 
-export const getUpdateExam1MutationOptions = <
+export const getUpdateCourseMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateExam1>>,
+    Awaited<ReturnType<typeof updateCourse>>,
     TError,
     { courseId: string; data: Course },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof updateExam1>>,
+  Awaited<ReturnType<typeof updateCourse>>,
   TError,
   { courseId: string; data: Course },
   TContext
 > => {
-  const mutationKey = ["updateExam1"];
+  const mutationKey = ["updateCourse"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -210,27 +210,27 @@ export const getUpdateExam1MutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateExam1>>,
+    Awaited<ReturnType<typeof updateCourse>>,
     { courseId: string; data: Course }
   > = (props) => {
     const { courseId, data } = props ?? {};
 
-    return updateExam1(courseId, data, requestOptions);
+    return updateCourse(courseId, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type UpdateExam1MutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateExam1>>
+export type UpdateCourseMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateCourse>>
 >;
-export type UpdateExam1MutationBody = Course;
-export type UpdateExam1MutationError = unknown;
+export type UpdateCourseMutationBody = Course;
+export type UpdateCourseMutationError = unknown;
 
-export const useUpdateExam1 = <TError = unknown, TContext = unknown>(
+export const useUpdateCourse = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateExam1>>,
+      Awaited<ReturnType<typeof updateCourse>>,
       TError,
       { courseId: string; data: Course },
       TContext
@@ -239,16 +239,16 @@ export const useUpdateExam1 = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof updateExam1>>,
+  Awaited<ReturnType<typeof updateCourse>>,
   TError,
   { courseId: string; data: Course },
   TContext
 > => {
-  const mutationOptions = getUpdateExam1MutationOptions(options);
+  const mutationOptions = getUpdateCourseMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
-export const deleteActivity3 = (
+export const deleteCourse = (
   courseId: string,
   options?: SecondParameter<typeof customInstance>,
 ) => {
@@ -258,24 +258,24 @@ export const deleteActivity3 = (
   );
 };
 
-export const getDeleteActivity3MutationOptions = <
+export const getDeleteCourseMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteActivity3>>,
+    Awaited<ReturnType<typeof deleteCourse>>,
     TError,
     { courseId: string },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteActivity3>>,
+  Awaited<ReturnType<typeof deleteCourse>>,
   TError,
   { courseId: string },
   TContext
 > => {
-  const mutationKey = ["deleteActivity3"];
+  const mutationKey = ["deleteCourse"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -285,27 +285,27 @@ export const getDeleteActivity3MutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteActivity3>>,
+    Awaited<ReturnType<typeof deleteCourse>>,
     { courseId: string }
   > = (props) => {
     const { courseId } = props ?? {};
 
-    return deleteActivity3(courseId, requestOptions);
+    return deleteCourse(courseId, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type DeleteActivity3MutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteActivity3>>
+export type DeleteCourseMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteCourse>>
 >;
 
-export type DeleteActivity3MutationError = unknown;
+export type DeleteCourseMutationError = unknown;
 
-export const useDeleteActivity3 = <TError = unknown, TContext = unknown>(
+export const useDeleteCourse = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteActivity3>>,
+      Awaited<ReturnType<typeof deleteCourse>>,
       TError,
       { courseId: string },
       TContext
@@ -314,16 +314,16 @@ export const useDeleteActivity3 = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof deleteActivity3>>,
+  Awaited<ReturnType<typeof deleteCourse>>,
   TError,
   { courseId: string },
   TContext
 > => {
-  const mutationOptions = getDeleteActivity3MutationOptions(options);
+  const mutationOptions = getDeleteCourseMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
-export const getAllExams = (
+export const getAllCourses = (
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
@@ -333,52 +333,52 @@ export const getAllExams = (
   );
 };
 
-export const getGetAllExamsQueryKey = () => {
+export const getGetAllCoursesQueryKey = () => {
   return [`/course/`] as const;
 };
 
-export const getGetAllExamsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getAllExams>>,
+export const getGetAllCoursesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAllCourses>>,
   TError = unknown,
 >(options?: {
   query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof getAllExams>>, TError, TData>
+    UseQueryOptions<Awaited<ReturnType<typeof getAllCourses>>, TError, TData>
   >;
   request?: SecondParameter<typeof customInstance>;
 }) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetAllExamsQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getGetAllCoursesQueryKey();
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllExams>>> = ({
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllCourses>>> = ({
     signal,
-  }) => getAllExams(requestOptions, signal);
+  }) => getAllCourses(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getAllExams>>,
+    Awaited<ReturnType<typeof getAllCourses>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetAllExamsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getAllExams>>
+export type GetAllCoursesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAllCourses>>
 >;
-export type GetAllExamsQueryError = unknown;
+export type GetAllCoursesQueryError = unknown;
 
-export function useGetAllExams<
-  TData = Awaited<ReturnType<typeof getAllExams>>,
+export function useGetAllCourses<
+  TData = Awaited<ReturnType<typeof getAllCourses>>,
   TError = unknown,
 >(
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getAllExams>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getAllCourses>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getAllExams>>,
+          Awaited<ReturnType<typeof getAllCourses>>,
           TError,
-          Awaited<ReturnType<typeof getAllExams>>
+          Awaited<ReturnType<typeof getAllCourses>>
         >,
         "initialData"
       >;
@@ -388,19 +388,19 @@ export function useGetAllExams<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetAllExams<
-  TData = Awaited<ReturnType<typeof getAllExams>>,
+export function useGetAllCourses<
+  TData = Awaited<ReturnType<typeof getAllCourses>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getAllExams>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getAllCourses>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getAllExams>>,
+          Awaited<ReturnType<typeof getAllCourses>>,
           TError,
-          Awaited<ReturnType<typeof getAllExams>>
+          Awaited<ReturnType<typeof getAllCourses>>
         >,
         "initialData"
       >;
@@ -410,13 +410,13 @@ export function useGetAllExams<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetAllExams<
-  TData = Awaited<ReturnType<typeof getAllExams>>,
+export function useGetAllCourses<
+  TData = Awaited<ReturnType<typeof getAllCourses>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getAllExams>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getAllCourses>>, TError, TData>
     >;
     request?: SecondParameter<typeof customInstance>;
   },
@@ -425,13 +425,13 @@ export function useGetAllExams<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetAllExams<
-  TData = Awaited<ReturnType<typeof getAllExams>>,
+export function useGetAllCourses<
+  TData = Awaited<ReturnType<typeof getAllCourses>>,
   TError = unknown,
 >(
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getAllExams>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getAllCourses>>, TError, TData>
     >;
     request?: SecondParameter<typeof customInstance>;
   },
@@ -439,7 +439,7 @@ export function useGetAllExams<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetAllExamsQueryOptions(options);
+  const queryOptions = getGetAllCoursesQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -451,7 +451,7 @@ export function useGetAllExams<
   return query;
 }
 
-export const createExam1 = (
+export const createCourse = (
   courseDetailDTO: CourseDetailDTO,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
@@ -468,24 +468,24 @@ export const createExam1 = (
   );
 };
 
-export const getCreateExam1MutationOptions = <
+export const getCreateCourseMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createExam1>>,
+    Awaited<ReturnType<typeof createCourse>>,
     TError,
     { data: CourseDetailDTO },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof createExam1>>,
+  Awaited<ReturnType<typeof createCourse>>,
   TError,
   { data: CourseDetailDTO },
   TContext
 > => {
-  const mutationKey = ["createExam1"];
+  const mutationKey = ["createCourse"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -495,27 +495,27 @@ export const getCreateExam1MutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createExam1>>,
+    Awaited<ReturnType<typeof createCourse>>,
     { data: CourseDetailDTO }
   > = (props) => {
     const { data } = props ?? {};
 
-    return createExam1(data, requestOptions);
+    return createCourse(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type CreateExam1MutationResult = NonNullable<
-  Awaited<ReturnType<typeof createExam1>>
+export type CreateCourseMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createCourse>>
 >;
-export type CreateExam1MutationBody = CourseDetailDTO;
-export type CreateExam1MutationError = unknown;
+export type CreateCourseMutationBody = CourseDetailDTO;
+export type CreateCourseMutationError = unknown;
 
-export const useCreateExam1 = <TError = unknown, TContext = unknown>(
+export const useCreateCourse = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createExam1>>,
+      Awaited<ReturnType<typeof createCourse>>,
       TError,
       { data: CourseDetailDTO },
       TContext
@@ -524,12 +524,12 @@ export const useCreateExam1 = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof createExam1>>,
+  Awaited<ReturnType<typeof createCourse>>,
   TError,
   { data: CourseDetailDTO },
   TContext
 > => {
-  const mutationOptions = getCreateExam1MutationOptions(options);
+  const mutationOptions = getCreateCourseMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

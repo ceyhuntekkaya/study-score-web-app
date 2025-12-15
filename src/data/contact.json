@@ -2,54 +2,54 @@
   "phone": {
     "primary": {
       "number": "+90 532 207 67 30",
-      "display": "+90 532 207 67 30",
+      "display": "+90 503 207 67 30",
       "href": "tel:+90 532 207 67 30"
     },
     "secondary": {
       "number": "+90 532 207 67 30",
-      "display": "+90 532 207 67 30",
+      "display": "+90 503 207 67 30",
       "href": "tel:+90 532 207 67 30"
     },
     "tertiary": {
       "number": "+90 532 207 67 30",
-      "display": "+90 532 207 67 30",
+      "display": "+90 503 207 67 30",
       "href": "tel:+90 532 207 67 30"
     },
     "footer": {
       "number": "+90 532 207 67 30",
-      "display": "+90 532 207 67 30",
+      "display": "+90 503 207 67 30",
       "href": "tel:+90 532 207 67 30"
     }
   },
   "email": {
     "primary": {
       "address": "hello@studyscore.ai",
-      "display": "hello@studyscore.ai",
+      "display": "info@studyscore.ai",
       "href": "mailto:hello@studyscore.ai"
     },
     "secondary": {
       "address": "hello@studyscore.ai",
-      "display": "hello@studyscore.ai",
+      "display": "info@studyscore.ai",
       "href": "mailto:hello@studyscore.ai"
     },
     "footer": {
       "address": "hello@studyscore.ai",
-      "display": "hello@studyscore.ai",
+      "display": "info@studyscore.ai",
       "href": "mailto:hello@studyscore.ai"
     }
   },
   "address": {
     "primary": {
-      "line1": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8",
+      "line1": "Ankara Üniversitesi Teknokent Savunma Snayi Binası",
       "line2": "Bilkent ANKARA, Türkiye",
-      "full": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8 Bilkent ANKARA, Türkiye",
-      "display": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8 Bilkent ANKARA, Türkiye"
+      "full": "Ankara Üniversitesi Teknokent Savunma Snayi Binası ANKARA, Türkiye",
+      "display": "Ankara Üniversitesi Teknokent Savunma Snayi Binası ANKARA, Türkiye"
     },
     "footer": {
-      "line1": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8",
+      "line1": "Ankara Üniversitesi Teknokent Savunma Snayi Binası",
       "line2": "",
-      "full": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8",
-      "display": "BİLKENT CYBERPARK, Cyberplaza H Blok No:8"
+      "full": "Ankara Üniversitesi Teknokent Savunma Snayi Binası",
+      "display": "Ankara Üniversitesi Teknokent Savunma Snayi Binası"
     }
   },
   "social": {

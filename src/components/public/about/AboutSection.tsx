@@ -42,15 +42,14 @@ export default function AboutSection() {
                     </svg> Reach.
                   </h2>
                   <p className="mt--20">
-                    At Study Score, we are moving boldly - and concertedly - to expand tomorrow's frontiers. 
-                    We believe that we have the power to shape the future, for the better
+                  Study Score AI is your dedicated, 24/7 smart tutor that develops personalized strategies for high-stakes exams like IELTS and SAT. Going beyond standard courses, it analyzes your performance in microscopic detail to pinpoint weaknesses, helping you achieve your target score in the most efficient way possible
                   </p>
                   <ul className="mt--30 mb--25">
                     <li>
                       <span className="icon bg-primary-opacity">
                         <i className="feather-heart"></i>
                       </span>
-                      <span className="text">Flexible Classes</span>
+                      <span className="text">Powerful AI</span>
                     </li>
                     <li>
                       <span className="icon bg-secondary-opacity">
@@ -60,7 +59,7 @@ export default function AboutSection() {
                     </li>
                   </ul>
                   <div className="d-flex align-items-center gap-5 flex-wrap">
-                    <Link className="rbt-btn btn-gradient hover-icon-reverse" href="/about">
+                    <Link className="rbt-btn btn-gradient hover-icon-reverse" href="/login">
                       <span className="icon-reverse-wrapper">
                         <span className="btn-text">Explore More</span>
                         <span className="btn-icon"><i className="feather-arrow-right"></i></span>
@@ -108,9 +107,9 @@ export default function AboutSection() {
                   </span>
                   <div className="title-wrap">
                     <h4 className="number rbt-font-primary">
-                      1890
+                    AI 
                     </h4>
-                    <h6 className="subtitle">Since</h6>
+                    <h6 className="subtitle">Private</h6>
                   </div>
                 </div>
                 <div className="thumb-1">
@@ -121,7 +120,7 @@ export default function AboutSection() {
                     height={600}
                   />
                 </div>
-                <h6 className="title">President of University</h6>
+                <h6 className="title">Academic Coordinator</h6>
               </div>
             </div>
           </div>

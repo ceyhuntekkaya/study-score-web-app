@@ -120,9 +120,6 @@ export default function TutorDashboardFooter() {
                     <Link href="/contact">Contact Us</Link>
                   </li>
                   <li>
-                    <Link href="/become-instructor">Become Teacher</Link>
-                  </li>
-                  <li>
                     <Link href="/blog">Blog</Link>
                   </li>
                   <li>
