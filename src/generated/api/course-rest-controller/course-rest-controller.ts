@@ -167,7 +167,7 @@ export function useGetExamById<
   return query;
 }
 
-export const updateExam = (
+export const updateExam1 = (
   courseId: string,
   course: Course,
   options?: SecondParameter<typeof customInstance>,
@@ -183,24 +183,24 @@ export const updateExam = (
   );
 };
 
-export const getUpdateExamMutationOptions = <
+export const getUpdateExam1MutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateExam>>,
+    Awaited<ReturnType<typeof updateExam1>>,
     TError,
     { courseId: string; data: Course },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof updateExam>>,
+  Awaited<ReturnType<typeof updateExam1>>,
   TError,
   { courseId: string; data: Course },
   TContext
 > => {
-  const mutationKey = ["updateExam"];
+  const mutationKey = ["updateExam1"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -210,27 +210,27 @@ export const getUpdateExamMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateExam>>,
+    Awaited<ReturnType<typeof updateExam1>>,
     { courseId: string; data: Course }
   > = (props) => {
     const { courseId, data } = props ?? {};
 
-    return updateExam(courseId, data, requestOptions);
+    return updateExam1(courseId, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type UpdateExamMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateExam>>
+export type UpdateExam1MutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateExam1>>
 >;
-export type UpdateExamMutationBody = Course;
-export type UpdateExamMutationError = unknown;
+export type UpdateExam1MutationBody = Course;
+export type UpdateExam1MutationError = unknown;
 
-export const useUpdateExam = <TError = unknown, TContext = unknown>(
+export const useUpdateExam1 = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateExam>>,
+      Awaited<ReturnType<typeof updateExam1>>,
       TError,
       { courseId: string; data: Course },
       TContext
@@ -239,12 +239,12 @@ export const useUpdateExam = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof updateExam>>,
+  Awaited<ReturnType<typeof updateExam1>>,
   TError,
   { courseId: string; data: Course },
   TContext
 > => {
-  const mutationOptions = getUpdateExamMutationOptions(options);
+  const mutationOptions = getUpdateExam1MutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
@@ -451,7 +451,7 @@ export function useGetAllExams<
   return query;
 }
 
-export const createExam = (
+export const createExam1 = (
   courseDetailDTO: CourseDetailDTO,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
@@ -468,24 +468,24 @@ export const createExam = (
   );
 };
 
-export const getCreateExamMutationOptions = <
+export const getCreateExam1MutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createExam>>,
+    Awaited<ReturnType<typeof createExam1>>,
     TError,
     { data: CourseDetailDTO },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof createExam>>,
+  Awaited<ReturnType<typeof createExam1>>,
   TError,
   { data: CourseDetailDTO },
   TContext
 > => {
-  const mutationKey = ["createExam"];
+  const mutationKey = ["createExam1"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -495,27 +495,27 @@ export const getCreateExamMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createExam>>,
+    Awaited<ReturnType<typeof createExam1>>,
     { data: CourseDetailDTO }
   > = (props) => {
     const { data } = props ?? {};
 
-    return createExam(data, requestOptions);
+    return createExam1(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type CreateExamMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createExam>>
+export type CreateExam1MutationResult = NonNullable<
+  Awaited<ReturnType<typeof createExam1>>
 >;
-export type CreateExamMutationBody = CourseDetailDTO;
-export type CreateExamMutationError = unknown;
+export type CreateExam1MutationBody = CourseDetailDTO;
+export type CreateExam1MutationError = unknown;
 
-export const useCreateExam = <TError = unknown, TContext = unknown>(
+export const useCreateExam1 = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createExam>>,
+      Awaited<ReturnType<typeof createExam1>>,
       TError,
       { data: CourseDetailDTO },
       TContext
@@ -524,12 +524,12 @@ export const useCreateExam = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof createExam>>,
+  Awaited<ReturnType<typeof createExam1>>,
   TError,
   { data: CourseDetailDTO },
   TContext
 > => {
-  const mutationOptions = getCreateExamMutationOptions(options);
+  const mutationOptions = getCreateExam1MutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

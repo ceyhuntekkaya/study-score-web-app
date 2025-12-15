@@ -298,9 +298,9 @@ export interface User {
   roleSet?: UserRoleSetItem[];
   authoritySet?: UserAuthoritySetItem[];
   enabled?: boolean;
-  authorities?: GrantedAuthority[];
   institutionalLearner?: boolean;
   individualLearner?: boolean;
+  authorities?: GrantedAuthority[];
   accountNonExpired?: boolean;
   accountNonLocked?: boolean;
   credentialsNonExpired?: boolean;
@@ -396,6 +396,140 @@ export interface UploadedFile {
   fileSize?: number;
   updatedAt?: string;
   version?: number;
+}
+
+export type QuestionCreateRequestQuestionType =
+  (typeof QuestionCreateRequestQuestionType)[keyof typeof QuestionCreateRequestQuestionType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionCreateRequestQuestionType = {
+  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
+  TRUE_FALSE: "TRUE_FALSE",
+  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
+  SHORT_ANSWER: "SHORT_ANSWER",
+  MATCHING: "MATCHING",
+  ESSAY: "ESSAY",
+  ORDERING: "ORDERING",
+  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
+  HOT_SPOT: "HOT_SPOT",
+  DRAG_AND_DROP: "DRAG_AND_DROP",
+  AUDIO_RESPONSE: "AUDIO_RESPONSE",
+  VIDEO_RESPONSE: "VIDEO_RESPONSE",
+  IMAGE_RESPONSE: "IMAGE_RESPONSE",
+} as const;
+
+export interface QuestionCreateRequest {
+  /**
+   * @minLength 3
+   * @maxLength 255
+   */
+  name: string;
+  questionGroupId: string;
+  questionType: QuestionCreateRequestQuestionType;
+  /**
+   * @minimum 0.1
+   * @maximum 1000
+   */
+  maximumScore: number;
+  /**
+   * @minLength 0
+   * @maxLength 100
+   */
+  subject?: string;
+  /** @pattern ^(EASY|MEDIUM|HARD)$ */
+  difficulty?: string;
+  /**
+   * @minLength 10
+   * @maxLength 10000
+   */
+  questionText: string;
+  templateData: unknown;
+}
+
+export type HeaderRequestMediaType =
+  (typeof HeaderRequestMediaType)[keyof typeof HeaderRequestMediaType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const HeaderRequestMediaType = {
+  IMAGE: "IMAGE",
+  VIDEO: "VIDEO",
+  AUDIO: "AUDIO",
+  DOCUMENT: "DOCUMENT",
+  PDF: "PDF",
+  TEXT: "TEXT",
+  LINK: "LINK",
+  OTHER: "OTHER",
+} as const;
+
+export interface HeaderRequest {
+  mediaType: HeaderRequestMediaType;
+  /**
+   * @minLength 0
+   * @maxLength 50000
+   */
+  content?: string;
+}
+
+export interface QuestionGroupCreateRequest {
+  /**
+   * @minLength 1
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  examId: string;
+  maximumScore?: number;
+  headers?: HeaderRequest[];
+}
+
+export type ExamUpdateRequestExamType =
+  (typeof ExamUpdateRequestExamType)[keyof typeof ExamUpdateRequestExamType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExamUpdateRequestExamType = {
+  CERTIFICATE: "CERTIFICATE",
+  COURSE_EXAM: "COURSE_EXAM",
+  LEVEL_DETERMINATION: "LEVEL_DETERMINATION",
+  PRACTICE: "PRACTICE",
+  DEGREE: "DEGREE",
+} as const;
+
+export interface ExamUpdateRequest {
+  /**
+   * @minLength 3
+   * @maxLength 255
+   */
+  name?: string;
+  examLevel?: string;
+  examType?: ExamUpdateRequestExamType;
+  /**
+   * @minimum 1
+   * @maximum 1440
+   */
+  timeLimitMinutes?: number;
+  /**
+   * @minimum 0
+   * @maximum 100
+   */
+  passingScorePercentage?: number;
+  /**
+   * @minimum 1
+   * @maximum 10
+   */
+  maxAttempts?: number;
+  shuffleQuestions?: boolean;
+  shuffleAnswers?: boolean;
+  allowBackward?: boolean;
+  showQuestionsOneAtTime?: boolean;
+  requireCompleteAttempt?: boolean;
+  resultsReleaseType?: string;
+  availableFrom?: string;
+  availableUntil?: string;
+  /**
+   * @minLength 0
+   * @maxLength 50
+   */
+  accessCode?: string;
+  requireProctoring?: boolean;
 }
 
 export type UploadedFileDtoStatus =
@@ -942,6 +1076,73 @@ export interface UpdateMaterialProgressRequest {
   isDownloaded?: boolean;
 }
 
+export type ExamCreateRequestCategory =
+  (typeof ExamCreateRequestCategory)[keyof typeof ExamCreateRequestCategory];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExamCreateRequestCategory = {
+  IELTS: "IELTS",
+  TOEFL: "TOEFL",
+} as const;
+
+export type ExamCreateRequestExamType =
+  (typeof ExamCreateRequestExamType)[keyof typeof ExamCreateRequestExamType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExamCreateRequestExamType = {
+  CERTIFICATE: "CERTIFICATE",
+  COURSE_EXAM: "COURSE_EXAM",
+  LEVEL_DETERMINATION: "LEVEL_DETERMINATION",
+  PRACTICE: "PRACTICE",
+  DEGREE: "DEGREE",
+} as const;
+
+export interface ExamCreateRequest {
+  /**
+   * @minLength 3
+   * @maxLength 255
+   */
+  name: string;
+  /**
+   * @minLength 1
+   * @pattern ^[A-Z0-9_-]+$
+   */
+  code: string;
+  category: ExamCreateRequestCategory;
+  examLevel?: string;
+  examType?: ExamCreateRequestExamType;
+  /**
+   * @minimum 1
+   * @maximum 1440
+   */
+  timeLimitMinutes?: number;
+  /**
+   * @minimum 0
+   * @maximum 100
+   */
+  passingScorePercentage?: number;
+  /**
+   * @minimum 1
+   * @maximum 10
+   */
+  maxAttempts?: number;
+  shuffleQuestions?: boolean;
+  shuffleAnswers?: boolean;
+  allowBackward?: boolean;
+  showQuestionsOneAtTime?: boolean;
+  requireCompleteAttempt?: boolean;
+  resultsReleaseType?: string;
+  availableFrom?: string;
+  availableUntil?: string;
+  /**
+   * @minLength 0
+   * @maxLength 50
+   */
+  accessCode?: string;
+  requireProctoring?: boolean;
+  dateRangeValid?: boolean;
+}
+
 export type CurriculumFilterDtoCategory =
   (typeof CurriculumFilterDtoCategory)[keyof typeof CurriculumFilterDtoCategory];
 
@@ -1207,9 +1408,9 @@ export interface PageableObject {
   offset?: number;
   sort?: SortObject;
   paged?: boolean;
-  unpaged?: boolean;
   pageNumber?: number;
   pageSize?: number;
+  unpaged?: boolean;
 }
 
 export interface SortObject {
@@ -1217,6 +1418,24 @@ export interface SortObject {
   sorted?: boolean;
   unsorted?: boolean;
 }
+
+export type GetQuestion200 = { [key: string]: unknown };
+
+export type UpdateQuestion200 = { [key: string]: unknown };
+
+export type DeleteQuestion200 = { [key: string]: unknown };
+
+export type GetQuestionGroup200 = { [key: string]: unknown };
+
+export type UpdateQuestionGroup200 = { [key: string]: unknown };
+
+export type DeleteQuestionGroup200 = { [key: string]: unknown };
+
+export type GetExam200 = { [key: string]: unknown };
+
+export type UpdateExam200 = { [key: string]: unknown };
+
+export type DeleteExam200 = { [key: string]: unknown };
 
 export type RenameFileParams = {
   /**
@@ -1249,6 +1468,24 @@ export type MoveContentParams = {
 export type UpdatePartProgress200 = { [key: string]: unknown };
 
 export type UpdateMaterialProgress200 = { [key: string]: unknown };
+
+export type CreateQuestion200 = { [key: string]: unknown };
+
+export type LockQuestionTemplate200 = { [key: string]: unknown };
+
+export type LockAllQuestionsInGroup200 = { [key: string]: unknown };
+
+export type CreateQuestionGroup200 = { [key: string]: unknown };
+
+export type GetAllActiveExams200 = { [key: string]: unknown };
+
+export type CreateExam200 = { [key: string]: unknown };
+
+export type StartExamParams = {
+  userId: string;
+};
+
+export type StartExam200 = { [key: string]: unknown };
 
 export type CopyFileParams = {
   /**
@@ -1315,9 +1552,33 @@ export type DuplicateCurriculumParams = {
   newName: string;
 };
 
+export type ReorderQuestionParams = {
+  orderNumber: number;
+};
+
+export type ReorderQuestion200 = { [key: string]: unknown };
+
+export type ReorderQuestionGroupParams = {
+  orderNumber: number;
+};
+
+export type ReorderQuestionGroup200 = { [key: string]: unknown };
+
 export type GetCourseProgress200 = { [key: string]: unknown };
 
 export type GetDashboard200 = { [key: string]: unknown };
+
+export type GetQuestionsByGroup200 = { [key: string]: unknown };
+
+export type CountQuestionsInGroup200 = { [key: string]: unknown };
+
+export type GetQuestionGroupsByExam200 = { [key: string]: unknown };
+
+export type GetExamWithUserDataParams = {
+  userId?: string;
+};
+
+export type GetExamWithUserData200 = { [key: string]: unknown };
 
 export type GetFileTypeStatistics200 = { [key: string]: number };
 
@@ -1349,6 +1610,10 @@ export type DeleteFileByPathParams = {
    */
   filePath: string;
 };
+
+export type GetExamByCode200 = { [key: string]: unknown };
+
+export type GetExamsByCategory200 = { [key: string]: unknown };
 
 export type GetCurriculumVersionsParams = {
   /**
@@ -1504,3 +1769,9 @@ export const GetContentsByCurriculumAndLevelLevel = {
   SUB_TOPIC: "SUB_TOPIC",
   GAIN: "GAIN",
 } as const;
+
+export type HardDeleteQuestion200 = { [key: string]: unknown };
+
+export type HardDeleteQuestionGroup200 = { [key: string]: unknown };
+
+export type HardDeleteExam200 = { [key: string]: unknown };

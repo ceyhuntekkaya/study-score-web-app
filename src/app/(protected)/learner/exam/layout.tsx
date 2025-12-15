@@ -5,11 +5,16 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import { useAuth } from '@/contexts/AuthContext';
 import { useExam } from '@/contexts/ExamContext';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 function ExamLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, clearAuth } = useAuth();
   const { examProgress } = useExam();
+  const pathname = usePathname();
+  
+  // Check if we're on the take page
+  const isTakePage = pathname?.includes('/take');
 
   const handleLogout = () => {
     clearAuth();
@@ -62,106 +67,110 @@ function ExamLayoutContent({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Exam Navigation - Horizontal Tabs */}
-      <div style={{
-        backgroundColor: 'white',
-        padding: '0 30px',
-        borderBottom: '2px solid #4d79ff',
-        display: 'flex',
-        gap: '0'
-      }}>
-        <Link 
-          href="/learner/exam"
-          style={{ 
-            padding: '15px 25px', 
-            textDecoration: 'none', 
-            color: '#4d79ff',
-            borderBottom: '3px solid #4d79ff',
-            fontWeight: '600',
-            backgroundColor: '#f0f4ff'
-          }}
-        >
-          📋 Current Exam
-        </Link>
-        <Link 
-          href="/learner/exam/schedule"
-          style={{ 
-            padding: '15px 25px', 
-            textDecoration: 'none', 
-            color: '#666',
-            borderBottom: '3px solid transparent'
-          }}
-        >
-          📅 Schedule
-        </Link>
-        <Link 
-          href="/learner/exam/results"
-          style={{ 
-            padding: '15px 25px', 
-            textDecoration: 'none', 
-            color: '#666',
-            borderBottom: '3px solid transparent'
-          }}
-        >
-          📊 Results
-        </Link>
-        <Link 
-          href="/learner/exam/archive"
-          style={{ 
-            padding: '15px 25px', 
-            textDecoration: 'none', 
-            color: '#666',
-            borderBottom: '3px solid transparent'
-          }}
-        >
-          🗄️ Archive
-        </Link>
-      </div>
+      {!isTakePage && (
+        <>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '0 30px',
+            borderBottom: '2px solid #4d79ff',
+            display: 'flex',
+            gap: '0'
+          }}>
+            <Link 
+              href="/learner/exam"
+              style={{ 
+                padding: '15px 25px', 
+                textDecoration: 'none', 
+                color: '#4d79ff',
+                borderBottom: '3px solid #4d79ff',
+                fontWeight: '600',
+                backgroundColor: '#f0f4ff'
+              }}
+            >
+              📋 Current Exam
+            </Link>
+            <Link 
+              href="/learner/exam/schedule"
+              style={{ 
+                padding: '15px 25px', 
+                textDecoration: 'none', 
+                color: '#666',
+                borderBottom: '3px solid transparent'
+              }}
+            >
+              📅 Schedule
+            </Link>
+            <Link 
+              href="/learner/exam/results"
+              style={{ 
+                padding: '15px 25px', 
+                textDecoration: 'none', 
+                color: '#666',
+                borderBottom: '3px solid transparent'
+              }}
+            >
+              📊 Results
+            </Link>
+            <Link 
+              href="/learner/exam/archive"
+              style={{ 
+                padding: '15px 25px', 
+                textDecoration: 'none', 
+                color: '#666',
+                borderBottom: '3px solid transparent'
+              }}
+            >
+              🗄️ Archive
+            </Link>
+          </div>
 
-      {/* Quick Links Bar */}
-      <div style={{
-        backgroundColor: '#f0f4ff',
-        padding: '12px 30px',
-        display: 'flex',
-        gap: '15px',
-        borderBottom: '1px solid #e0e0e0'
-      }}>
-        <Link 
-          href="/learner/dashboard"
-          style={{ 
-            padding: '6px 12px', 
-            textDecoration: 'none', 
-            color: '#4d79ff',
-            fontSize: '13px'
-          }}
-        >
-          ← Dashboard
-        </Link>
-        <Link 
-          href="/learner/quiz"
-          style={{ 
-            padding: '6px 12px', 
-            textDecoration: 'none', 
-            color: '#4d79ff',
-            fontSize: '13px'
-          }}
-        >
-          Quiz
-        </Link>
-        <Link 
-          href="/learner/content"
-          style={{ 
-            padding: '6px 12px', 
-            textDecoration: 'none', 
-            color: '#4d79ff',
-            fontSize: '13px'
-          }}
-        >
-          Content
-        </Link>
-      </div>
+          {/* Quick Links Bar */}
+          <div style={{
+            backgroundColor: '#f0f4ff',
+            padding: '12px 30px',
+            display: 'flex',
+            gap: '15px',
+            borderBottom: '1px solid #e0e0e0'
+          }}>
+            <Link 
+              href="/learner/dashboard"
+              style={{ 
+                padding: '6px 12px', 
+                textDecoration: 'none', 
+                color: '#4d79ff',
+                fontSize: '13px'
+              }}
+            >
+              ← Dashboard
+            </Link>
+            <Link 
+              href="/learner/quiz"
+              style={{ 
+                padding: '6px 12px', 
+                textDecoration: 'none', 
+                color: '#4d79ff',
+                fontSize: '13px'
+              }}
+            >
+              Quiz
+            </Link>
+            <Link 
+              href="/learner/content"
+              style={{ 
+                padding: '6px 12px', 
+                textDecoration: 'none', 
+                color: '#4d79ff',
+                fontSize: '13px'
+              }}
+            >
+              Content
+            </Link>
+          </div>
+        </>
+      )}
 
       {/* Main Content */}
-      <main style={{ padding: '30px' }}>
+      <main style={{ padding: isTakePage ? '0' : '30px' }}>
         {children}
       </main>
     </div>
