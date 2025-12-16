@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslation } from '@/i18n';
@@ -12,6 +13,7 @@ export default function EditCoursePage() {
   const { t } = useTranslation();
   const params = useParams();
   const courseId = params?.id as string;
+  const [isCourseInfoOpen, setIsCourseInfoOpen] = useState(false);
 
   const { data: courseDetails, isLoading } = useGetCourseWithAllDetails(courseId, {
     query: { enabled: !!courseId },
@@ -63,10 +65,30 @@ export default function EditCoursePage() {
         </div>
       </div>
       <div className="rbt-dashboard-content-wrapper">
-        {/* Course Form - Top Section */}
+        {/* Course Form - Top Section with Accordion */}
         <div className="rbt-card rbt-card-body mb--30">
-          <h3 className="mb--20">Kurs Bilgileri</h3>
-          <CourseForm initialData={courseData} />
+          <div className="accordion-item card">
+            <h2 className="accordion-header card-header" id="heading-course-info">
+              <button
+                className={`accordion-button ${isCourseInfoOpen ? '' : 'collapsed'}`}
+                type="button"
+                onClick={() => setIsCourseInfoOpen(!isCourseInfoOpen)}
+                aria-expanded={isCourseInfoOpen}
+                aria-controls="collapse-course-info"
+              >
+                <h3 className="mb-0">Kurs Bilgileri</h3>
+              </button>
+            </h2>
+            <div
+              id="collapse-course-info"
+              className={`accordion-collapse collapse ${isCourseInfoOpen ? 'show' : ''}`}
+              aria-labelledby="heading-course-info"
+            >
+              <div className="accordion-body card-body">
+                <CourseForm initialData={courseData} />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Course Lessons Accordion - Bottom Section (2 columns) */}
