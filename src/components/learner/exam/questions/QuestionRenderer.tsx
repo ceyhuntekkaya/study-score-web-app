@@ -15,7 +15,8 @@ import VideoResponseQuestion from './VideoResponseQuestion';
 import EssayQuestion from './EssayQuestion';
 
 interface Question {
-  questionId: string;
+  questionId?: string;
+  id?: string;
   questionType: string;
   questionText: string;
   templateData: any;
@@ -38,7 +39,7 @@ export default function QuestionRenderer({
   questionId,
 }: QuestionRendererProps) {
   const { questionType, questionText, templateData, userAnswer } = question;
-  const uniqueQuestionId = questionId || question.questionId || question.id || 'question';
+  const uniqueQuestionId = questionId || question.questionId || (question as any).id || 'question';
 
   // Parse templateData if it's a string
   const parsedTemplateData = typeof templateData === 'string' 

@@ -54,11 +54,11 @@ const DynamicTable = <T extends RecordType>({
         const newMap = new Map<string, string[]>();
 
         sortedData.forEach((item) => {
-            const recordId = String(item.id || Math.random()); // Fallback if no id
+            const recordId = String((item as any).id || Math.random()); // Fallback if no id
             const renderedValues: string[] = [];
 
             // Add direct values
-            Object.entries(item).forEach(([, value]) => {
+            Object.entries(item as any).forEach(([, value]) => {
                 if (value !== undefined && value !== null) {
                     renderedValues.push(String(value).toLowerCase());
                 }
@@ -68,7 +68,7 @@ const DynamicTable = <T extends RecordType>({
             columns.forEach((column) => {
                 if (column.render) {
                     try {
-                        const baseValue = item[column.key as keyof typeof item];
+                        const baseValue = (item as any)[column.key];
                         const renderedOutput = column.render(baseValue, item);
 
                         // Handle React elements
@@ -139,7 +139,7 @@ const DynamicTable = <T extends RecordType>({
                 try {
                     const keyParts = key.split('.');
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    let currentValue: any = item;
+                    let currentValue: any = item as any;
                     let valid = true;
 
                     for (const part of keyParts) {
@@ -172,12 +172,12 @@ const DynamicTable = <T extends RecordType>({
         const searchTermLower = searchTerm.toLowerCase();
 
         return sortedData.filter(item => {
-            const recordId = String(item.id || Math.random());
+            const recordId = String((item as any).id || Math.random());
             const renderedValues = renderedValuesMap.get(recordId) || [];
 
             // Direct property search first
-            for (const key in item) {
-                const value = item[key];
+            for (const key in item as any) {
+                const value = (item as any)[key];
                 if (value !== undefined &&
                     String(value).toLowerCase().includes(searchTermLower)) {
                     return true;
@@ -261,7 +261,7 @@ const DynamicTable = <T extends RecordType>({
             );
         }
 
-        const value = item[column.key as keyof T];
+        const value = (item as any)[column.key];
         return column.render ? column.render(value, item) : String(value ?? '-');
     };
 
@@ -270,48 +270,41 @@ const DynamicTable = <T extends RecordType>({
     return (
         <div className="w-100">
             {searchable && (
-                <div className="rbt-search-box mb--20">
-                    <div className="input-group">
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder={t('common.search') || 'Search...'}
-                        />
-                        <span className="input-group-text">
-                            <i className="feather-search"></i>
-                        </span>
-                    </div>
+                <div className="ui-table-search">
+                    <i className="feather-search" style={{ width: '20px', height: '20px', color: '#9ca3af' }}></i>
+                    <input
+                        type="text"
+                        className="ui-input"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder={t('common.search') || 'Search...'}
+                        style={{ fontSize: '0.875rem', fontWeight: 'normal' }}
+                    />
                 </div>
             )}
 
-            <div className="table-responsive">
-                <table className="table table-bordered table-hover">
+            <div className="ui-table-wrapper">
+                <table className="ui-table">
                     <thead>
                         <tr>
                             {columns.map((column, index) => (
                                 <th
                                     key={`${String(column.key)}-${index}`}
                                     onClick={() => column.key !== 'actions' && handleSort(column.key as keyof T)}
-                                    style={{
-                                        cursor: column.sortable && column.key !== 'actions' ? 'pointer' : 'default',
-                                        userSelect: 'none',
-                                    }}
-                                    className={column.sortable && column.key !== 'actions' ? '' : ''}
+                                    className={column.sortable && column.key !== 'actions' ? 'sortable' : ''}
                                 >
-                                    <div className="d-flex align-items-center justify-content-between">
+                                    <div>
                                         <span>{column.header}</span>
                                         {column.sortable && column.key !== 'actions' && (
-                                            <span className="ms-2">
+                                            <span style={{ marginLeft: '0.5rem' }}>
                                                 {sortConfig?.key === column.key ? (
                                                     sortConfig.direction === 'asc' ? (
-                                                        <i className="feather-arrow-up"></i>
+                                                        <i className="feather-arrow-up" style={{ width: '16px', height: '16px' }}></i>
                                                     ) : (
-                                                        <i className="feather-arrow-down"></i>
+                                                        <i className="feather-arrow-down" style={{ width: '16px', height: '16px' }}></i>
                                                     )
                                                 ) : (
-                                                    <i className="feather-arrow-up-down" style={{ opacity: 0.3 }}></i>
+                                                    <i className="feather-arrow-up-down" style={{ width: '16px', height: '16px', opacity: 0.3 }}></i>
                                                 )}
                                             </span>
                                         )}
@@ -332,7 +325,6 @@ const DynamicTable = <T extends RecordType>({
                                 {columns.map((column, colIndex) => (
                                     <td
                                         key={`${String(column.key)}-${colIndex}`}
-                                        className="align-middle"
                                     >
                                         {renderCell(column, item)}
                                     </td>
@@ -344,27 +336,24 @@ const DynamicTable = <T extends RecordType>({
             </div>
 
             {showPagination && (
-                <div className="rbt-pagination-wrapper mt--20">
-                    <nav aria-label="Page navigation">
-                        <ul className="pagination">
-                            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                <button
-                                    className="page-link"
-                                    onClick={() => setCurrentPage(1)}
-                                    disabled={currentPage === 1}
-                                >
-                                    <i className="feather-chevrons-left"></i>
-                                </button>
-                            </li>
-                            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                <button
-                                    className="page-link"
-                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                    disabled={currentPage === 1}
-                                >
-                                    <i className="feather-chevron-left"></i>
-                                </button>
-                            </li>
+                <div className="ui-pagination">
+                    <div className="ui-pagination-controls">
+                        <button
+                            type="button"
+                            className="ui-pagination-button"
+                            onClick={() => setCurrentPage(1)}
+                            disabled={currentPage === 1}
+                        >
+                            <i className="feather-chevrons-left" style={{ width: '16px', height: '16px' }}></i>
+                        </button>
+                        <button
+                            type="button"
+                            className="ui-pagination-button"
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                        >
+                            <i className="feather-chevron-left" style={{ width: '16px', height: '16px' }}></i>
+                        </button>
                             {(() => {
                                 const pages: (number | string)[] = [];
                                 const showEllipsis = totalPages > 7;
@@ -399,52 +388,44 @@ const DynamicTable = <T extends RecordType>({
                                 return pages.map((page, idx) => {
                                     if (page === 'ellipsis') {
                                         return (
-                                            <li key={`ellipsis-${idx}`} className="page-item disabled">
-                                                <span className="page-link">...</span>
-                                            </li>
+                                            <span key={`ellipsis-${idx}`} className="ui-pagination-button" style={{ cursor: 'default' }}>
+                                                ...
+                                            </span>
                                         );
                                     }
                                     return (
-                                        <li
+                                        <button
                                             key={page}
-                                            className={`page-item ${currentPage === page ? 'active' : ''}`}
+                                            type="button"
+                                            className={`ui-pagination-button ${currentPage === page ? 'active' : ''}`}
+                                            onClick={() => setCurrentPage(page as number)}
                                         >
-                                            <button
-                                                className="page-link"
-                                                onClick={() => setCurrentPage(page as number)}
-                                            >
-                                                {page}
-                                            </button>
-                                        </li>
+                                            {page}
+                                        </button>
                                     );
                                 });
                             })()}
-                            <li className={`page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}`}>
-                                <button
-                                    className="page-link"
-                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                    disabled={currentPage === totalPages || totalPages === 0}
-                                >
-                                    <i className="feather-chevron-right"></i>
-                                </button>
-                            </li>
-                            <li className={`page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}`}>
-                                <button
-                                    className="page-link"
-                                    onClick={() => setCurrentPage(totalPages)}
-                                    disabled={currentPage === totalPages || totalPages === 0}
-                                >
-                                    <i className="feather-chevrons-right"></i>
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
-                    <div className="pagination-info mt-2">
-                        <span>
-                            {t('common.showing') || 'Showing'} {((currentPage - 1) * pageSize) + 1} -{' '}
-                            {Math.min(currentPage * pageSize, filteredData.length)} {t('common.of') || 'of'}{' '}
-                            {filteredData.length}
-                        </span>
+                        <button
+                            type="button"
+                            className="ui-pagination-button"
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages || totalPages === 0}
+                        >
+                            <i className="feather-chevron-right" style={{ width: '16px', height: '16px' }}></i>
+                        </button>
+                        <button
+                            type="button"
+                            className="ui-pagination-button"
+                            onClick={() => setCurrentPage(totalPages)}
+                            disabled={currentPage === totalPages || totalPages === 0}
+                        >
+                            <i className="feather-chevrons-right" style={{ width: '16px', height: '16px' }}></i>
+                        </button>
+                    </div>
+                    <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                        {t('common.showing') || 'Showing'} {((currentPage - 1) * pageSize) + 1} to{' '}
+                        {Math.min(currentPage * pageSize, filteredData.length)} {t('common.of') || 'of'}{' '}
+                        {filteredData.length} entries
                     </div>
                 </div>
             )}

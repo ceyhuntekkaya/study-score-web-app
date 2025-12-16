@@ -25,6 +25,8 @@ export default function RootLayout({
         <link rel="stylesheet" href="/assets/css/plugins/fontawesome.min.css" />
         <link rel="stylesheet" href="/assets/css/plugins/euclid-circulara.css" />
         <link rel="stylesheet" href="/assets/css/styles.css" />
+        <link rel="stylesheet" href="/styles/ui-components.css" />
+        <link rel="stylesheet" href="/styles/admin.css" />
       </head>
       <body>
         <QueryProvider>

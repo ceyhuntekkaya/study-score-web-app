@@ -10,12 +10,12 @@ export interface BadgeProps
 
 function Badge({ className, variant = "default", ...props }: BadgeProps) {
     const variants = {
-        default: "badge bg-primary",
-        secondary: "badge bg-secondary",
-        destructive: "badge bg-danger",
-        outline: "badge bg-outline",
-        success: "badge bg-success",
-        warning: "badge bg-warning"
+        default: "ui-badge ui-badge-default",
+        secondary: "ui-badge ui-badge-secondary",
+        destructive: "ui-badge ui-badge-destructive",
+        outline: "ui-badge ui-badge-outline",
+        success: "ui-badge ui-badge-default", // Using default for success
+        warning: "ui-badge ui-badge-default" // Using default for warning
     };
 
     return (

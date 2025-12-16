@@ -12,21 +12,22 @@ export default function LoadingSpinner({
     className = ''
 }: LoadingSpinnerProps) {
     const sizeClasses = {
-        sm: 'spinner-border-sm',
-        md: '',
-        lg: 'spinner-border-lg'
+        sm: 'ui-spinner-sm',
+        md: 'ui-spinner-md',
+        lg: 'ui-spinner-lg'
     };
 
-    const colorClasses = {
-        primary: 'text-primary',
-        white: 'text-white',
-        gray: 'text-secondary'
+    const colorStyles: React.CSSProperties = {
+        color: color === 'primary' ? '#3b82f6' : 
+               color === 'white' ? '#ffffff' : 
+               '#6b7280'
     };
 
     return (
         <div 
             role="status" 
-            className={`spinner-border ${sizeClasses[size]} ${colorClasses[color]} ${className}`}
+            className={`ui-spinner ${sizeClasses[size]} ${className}`}
+            style={colorStyles}
             aria-hidden="true"
         >
             <span className="visually-hidden">Loading...</span>

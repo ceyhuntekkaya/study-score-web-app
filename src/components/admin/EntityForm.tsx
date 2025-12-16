@@ -11,6 +11,11 @@ import { useCreateBranch, useUpdateBranch } from '@/generated/api/branch-rest-co
 import { useGetAllBrands } from '@/generated/api/brand-rest-controller/brand-rest-controller';
 import { useGetAllCampuss } from '@/generated/api/campus-rest-controller/campus-rest-controller';
 import { useGetAllInstitutions } from '@/generated/api/institution-rest-controller/institution-rest-controller';
+import { Input } from '@/components/ui/Input';
+import { Textarea } from '@/components/ui/Textarea';
+import { Label } from '@/components/ui/Label';
+import { Button } from '@/components/ui/Button';
+import LoadingButton from '@/components/ui/LoadingButton';
 
 type EntityType = 'brand' | 'campus' | 'institution' | 'branch';
 type EntityData = Brand | Campus | Institution | Branch;
@@ -205,14 +210,13 @@ export default function EntityForm({
         {/* Name - Required for all */}
         <div className="col-12">
           <div className="form-group">
-            <label htmlFor="name">
+            <Label htmlFor="name">
               {getEntityLabel()} Adı <span className="text-danger">*</span>
-            </label>
-            <input
+            </Label>
+            <Input
               id="name"
               name="name"
               type="text"
-              className="form-control"
               value={formData.name}
               onChange={handleChange}
               required
@@ -225,11 +229,10 @@ export default function EntityForm({
           <>
             <div className="col-12">
               <div className="form-group">
-                <label htmlFor="description">Açıklama</label>
-                <textarea
+                <Label htmlFor="description">Açıklama</Label>
+                <Textarea
                   id="description"
                   name="description"
-                  className="form-control"
                   rows={4}
                   value={formData.description}
                   onChange={handleChange}
@@ -238,12 +241,11 @@ export default function EntityForm({
             </div>
             <div className="col-md-6">
               <div className="form-group">
-                <label htmlFor="email">E-posta</label>
-                <input
+                <Label htmlFor="email">E-posta</Label>
+                <Input
                   id="email"
                   name="email"
                   type="email"
-                  className="form-control"
                   value={formData.email}
                   onChange={handleChange}
                 />
@@ -251,12 +253,11 @@ export default function EntityForm({
             </div>
             <div className="col-md-6">
               <div className="form-group">
-                <label htmlFor="phone">Telefon</label>
-                <input
+                <Label htmlFor="phone">Telefon</Label>
+                <Input
                   id="phone"
                   name="phone"
                   type="tel"
-                  className="form-control"
                   value={formData.phone}
                   onChange={handleChange}
                 />
@@ -264,12 +265,11 @@ export default function EntityForm({
             </div>
             <div className="col-md-6">
               <div className="form-group">
-                <label htmlFor="website">Website</label>
-                <input
+                <Label htmlFor="website">Website</Label>
+                <Input
                   id="website"
                   name="website"
                   type="url"
-                  className="form-control"
                   value={formData.website}
                   onChange={handleChange}
                 />
@@ -277,12 +277,11 @@ export default function EntityForm({
             </div>
             <div className="col-md-6">
               <div className="form-group">
-                <label htmlFor="contactPerson">İletişim Kişisi</label>
-                <input
+                <Label htmlFor="contactPerson">İletişim Kişisi</Label>
+                <Input
                   id="contactPerson"
                   name="contactPerson"
                   type="text"
-                  className="form-control"
                   value={formData.contactPerson}
                   onChange={handleChange}
                 />
@@ -290,11 +289,10 @@ export default function EntityForm({
             </div>
             <div className="col-12">
               <div className="form-group">
-                <label htmlFor="address">Adres</label>
-                <textarea
+                <Label htmlFor="address">Adres</Label>
+                <Textarea
                   id="address"
                   name="address"
-                  className="form-control"
                   rows={2}
                   value={formData.address}
                   onChange={handleChange}
@@ -303,12 +301,11 @@ export default function EntityForm({
             </div>
             <div className="col-12">
               <div className="form-group">
-                <label htmlFor="logo">Logo URL</label>
-                <input
+                <Label htmlFor="logo">Logo URL</Label>
+                <Input
                   id="logo"
                   name="logo"
                   type="url"
-                  className="form-control"
                   value={formData.logo}
                   onChange={handleChange}
                 />
@@ -321,9 +318,9 @@ export default function EntityForm({
         {entityType === 'campus' && (
           <div className="col-12">
             <div className="form-group">
-              <label htmlFor="brandId">
+              <Label htmlFor="brandId">
                 Kurum <span className="text-danger">*</span>
-              </label>
+              </Label>
               <select
                 id="brandId"
                 name="brandId"
@@ -348,9 +345,9 @@ export default function EntityForm({
         {entityType === 'institution' && (
           <div className="col-12">
             <div className="form-group">
-              <label htmlFor="campusId">
+              <Label htmlFor="campusId">
                 Kampüs <span className="text-danger">*</span>
-              </label>
+              </Label>
               <select
                 id="campusId"
                 name="campusId"
@@ -378,9 +375,9 @@ export default function EntityForm({
           <>
             <div className="col-md-6">
               <div className="form-group">
-                <label htmlFor="institutionId">
+                <Label htmlFor="institutionId">
                   Kurum <span className="text-danger">*</span>
-                </label>
+                </Label>
                 <select
                   id="institutionId"
                   name="institutionId"
@@ -403,12 +400,11 @@ export default function EntityForm({
             </div>
             <div className="col-md-6">
               <div className="form-group">
-                <label htmlFor="grade">Sınıf</label>
-                <input
+                <Label htmlFor="grade">Sınıf</Label>
+                <Input
                   id="grade"
                   name="grade"
                   type="text"
-                  className="form-control"
                   value={formData.grade}
                   onChange={handleChange}
                 />
@@ -420,7 +416,7 @@ export default function EntityForm({
         {/* Status - For all */}
         <div className="col-12">
           <div className="form-group">
-            <label htmlFor="status">Durum</label>
+            <Label htmlFor="status">Durum</Label>
             <select
               id="status"
               name="status"
@@ -437,36 +433,26 @@ export default function EntityForm({
         {/* Submit buttons */}
         <div className="col-12">
           <div className="form-group d-flex gap-3">
-            <button
+            <LoadingButton
               type="submit"
-              className="rbt-btn btn-md hover-icon-reverse"
+              variant="primary"
+              size="md"
+              isLoading={isLoading}
+              loadingText={t('common.loading') || 'Yükleniyor...'}
               disabled={isLoading}
             >
-              <span className="icon-reverse-wrapper">
-                <span className="btn-text">
-                  {isLoading
-                    ? t('common.loading')
-                    : isEditMode
-                    ? t('common.save')
-                    : t('common.add')}
-                </span>
-                <span className="btn-icon">
-                  <i className="feather-arrow-right"></i>
-                </span>
-                <span className="btn-icon">
-                  <i className="feather-arrow-right"></i>
-                </span>
-              </span>
-            </button>
+              {isEditMode ? t('common.save') || 'Kaydet' : t('common.add') || 'Ekle'}
+            </LoadingButton>
             {onCancel && (
-              <button
+              <Button
                 type="button"
-                className="rbt-btn btn-md btn-border-gradient"
+                variant="outline"
+                size="md"
                 onClick={onCancel}
                 disabled={isLoading}
               >
-                {t('common.cancel')}
-              </button>
+                {t('common.cancel') || 'İptal'}
+              </Button>
             )}
           </div>
         </div>

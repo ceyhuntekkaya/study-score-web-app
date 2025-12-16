@@ -54,7 +54,7 @@ export default function ShortAnswerQuestion({
     maxCharacters = 500,
     minCharacters = 0,
     trimWhitespace = true,
-  } = templateData;
+  } = (templateData as any).options || templateData || {};
 
   const characterCount = answerText.length;
 

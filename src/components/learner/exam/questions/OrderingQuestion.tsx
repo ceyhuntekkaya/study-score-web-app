@@ -50,7 +50,7 @@ export default function OrderingQuestion({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
-  const { items: originalItems = [], shuffleItems = false } = templateData.options || {};
+  const { items: originalItems = [], shuffleItems = false } = (templateData.options || {}) as any;
 
   // Initialize items
   useEffect(() => {
@@ -59,12 +59,12 @@ export default function OrderingQuestion({
     if (initialAnswer?.orderedItemIds && initialAnswer.orderedItemIds.length > 0) {
       // Restore from answer
       processedItems = initialAnswer.orderedItemIds
-        .map((id) => originalItems.find((item) => item.id === id))
+        .map((id) => (originalItems as any[]).find((item: any) => item.id === id))
         .filter((item): item is OrderingItem => item !== undefined);
       
       // Add any missing items
-      originalItems.forEach((item) => {
-        if (!processedItems.find((i) => i.id === item.id)) {
+      (originalItems as any[]).forEach((item: any) => {
+        if (!processedItems.find((i: any) => i.id === item.id)) {
           processedItems.push(item);
         }
       });

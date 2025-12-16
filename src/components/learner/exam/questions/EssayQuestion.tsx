@@ -315,13 +315,13 @@ export default function EssayQuestion({
                   padding: '3px 8px',
                   margin: '3px',
                   borderRadius: '4px',
-                  backgroundColor: topicCheck.found.includes(topic) ? '#28a745' : '#ffc107',
+                  backgroundColor: topicCheck.found?.includes(topic) ? '#28a745' : '#ffc107',
                   color: '#ffffff',
                   fontSize: '11px',
                   fontWeight: '500',
                 }}
               >
-                {topic} {topicCheck.found.includes(topic) ? '✓' : '✗'}
+                {topic} {topicCheck.found?.includes(topic) ? '✓' : '✗'}
               </span>
             ))}
           </div>

@@ -12,7 +12,7 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({
     items,
     size = 'md',
     variant = 'primary'
-}) => {
+}: DropdownButtonProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -27,7 +27,7 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const itemVariants = {
+    const itemVariants: Record<string, string> = {
         default: '',
         danger: 'text-danger',
         warning: 'text-warning'

@@ -13,8 +13,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         return (
             <textarea
                 className={cn(
-                    "form-control",
-                    error && "is-invalid",
+                    "ui-textarea",
+                    error && "error",
                     className
                 )}
                 ref={ref}

@@ -61,16 +61,16 @@ export default function MatchingQuestion({
     initialAnswer?.matches || {}
   );
 
-  const { pairs = [], distractors = [], matchingType = 'ONE_TO_ONE', shuffleLeftItems = false, shuffleRightItems = false } = templateData.options || {};
+  const { pairs = [], distractors = [], matchingType = 'ONE_TO_ONE', shuffleLeftItems = false, shuffleRightItems = false } = (templateData.options || {}) as any;
 
   // Get all right items (from pairs + distractors on RIGHT side)
   const rightItems = [
-    ...pairs.map((pair) => ({
+    ...(pairs as any[]).map((pair: any) => ({
       id: pair.rightId,
       text: pair.rightText,
       mediaUrl: pair.rightMediaUrl,
     })),
-    ...distractors.filter((d) => d.side === 'RIGHT').map((d) => ({
+    ...(distractors as any[]).filter((d: any) => d.side === 'RIGHT').map((d: any) => ({
       id: d.id,
       text: d.text,
       mediaUrl: d.mediaUrl,
@@ -79,12 +79,12 @@ export default function MatchingQuestion({
 
   // Get all left items (from pairs + distractors on LEFT side)
   const leftItems = [
-    ...pairs.map((pair) => ({
+    ...(pairs as any[]).map((pair: any) => ({
       id: pair.leftId,
       text: pair.leftText,
       mediaUrl: pair.leftMediaUrl,
     })),
-    ...distractors.filter((d) => d.side === 'LEFT').map((d) => ({
+    ...(distractors as any[]).filter((d: any) => d.side === 'LEFT').map((d: any) => ({
       id: d.id,
       text: d.text,
       mediaUrl: d.mediaUrl,

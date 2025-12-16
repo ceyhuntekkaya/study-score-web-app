@@ -14,28 +14,33 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
         const clampedValue = Math.min(100, Math.max(0, value));
 
         const variantClasses = {
-            primary: "bg-primary",
-            success: "bg-success",
-            warning: "bg-warning",
-            danger: "bg-danger",
-            info: "bg-info"
+            primary: "bg-blue-500",
+            success: "bg-green-500",
+            warning: "bg-yellow-500",
+            danger: "bg-red-500",
+            info: "bg-cyan-500"
         };
 
         return (
             <div
                 ref={ref}
-                className={cn("progress", className)}
+                className={cn("ui-progress", className)}
             >
                 <div
-                    className={cn("progress-bar", variantClasses[variant])}
+                    className="ui-progress-bar"
                     role="progressbar"
-                    style={{ width: `${clampedValue}%` }}
+                    style={{ 
+                        width: `${clampedValue}%`,
+                        backgroundColor: variant === 'primary' ? '#3b82f6' : 
+                                        variant === 'success' ? '#10b981' :
+                                        variant === 'warning' ? '#f59e0b' :
+                                        variant === 'danger' ? '#ef4444' :
+                                        '#06b6d4'
+                    }}
                     aria-valuenow={clampedValue}
                     aria-valuemin={0}
                     aria-valuemax={100}
-                >
-                    {clampedValue}%
-                </div>
+                />
             </div>
         );
     }

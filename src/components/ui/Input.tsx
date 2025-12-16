@@ -13,8 +13,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         return (
             <input
                 className={cn(
-                    "form-control",
-                    error && "is-invalid",
+                    "ui-input",
+                    error && "error",
                     className
                 )}
                 ref={ref}

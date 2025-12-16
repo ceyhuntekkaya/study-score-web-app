@@ -90,7 +90,6 @@ const translations: Record<Language, Translations> = {
     'menu.admin': 'Admin',
     'menu.institutions': 'Institutions',
     'menu.courses': 'Courses',
-    'menu.exams': 'Exams',
     'menu.students': 'Students',
     
     // Header Menu Items
@@ -197,7 +196,6 @@ const translations: Record<Language, Translations> = {
     'menu.admin': 'Admin',
     'menu.institutions': 'Kurumlar',
     'menu.courses': 'Kurslar',
-    'menu.exams': 'Sınavlar',
     'menu.students': 'Öğrenciler',
     
     // Header Menu Items

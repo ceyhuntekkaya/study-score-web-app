@@ -15,18 +15,31 @@ interface SwitchProps {
 const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
     ({ id, checked, onCheckedChange, disabled = false, className = '', label }, ref) => {
         return (
-            <div className="form-check form-switch">
-                <input
-                    className={cn("form-check-input", className)}
-                    type="checkbox"
+            <div className="d-flex align-items-center gap-2">
+                <button
+                    type="button"
                     role="switch"
                     id={id}
-                    checked={checked}
+                    ref={ref}
+                    aria-checked={checked}
                     disabled={disabled}
-                    onChange={(e) => !disabled && onCheckedChange(e.target.checked)}
-                />
+                    onClick={() => !disabled && onCheckedChange(!checked)}
+                    className={cn(
+                        "ui-switch",
+                        disabled && "disabled",
+                        className
+                    )}
+                >
+                    <span
+                        aria-hidden="true"
+                        className="ui-switch-thumb"
+                    />
+                    <span className="visually-hidden">
+                        {checked ? 'Açık' : 'Kapalı'}
+                    </span>
+                </button>
                 {label && (
-                    <label className="form-check-label" htmlFor={id}>
+                    <label htmlFor={id} className="mb-0">
                         {label}
                     </label>
                 )}

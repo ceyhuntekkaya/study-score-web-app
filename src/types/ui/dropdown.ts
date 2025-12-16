@@ -13,5 +13,5 @@ export interface DropdownButtonProps {
     icon?: React.ReactNode;
     items: DropdownItem[];
     size?: 'sm' | 'md' | 'lg';
-    variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info';
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
 }

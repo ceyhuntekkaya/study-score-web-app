@@ -13,8 +13,8 @@ const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
         return (
             <label
                 className={cn(
-                    "form-label",
-                    error && "text-danger",
+                    "ui-label",
+                    error && "error",
                     className
                 )}
                 ref={ref}

@@ -12,11 +12,11 @@ const Alert = React.forwardRef<
     AlertProps
 >(({ className, variant = "default", ...props }, ref) => {
     const variants = {
-        default: "alert",
-        destructive: "alert alert-danger",
-        success: "alert alert-success",
-        warning: "alert alert-warning",
-        info: "alert alert-info"
+        default: "ui-alert ui-alert-default",
+        destructive: "ui-alert ui-alert-destructive",
+        success: "ui-alert ui-alert-default",
+        warning: "ui-alert ui-alert-default",
+        info: "ui-alert ui-alert-default"
     };
 
     return (
@@ -36,7 +36,7 @@ const AlertTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <h5
         ref={ref}
-        className={cn("alert-heading", className)}
+        className={cn("ui-alert-title", className)}
         {...props}
     />
 ))
@@ -48,7 +48,7 @@ const AlertDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <div
         ref={ref}
-        className={cn("alert-description", className)}
+        className={cn("ui-alert-description", className)}
         {...props}
     />
 ))

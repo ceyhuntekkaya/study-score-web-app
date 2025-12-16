@@ -18,7 +18,11 @@ export interface Column<T> {
     }>;
 }
 
+// RecordType - Orval'dan gelen tiplerle uyumlu olması için esnek yapıldı
+// Orval tipleri zaten object olduğu için, index signature'ı optional yapıyoruz
+// Bu sayede Brand, Campus, Institution gibi Orval tipleriyle uyumlu çalışır
 export type RecordType = {
-    [key: string]: unknown;
     id?: string | number;
+} & {
+    [key: string]: any; // Index signature - Orval tipleriyle uyumlu
 };
