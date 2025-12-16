@@ -52,7 +52,7 @@ export interface LessonSection {
 /**
  * Get sidebar menu for a specific role
  */
-export function getSidebarMenu(role: 'learner' | 'tutor' | 'manager'): SidebarMenu {
+export function getSidebarMenu(role: 'learner' | 'tutor' | 'manager' | 'admin'): SidebarMenu {
   return menusData.sidebars[role];
 }
 

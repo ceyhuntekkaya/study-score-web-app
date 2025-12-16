@@ -8,11 +8,10 @@ export default function AdminDashboardPage() {
   const { t } = useTranslation();
 
   return (
-    <div>
-      <h1>Admin Dashboard</h1>
-      <p>This is the admin dashboard page.</p>
-      <p>F5 yapıldığında bu sayfadan devam edeceksiniz.</p>
-      
+    <>
+      <div className="rbt-page-title">
+        <h2>Admin Dashboard</h2>
+      </div>
       <div style={{ marginTop: '20px', padding: '20px', backgroundColor: '#fce4ec', borderRadius: '8px' }}>
         <h3>Admin Data</h3>
         <pre>{JSON.stringify(adminData || { message: 'No data yet' }, null, 2)}</pre>
@@ -31,7 +30,7 @@ export default function AdminDashboardPage() {
           Refresh Data
         </button>
       </div>
-    </div>
+    </>
   );
 }
 

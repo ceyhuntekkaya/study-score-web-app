@@ -29,6 +29,11 @@ const translations: Record<Language, Translations> = {
     'common.success': 'Success',
     'common.confirm': 'Confirm',
     'common.language': 'Language',
+    'common.search': 'Search...',
+    'common.noData': 'No data available',
+    'common.showing': 'Showing',
+    'common.of': 'of',
+    'common.add': 'Add',
     
     // Auth
     'auth.login.title': 'Login',
@@ -82,6 +87,11 @@ const translations: Record<Language, Translations> = {
     'menu.announcements': 'Announcements',
     'menu.quizAttempts': 'Quiz Attempts',
     'menu.assignments': 'Assignments',
+    'menu.admin': 'Admin',
+    'menu.institutions': 'Institutions',
+    'menu.courses': 'Courses',
+    'menu.exams': 'Exams',
+    'menu.students': 'Students',
     
     // Header Menu Items
     'menu.myDashboard': 'My Dashboard',
@@ -126,6 +136,11 @@ const translations: Record<Language, Translations> = {
     'common.success': 'Başarılı',
     'common.confirm': 'Onayla',
     'common.language': 'Dil',
+    'common.search': 'Ara...',
+    'common.noData': 'Veri bulunamadı',
+    'common.showing': 'Gösteriliyor',
+    'common.of': '/',
+    'common.add': 'Ekle',
     
     // Auth
     'auth.login.title': 'Giriş Yap',
@@ -179,6 +194,11 @@ const translations: Record<Language, Translations> = {
     'menu.announcements': 'Duyurular',
     'menu.quizAttempts': 'Quiz Denemeleri',
     'menu.assignments': 'Ödevler',
+    'menu.admin': 'Admin',
+    'menu.institutions': 'Kurumlar',
+    'menu.courses': 'Kurslar',
+    'menu.exams': 'Sınavlar',
+    'menu.students': 'Öğrenciler',
     
     // Header Menu Items
     'menu.myDashboard': 'Kontrol Panelim',

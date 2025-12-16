@@ -224,6 +224,56 @@
           ]
         }
       ]
+    },
+    "admin": {
+      "sections": [
+        {
+          "titleKey": "menu.admin",
+          "items": [
+            {
+              "icon": "feather-home",
+              "labelKey": "menu.dashboard",
+              "href": "/admin/dashboard"
+            },
+            {
+              "icon": "feather-building",
+              "labelKey": "menu.institutions",
+              "href": "/admin/dashboard/brands"
+            },
+            {
+              "icon": "feather-book-open",
+              "labelKey": "menu.courses",
+              "href": "/admin/dashboard/courses"
+            },
+            {
+              "icon": "feather-file-text",
+              "labelKey": "menu.exams",
+              "href": "/admin/dashboard/exams"
+            },
+            {
+              "icon": "feather-users",
+              "labelKey": "menu.students",
+              "href": "/admin/dashboard/students"
+            }
+          ]
+        },
+        {
+          "titleKey": "menu.user",
+          "items": [
+            {
+              "icon": "feather-settings",
+              "labelKey": "nav.settings",
+              "href": "/admin/dashboard/settings"
+            },
+            {
+              "icon": "feather-log-out",
+              "labelKey": "common.logout",
+              "href": "#",
+              "action": "logout"
+            }
+          ]
+        }
+      ]
     }
   },
   "headers": {

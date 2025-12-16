@@ -1,0 +1,146 @@
+'use client';
+
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useGetAllCampuss } from '@/generated/api/campus-rest-controller/campus-rest-controller';
+import { useGetBrandById } from '@/generated/api/brand-rest-controller/brand-rest-controller';
+import { Campus } from '@/generated/api/openAPIDefinition.schemas';
+import DataTable, { Column } from '@/components/admin/DataTable';
+import { useTranslation } from '@/i18n';
+import { useMemo } from 'react';
+
+export default function BrandCampusesPage() {
+  const { t } = useTranslation();
+  const params = useParams();
+  const router = useRouter();
+  const brandId = params?.id as string;
+
+  const { data: brand, isLoading: brandLoading } = useGetBrandById(brandId, {
+    query: { enabled: !!brandId },
+  });
+  const { data: allCampuses, isLoading: campusesLoading } = useGetAllCampuss();
+
+  // Filter campuses by brand ID
+  const campuses = useMemo(() => {
+    if (!allCampuses || !brandId) return [];
+    return allCampuses.filter((campus) => campus.brand?.id === brandId);
+  }, [allCampuses, brandId]);
+
+  const columns: Column<Campus>[] = [
+    {
+      key: 'name',
+      label: 'Kampüs Adı',
+      sortable: true,
+    },
+    {
+      key: 'status',
+      label: 'Durum',
+      sortable: true,
+      render: (value) => {
+        const status = value as string;
+        const statusClass =
+          status === 'ACTIVE'
+            ? 'badge bg-success'
+            : status === 'PASSIVE'
+            ? 'badge bg-warning'
+            : 'badge bg-secondary';
+        return <span className={statusClass}>{status || '-'}</span>;
+      },
+    },
+    {
+      key: 'createdAt',
+      label: 'Oluşturulma Tarihi',
+      sortable: true,
+      render: (value) => {
+        if (!value) return '-';
+        const date = new Date(value as string);
+        return date.toLocaleDateString('tr-TR');
+      },
+    },
+    {
+      key: 'edit',
+      label: 'Düzenle',
+      sortable: false,
+      clickable: true,
+      render: (value, row) => {
+        return (
+          <button
+            className="rbt-btn btn-sm btn-border-gradient"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/admin/dashboard/campuses/${row.id}/edit`);
+            }}
+          >
+            <i className="feather-edit me-1"></i>
+            {t('common.edit') || 'Düzenle'}
+          </button>
+        );
+      },
+    },
+    {
+      key: 'actions',
+      label: 'İşlemler',
+      sortable: false,
+      clickable: true,
+      render: (value, row) => {
+        return (
+          <button
+            className="rbt-btn btn-sm btn-border-gradient"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/admin/dashboard/campuses/${row.id}/institutions`);
+            }}
+          >
+            <i className="feather-list me-1"></i>
+            Kurumlar
+          </button>
+        );
+      },
+    },
+  ];
+
+  const handleRowClick = (row: Campus) => {
+    if (row.id) {
+      router.push(`/admin/dashboard/campuses/${row.id}/edit`);
+    }
+  };
+
+  if (brandLoading || campusesLoading) {
+    return (
+      <div className="text-center py-5">
+        <p>{t('common.loading')}</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
+        <div>
+          <h2>{brand?.name || 'Kurum'} - Kampüsler</h2>
+          <Link href="/admin/dashboard/brands" className="rbt-btn-link">
+            <i className="feather-arrow-left me-1"></i>
+            Kurumlar Listesine Dön
+          </Link>
+        </div>
+        <Link
+          href={`/admin/dashboard/brands/${brandId}/campuses/add`}
+          className="rbt-btn btn-md hover-icon-reverse"
+        >
+          <span className="icon-reverse-wrapper">
+            <span className="btn-text">{t('common.add') || 'Ekle'}</span>
+            <span className="btn-icon"><i className="feather-plus"></i></span>
+            <span className="btn-icon"><i className="feather-plus"></i></span>
+          </span>
+        </Link>
+      </div>
+      <DataTable
+        data={campuses}
+        columns={columns}
+        pageSize={20}
+        searchable={true}
+        onRowClick={handleRowClick}
+      />
+    </>
+  );
+}
