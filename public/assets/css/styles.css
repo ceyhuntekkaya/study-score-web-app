@@ -8579,7 +8579,7 @@ input[type=radio] ~ label::after {
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   display: inline-block;
 }
 .form-group input {
@@ -21214,7 +21214,7 @@ span.transparent-button:hover i {
 .form-group {
   position: relative;
   z-index: 2;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
   display: block;
 }
 .form-group label {

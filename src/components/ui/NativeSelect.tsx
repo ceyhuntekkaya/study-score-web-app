@@ -2,12 +2,12 @@
 
 import React from "react";
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface NativeSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   error?: boolean;
 }
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className = "", error, style, ...props }, ref) => {
+const NativeSelect = React.forwardRef<HTMLSelectElement, NativeSelectProps>(
+  ({ className = "", error, style, children, ...props }, ref) => {
     const baseStyle: React.CSSProperties = {
       // Reset all inherited styles
       all: "unset" as React.CSSProperties["all"],
@@ -21,16 +21,13 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       paddingTop: "8px",
       paddingBottom: "8px",
       paddingLeft: "16px",
-      paddingRight: "16px",
+      paddingRight: "40px", // Extra space for dropdown arrow
 
       // Margin: 8px 0px 0px
       marginTop: "8px",
       marginRight: "0",
       marginBottom: "0",
       marginLeft: "0",
-
-      // min-height for textarea
-      minHeight: "120px",
 
       // text-xs - font-size: 12px
       fontSize: "12px",
@@ -42,11 +39,15 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       // font-family: inherit
       fontFamily: "inherit",
 
-      // color: #092e5e (text color)
+      // color: #092e5e
       color: "#092e5e",
 
-      // Background: #FFFFFF
+      // Background: #FFFFFF with dropdown arrow
       backgroundColor: "#FFFFFF",
+      backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "right 12px center",
+      backgroundSize: "16px 12px",
 
       // border: .0625rem solid
       border: "0.0625rem solid",
@@ -57,13 +58,13 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       // rounded-md - border-radius: 6px
       borderRadius: "6px",
 
-      // shadow-sm: box-shadow: 0 2px 5px rgba(140, 152, 164, .2)
+      // shadow-sm
       boxShadow: "0 2px 5px rgba(140, 152, 164, 0.2)",
 
-      // Transition - all .2s ease
+      // Transition
       transition: "all 0.2s ease",
 
-      // focus:outline-none
+      // outline-none
       outline: "none",
       outlineWidth: "0",
       outlineStyle: "none",
@@ -78,18 +79,20 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       WebkitAppearance: "none",
       MozAppearance: "none",
 
-      // Resize
-      resize: "vertical",
+      // cursor
+      cursor: "pointer",
 
       ...style,
     };
 
     return (
-      <textarea className={className} style={baseStyle} ref={ref} {...props} />
+      <select className={className} style={baseStyle} ref={ref} {...props}>
+        {children}
+      </select>
     );
   }
 );
 
-Textarea.displayName = "Textarea";
+NativeSelect.displayName = "NativeSelect";
 
-export { Textarea };
+export { NativeSelect };

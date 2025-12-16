@@ -1,23 +1,48 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslation } from '@/i18n';
-import { Brand, Campus, Institution, Branch } from '@/generated/api/openAPIDefinition.schemas';
-import { useCreateBrand, useUpdateBrand } from '@/generated/api/brand-rest-controller/brand-rest-controller';
-import { useCreateCampus, useUpdateCampus } from '@/generated/api/campus-rest-controller/campus-rest-controller';
-import { useCreateInstitution, useUpdateInstitution } from '@/generated/api/institution-rest-controller/institution-rest-controller';
-import { useCreateBranch, useUpdateBranch } from '@/generated/api/branch-rest-controller/branch-rest-controller';
-import { useGetAllBrands } from '@/generated/api/brand-rest-controller/brand-rest-controller';
-import { useGetAllCampuss } from '@/generated/api/campus-rest-controller/campus-rest-controller';
-import { useGetAllInstitutions } from '@/generated/api/institution-rest-controller/institution-rest-controller';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
-import { Label } from '@/components/ui/Label';
-import { Button } from '@/components/ui/Button';
-import LoadingButton from '@/components/ui/LoadingButton';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslation } from "@/i18n";
+import {
+  Brand,
+  Campus,
+  Institution,
+  Branch,
+} from "@/generated/api/openAPIDefinition.schemas";
+import {
+  useCreateBrand,
+  useUpdateBrand,
+} from "@/generated/api/brand-rest-controller/brand-rest-controller";
+import {
+  useCreateCampus,
+  useUpdateCampus,
+} from "@/generated/api/campus-rest-controller/campus-rest-controller";
+import {
+  useCreateInstitution,
+  useUpdateInstitution,
+} from "@/generated/api/institution-rest-controller/institution-rest-controller";
+import {
+  useCreateBranch,
+  useUpdateBranch,
+} from "@/generated/api/branch-rest-controller/branch-rest-controller";
+import { useGetAllBrands } from "@/generated/api/brand-rest-controller/brand-rest-controller";
+import { useGetAllCampuss } from "@/generated/api/campus-rest-controller/campus-rest-controller";
+import { useGetAllInstitutions } from "@/generated/api/institution-rest-controller/institution-rest-controller";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Label } from "@/components/ui/Label";
+import { Button } from "@/components/ui/Button";
+import LoadingButton from "@/components/ui/LoadingButton";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from "../ui/Select";
 
-type EntityType = 'brand' | 'campus' | 'institution' | 'branch';
+type EntityType = "brand" | "campus" | "institution" | "branch";
 type EntityData = Brand | Campus | Institution | Branch;
 
 interface EntityFormProps {
@@ -41,19 +66,19 @@ export default function EntityForm({
 
   // Form state
   const [formData, setFormData] = useState<any>({
-    name: '',
-    description: '',
-    logo: '',
-    website: '',
-    phone: '',
-    email: '',
-    address: '',
-    contactPerson: '',
-    status: 'ACTIVE',
-    grade: '',
-    ...(entityType === 'campus' && { brand: { id: parentId } }),
-    ...(entityType === 'institution' && { campus: { id: parentId } }),
-    ...(entityType === 'branch' && { institution: { id: parentId } }),
+    name: "",
+    description: "",
+    logo: "",
+    website: "",
+    phone: "",
+    email: "",
+    address: "",
+    contactPerson: "",
+    status: "ACTIVE",
+    grade: "",
+    ...(entityType === "campus" && { brand: { id: parentId } }),
+    ...(entityType === "institution" && { campus: { id: parentId } }),
+    ...(entityType === "branch" && { institution: { id: parentId } }),
   });
 
   // Mutations
@@ -75,31 +100,41 @@ export default function EntityForm({
   useEffect(() => {
     if (initialData) {
       setFormData({
-        name: initialData.name || '',
-        description: (initialData as Brand).description || '',
-        logo: (initialData as Brand).logo || '',
-        website: (initialData as Brand).website || '',
-        phone: (initialData as Brand).phone || '',
-        email: (initialData as Brand).email || '',
-        address: (initialData as Brand).address || '',
-        contactPerson: (initialData as Brand).contactPerson || '',
-        status: initialData.status || 'ACTIVE',
-        grade: (initialData as Branch).grade || '',
-        ...(entityType === 'campus' && { brand: (initialData as Campus).brand }),
-        ...(entityType === 'institution' && { campus: (initialData as Institution).campus }),
-        ...(entityType === 'branch' && { institution: (initialData as Branch).institution }),
+        name: initialData.name || "",
+        description: (initialData as Brand).description || "",
+        logo: (initialData as Brand).logo || "",
+        website: (initialData as Brand).website || "",
+        phone: (initialData as Brand).phone || "",
+        email: (initialData as Brand).email || "",
+        address: (initialData as Brand).address || "",
+        contactPerson: (initialData as Brand).contactPerson || "",
+        status: initialData.status || "ACTIVE",
+        grade: (initialData as Branch).grade || "",
+        ...(entityType === "campus" && {
+          brand: (initialData as Campus).brand,
+        }),
+        ...(entityType === "institution" && {
+          campus: (initialData as Institution).campus,
+        }),
+        ...(entityType === "branch" && {
+          institution: (initialData as Branch).institution,
+        }),
       });
     }
   }, [initialData, entityType]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
-    
-    if (name === 'brandId' && entityType === 'campus') {
+
+    if (name === "brandId" && entityType === "campus") {
       setFormData({ ...formData, brand: { id: value } });
-    } else if (name === 'campusId' && entityType === 'institution') {
+    } else if (name === "campusId" && entityType === "institution") {
       setFormData({ ...formData, campus: { id: value } });
-    } else if (name === 'institutionId' && entityType === 'branch') {
+    } else if (name === "institutionId" && entityType === "branch") {
       setFormData({ ...formData, institution: { id: value } });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -114,32 +149,46 @@ export default function EntityForm({
         // Update mode
         const id = initialData!.id!;
         switch (entityType) {
-          case 'brand':
-            await updateBrand.mutateAsync({ brandId: id, data: formData as Brand });
+          case "brand":
+            await updateBrand.mutateAsync({
+              brandId: id,
+              data: formData as Brand,
+            });
             break;
-          case 'campus':
-            await updateCampus.mutateAsync({ campusId: id, data: formData as Campus });
+          case "campus":
+            await updateCampus.mutateAsync({
+              campusId: id,
+              data: formData as Campus,
+            });
             break;
-          case 'institution':
-            await updateInstitution.mutateAsync({ institutionId: id, data: formData as Institution });
+          case "institution":
+            await updateInstitution.mutateAsync({
+              institutionId: id,
+              data: formData as Institution,
+            });
             break;
-          case 'branch':
-            await updateBranch.mutateAsync({ branchId: id, data: formData as Branch });
+          case "branch":
+            await updateBranch.mutateAsync({
+              branchId: id,
+              data: formData as Branch,
+            });
             break;
         }
       } else {
         // Create mode
         switch (entityType) {
-          case 'brand':
+          case "brand":
             await createBrand.mutateAsync({ data: formData as Brand });
             break;
-          case 'campus':
+          case "campus":
             await createCampus.mutateAsync({ data: formData as Campus });
             break;
-          case 'institution':
-            await createInstitution.mutateAsync({ data: formData as Institution });
+          case "institution":
+            await createInstitution.mutateAsync({
+              data: formData as Institution,
+            });
             break;
-          case 'branch':
+          case "branch":
             await createBranch.mutateAsync({ data: formData as Branch });
             break;
         }
@@ -149,33 +198,36 @@ export default function EntityForm({
         onSuccess();
       } else {
         // Default redirect
-        if (entityType === 'brand') {
-          router.push('/admin/dashboard/brands');
-        } else if (entityType === 'campus') {
+        if (entityType === "brand") {
+          router.push("/admin/dashboard/brands");
+        } else if (entityType === "campus") {
           const brandId = parentId || (initialData as Campus)?.brand?.id;
           if (brandId) {
             router.push(`/admin/dashboard/brands/${brandId}/campuses`);
           } else {
-            router.push('/admin/dashboard/brands');
+            router.push("/admin/dashboard/brands");
           }
-        } else if (entityType === 'institution') {
+        } else if (entityType === "institution") {
           const campusId = parentId || (initialData as Institution)?.campus?.id;
           if (campusId) {
             router.push(`/admin/dashboard/campuses/${campusId}/institutions`);
           } else {
-            router.push('/admin/dashboard/brands');
+            router.push("/admin/dashboard/brands");
           }
-        } else if (entityType === 'branch') {
-          const institutionId = parentId || (initialData as Branch)?.institution?.id;
+        } else if (entityType === "branch") {
+          const institutionId =
+            parentId || (initialData as Branch)?.institution?.id;
           if (institutionId) {
-            router.push(`/admin/dashboard/institutions/${institutionId}/branches`);
+            router.push(
+              `/admin/dashboard/institutions/${institutionId}/branches`
+            );
           } else {
-            router.push('/admin/dashboard/brands');
+            router.push("/admin/dashboard/brands");
           }
         }
       }
     } catch (error) {
-      console.error('Form submission error:', error);
+      console.error("Form submission error:", error);
     }
   };
 
@@ -191,22 +243,22 @@ export default function EntityForm({
 
   const getEntityLabel = () => {
     switch (entityType) {
-      case 'brand':
-        return t('menu.institutions') || 'Kurum';
-      case 'campus':
-        return 'Kampüs';
-      case 'institution':
-        return 'Kurum';
-      case 'branch':
-        return 'Branch';
+      case "brand":
+        return t("menu.institutions") || "Kurum";
+      case "campus":
+        return "Kampüs";
+      case "institution":
+        return "Kurum";
+      case "branch":
+        return "Branch";
       default:
-        return 'Entity';
+        return "Entity";
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="rbt-form-wrapper">
-      <div className="row g-5">
+      <div className="row">
         {/* Name - Required for all */}
         <div className="col-12">
           <div className="form-group">
@@ -225,7 +277,7 @@ export default function EntityForm({
         </div>
 
         {/* Brand specific fields */}
-        {entityType === 'brand' && (
+        {entityType === "brand" && (
           <>
             <div className="col-12">
               <div className="form-group">
@@ -315,7 +367,7 @@ export default function EntityForm({
         )}
 
         {/* Campus - Brand selection */}
-        {entityType === 'campus' && (
+        {entityType === "campus" && (
           <div className="col-12">
             <div className="form-group">
               <Label htmlFor="brandId">
@@ -325,7 +377,7 @@ export default function EntityForm({
                 id="brandId"
                 name="brandId"
                 className="form-control"
-                value={formData.brand?.id || parentId || ''}
+                value={formData.brand?.id || parentId || ""}
                 onChange={handleChange}
                 required
                 disabled={!!parentId} // Disable if parentId is provided (from URL)
@@ -342,7 +394,7 @@ export default function EntityForm({
         )}
 
         {/* Institution - Campus selection */}
-        {entityType === 'institution' && (
+        {entityType === "institution" && (
           <div className="col-12">
             <div className="form-group">
               <Label htmlFor="campusId">
@@ -352,7 +404,7 @@ export default function EntityForm({
                 id="campusId"
                 name="campusId"
                 className="form-control"
-                value={formData.campus?.id || parentId || ''}
+                value={formData.campus?.id || parentId || ""}
                 onChange={handleChange}
                 required
                 disabled={!!parentId}
@@ -371,7 +423,7 @@ export default function EntityForm({
         )}
 
         {/* Branch - Institution selection and grade */}
-        {entityType === 'branch' && (
+        {entityType === "branch" && (
           <>
             <div className="col-md-6">
               <div className="form-group">
@@ -382,7 +434,7 @@ export default function EntityForm({
                   id="institutionId"
                   name="institutionId"
                   className="form-control"
-                  value={formData.institution?.id || parentId || ''}
+                  value={formData.institution?.id || parentId || ""}
                   onChange={handleChange}
                   required
                   disabled={!!parentId}
@@ -417,16 +469,22 @@ export default function EntityForm({
         <div className="col-12">
           <div className="form-group">
             <Label htmlFor="status">Durum</Label>
-            <select
-              id="status"
-              name="status"
-              className="form-control"
+            <Select
               value={formData.status}
-              onChange={handleChange}
+              onValueChange={(value) =>
+                handleChange({ target: { name: "status", value } } as any)
+              }
             >
-              <option value="ACTIVE">Aktif</option>
-              <option value="PASSIVE">Pasif</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Durum seçiniz" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="ACTIVE">Aktif</SelectItem>
+                  <SelectItem value="PASSIVE">Pasif</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -438,10 +496,12 @@ export default function EntityForm({
               variant="primary"
               size="md"
               isLoading={isLoading}
-              loadingText={t('common.loading') || 'Yükleniyor...'}
+              loadingText={t("common.loading") || "Yükleniyor..."}
               disabled={isLoading}
             >
-              {isEditMode ? t('common.save') || 'Kaydet' : t('common.add') || 'Ekle'}
+              {isEditMode
+                ? t("common.save") || "Kaydet"
+                : t("common.add") || "Ekle"}
             </LoadingButton>
             {onCancel && (
               <Button
@@ -451,7 +511,7 @@ export default function EntityForm({
                 onClick={onCancel}
                 disabled={isLoading}
               >
-                {t('common.cancel') || 'İptal'}
+                {t("common.cancel") || "İptal"}
               </Button>
             )}
           </div>

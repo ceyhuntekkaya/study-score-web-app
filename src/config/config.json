@@ -1,6 +1,6 @@
 {
     "api": {
-        "invokeUrl": "http://localhost:8080/api",
+        "invokeUrl": "http://192.168.1.87:8080/api",
         "baseUrl": "http://localhost:3000",
         "aiUrl": "https://chat.studyscore.ai/ollama"
     }

@@ -1,8 +1,18 @@
-'use client';
-
-import React, { useState, useMemo, useEffect } from 'react';
-import feather from 'feather-icons';
-import { CourseLessonDetailDTO, CourseLessonPartDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
+"use client";
+import React, { useMemo, useState } from "react";
+import {
+  CourseLessonDetailDTO,
+  CourseLessonPartDetailDTO,
+} from "@/generated/api/openAPIDefinition.schemas";
+import {
+  BookOpen,
+  FileText,
+  GraduationCap,
+  ChevronDown,
+  DiamondPlus,
+  Pencil,
+  Presentation,
+} from "lucide-react";
 
 interface CourseLessonsAccordionProps {
   lessons?: CourseLessonDetailDTO[];
@@ -12,499 +22,689 @@ interface CourseLessonDetailDTOWithChildren extends CourseLessonDetailDTO {
   childLessons?: CourseLessonDetailDTOWithChildren[];
 }
 
-type LessonLevel = 'UNIT' | 'TOPIC' | 'LESSON';
+type LessonLevel = "UNIT" | "TOPIC" | "LESSON";
 
-export default function CourseLessonsAccordion({ lessons = [] }: CourseLessonsAccordionProps) {
-    const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
-    
-    // Transform lessons to hierarchical structure
-    const hierarchicalLessons = useMemo(() => {
-        if (!lessons || lessons.length === 0) return [];
+export default function CourseLessonsAccordion({
+  lessons = [],
+}: CourseLessonsAccordionProps) {
+  const [openUnitId, setOpenUnitId] = useState<string | null>(null);
 
-        const allLessons = lessons
-            .filter((lesson): lesson is CourseLessonDetailDTO => !!lesson)
-            .map((lesson) => lesson as CourseLessonDetailDTOWithChildren)
-            .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
+  // Transform lessons to hierarchical structure
+  const hierarchicalLessons = useMemo(() => {
+    if (!lessons || lessons.length === 0) return [];
 
-        // Get UNIT level lessons (top level, no parent)
-        const units = allLessons.filter(
-            (lesson) => lesson.lessonLevel === 'UNIT' && !lesson.parentLessonId
-        );
+    const allLessons = lessons
+      .filter((lesson): lesson is CourseLessonDetailDTO => !!lesson)
+      .map((lesson) => lesson as CourseLessonDetailDTOWithChildren)
+      .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
 
-        return units;
-    }, [lessons]);
+    // Get UNIT level lessons (top level, no parent)
+    const units = allLessons.filter(
+      (lesson) => lesson.lessonLevel === "UNIT" && !lesson.parentLessonId
+    );
 
-    // Toggle accordion item
-    const toggleItem = (itemId: string) => {
-        const newExpanded = new Set(expandedItems);
-        if (newExpanded.has(itemId)) {
-            newExpanded.delete(itemId);
-        } else {
-            newExpanded.add(itemId);
-        }
-        setExpandedItems(newExpanded);
-    };
+    return units;
+  }, [lessons]);
 
-    // Helper function to get child lessons
-    const getChildLessons = (parent: CourseLessonDetailDTOWithChildren): CourseLessonDetailDTOWithChildren[] => {
-        if (parent.childLessons && parent.childLessons.length > 0) {
-            return parent.childLessons;
-        }
-        if (!lessons) return [];
-        return lessons.filter(
-            (lesson) => lesson.parentLessonId === parent.id
-        ) as CourseLessonDetailDTOWithChildren[];
-    };
+  // Toggle accordion function
+  const toggleUnit = (unitId: string) => {
+    setOpenUnitId((prevId) => (prevId === unitId ? null : unitId));
+  };
 
-    // Feather icons replacement after render
-    useEffect(() => {
-        feather.replace();
-    }, [lessons]);
-
-    // Helper functions for level styling
-    const getLevelBadgeClass = (level: LessonLevel | string): string => {
-        switch (level) {
-            case 'UNIT':
-                return 'badge bg-success bg-opacity-25 text-success';
-            case 'TOPIC':
-                return 'badge bg-primary bg-opacity-25 text-primary';
-            case 'LESSON':
-                return 'badge bg-warning bg-opacity-25 text-warning';
-            default:
-                return 'badge bg-secondary bg-opacity-25 text-secondary';
-        }
-    };
-
-    const getLevelText = (level: LessonLevel | string): string => {
-        switch (level) {
-            case 'UNIT':
-                return 'UNIT';
-            case 'TOPIC':
-                return 'TOPIC';
-            case 'LESSON':
-                return 'LESSON';
-            default:
-                return 'PART';
-        }
-    };
-
-    const getLevelIcon = (level: LessonLevel | string): string => {
-        switch (level) {
-            case 'UNIT':
-                return 'feather-award';
-            case 'TOPIC':
-                return 'feather-book-open';
-            case 'LESSON':
-                return 'feather-file-text';
-            default:
-                return 'feather-monitor';
-        }
-    };
-
-    const getLevelIconColor = (level: LessonLevel | string, depth: number): string => {
-        if (depth === 0) return 'text-primary';
-        if (depth === 1) return 'text-secondary';
-        if (depth === 2) return 'text-warning';
-        return 'text-danger';
-    };
-
-    // Lesson Part Row Component
-    const LessonPartRow: React.FC<{
-        lesson: CourseLessonPartDetailDTO;
-        index: number;
-        level: number;
-        parentNumbers?: string;
-    }> = ({lesson, index, level, parentNumbers = ''}) => {
-        // Part seviyesi için de aynı girinti mantığı
-        const getIndentClass = (lvl: number): string => {
-            if (lvl === 0) return '';
-            if (lvl === 1) return 'ps-4';  // 1.5rem
-            if (lvl === 2) return 'ps-7';  // 3rem
-            if (lvl === 3) return 'ps-10'; // 4.5rem
-            return 'ps-13'; // 6rem
-        };
-        const indentClass = getIndentClass(level);
-        const bgClass = level === 0 ? 'table-light' : '';
-        const numberPrefix = parentNumbers ? `${parentNumbers}.${index + 1}` : `${index + 1}`;
-        const iconColorClass = getLevelIconColor('PART', level);
-
-        return (
-            <>
-                <tr className={bgClass}>
-                    <td className="px-3 py-2 fw-medium text-dark" style={{fontSize: '0.875rem'}}>
-                        {level === 0 ? index + 1 : ''}
-                    </td>
-                    <td className="px-3 py-2">
-                        <div
-                            className={`d-flex align-items-center cursor-pointer ${indentClass}`}
-                            style={{transition: 'color 0.15s'}}
-                            onMouseOver={(e) => {
-                                const span = e.currentTarget.querySelector('span');
-                                if (span) span.classList.add('text-primary');
-                            }}
-                            onMouseOut={(e) => {
-                                const span = e.currentTarget.querySelector('span');
-                                if (span) span.classList.remove('text-primary');
-                            }}
-                        >
-                            <i 
-                                className={`feather-monitor ${iconColorClass} me-3`} 
-                                style={{fontSize: '18px'}}
-                            />
-                            <span className={`${level === 0 ? 'fw-semibold text-dark' : 'text-secondary'}`}>
-                                {level > 0 && `${numberPrefix} `}{lesson.name || 'İsimsiz Part'}
-                            </span>
-                        </div>
-                    </td>
-                    <td className="px-3 py-2">
-                        <span className="badge bg-secondary bg-opacity-25 text-secondary">
-                            PART
-                        </span>
-                    </td>
-                    <td className="px-3 py-2">
-                        <div className="d-flex align-items-center gap-2">
-                            <button
-                                className="btn btn-sm btn-light border-0 p-1 text-primary"
-                                title="Material Ekle"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    // TODO: Handle material add
-                                }}
-                                style={{transition: 'all 0.15s'}}
-                                onMouseOver={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
-                                    e.currentTarget.style.color = '#0a58ca';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.currentTarget.style.backgroundColor = '';
-                                    e.currentTarget.style.color = '';
-                                }}
-                            >
-                                <i className="feather-plus-circle" style={{fontSize: '16px'}} />
-                            </button>
-                            <button
-                                className="btn btn-sm btn-light border-0 p-1 text-success"
-                                title="Düzenle"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    // TODO: Handle part edit
-                                }}
-                                style={{transition: 'all 0.15s'}}
-                                onMouseOver={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'rgba(25, 135, 84, 0.1)';
-                                    e.currentTarget.style.color = '#157347';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.currentTarget.style.backgroundColor = '';
-                                    e.currentTarget.style.color = '';
-                                }}
-                            >
-                                <i className="feather-edit" style={{fontSize: '16px'}} />
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-
-                {/* Material Rows */}
-                {lesson.materials && lesson.materials.length > 0 && lesson.materials.map((material, materialIndex) => {
-                    // Material, part'ın bir alt seviyesi olduğu için +1 seviye daha girintili
-                    const getMaterialIndentClass = (lvl: number): string => {
-                        if (lvl === 0) return 'ps-7';   // 3rem
-                        if (lvl === 1) return 'ps-10';  // 4.5rem
-                        if (lvl === 2) return 'ps-13';  // 6rem
-                        if (lvl === 3) return 'ps-16';  // 7.5rem
-                        return 'ps-19'; // 9rem
-                    };
-                    const materialIndentClass = getMaterialIndentClass(level);
-                    const materialNumber = `${numberPrefix}.${materialIndex + 1}`;
-                    
-                    return (
-                        <tr key={material.id} className="bg-white">
-                            <td className="px-3 py-2 fw-medium text-dark" style={{fontSize: '0.875rem'}}></td>
-                            <td className="px-3 py-2">
-                                <div className={`d-flex align-items-center ${materialIndentClass}`}>
-                                    <i className="feather-file text-secondary me-3" style={{fontSize: '16px'}}></i>
-                                    <span className="text-secondary" style={{fontSize: '0.875rem'}}>
-                                        {materialNumber} {material.name || 'İsimsiz Material'}
-                                    </span>
-                                    {material.mediaType && (
-                                        <span className="badge bg-secondary ms-2" style={{fontSize: '0.75rem'}}>{material.mediaType}</span>
-                                    )}
-                                </div>
-                            </td>
-                            <td className="px-3 py-2">
-                                <span className="badge bg-secondary bg-opacity-25 text-secondary" style={{fontSize: '0.75rem'}}>
-                                    MATERIAL
-                                </span>
-                            </td>
-                            <td className="px-3 py-2">
-                                <div className="d-flex align-items-center gap-2">
-                                    <button
-                                        className="btn btn-sm btn-light border-0 p-1 text-success"
-                                        title="Düzenle"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            // TODO: Handle material edit
-                                        }}
-                                        style={{transition: 'all 0.15s'}}
-                                        onMouseOver={(e) => {
-                                            e.currentTarget.style.backgroundColor = 'rgba(25, 135, 84, 0.1)';
-                                            e.currentTarget.style.color = '#157347';
-                                        }}
-                                        onMouseOut={(e) => {
-                                            e.currentTarget.style.backgroundColor = '';
-                                            e.currentTarget.style.color = '';
-                                        }}
-                                    >
-                                        <i className="feather-edit" style={{fontSize: '16px'}} />
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    );
-                })}
-            </>
-        );
-    };
-
-    // Lesson Row Component (Recursive)
-    const LessonRow: React.FC<{
-        lesson: CourseLessonDetailDTOWithChildren;
-        index: number;
-        level: number;
-        parentNumbers?: string;
-    }> = ({lesson, index, level, parentNumbers = ''}) => {
-        const LevelIcon = getLevelIcon(lesson.lessonLevel || '');
-        // Daha belirgin girinti hiyerarşisi: her seviye 3rem artış
-        const getIndentClass = (lvl: number): string => {
-            if (lvl === 0) return '';
-            if (lvl === 1) return 'ps-4';  // 1.5rem
-            if (lvl === 2) return 'ps-7';  // 3rem
-            if (lvl === 3) return 'ps-10'; // 4.5rem
-            return 'ps-13'; // 6rem
-        };
-        const indentClass = getIndentClass(level);
-        const bgClass = level === 0 ? 'table-light' : '';
-        const numberPrefix = parentNumbers ? `${parentNumbers}.${index + 1}` : `${index + 1}`;
-        const iconColorClass = getLevelIconColor(lesson.lessonLevel || '', level);
-
-        const children = getChildLessons(lesson);
-        const hasChildren = (children && children.length > 0) || 
-                           (lesson.lessonParts && lesson.lessonParts.length > 0);
-        
-        const isExpanded = expandedItems.has(lesson.id || '');
-
-        return (
-            <>
-                <tr className={bgClass}>
-                    <td className="px-3 py-2 fw-medium text-dark" style={{fontSize: '0.875rem'}}>
-                        {level === 0 ? index + 1 : ''}
-                    </td>
-                    <td className="px-3 py-2">
-                        <div
-                            className={`d-flex align-items-center cursor-pointer ${indentClass}`}
-                            style={{transition: 'color 0.15s'}}
-                            onMouseOver={(e) => {
-                                const span = e.currentTarget.querySelector('span.lesson-name');
-                                if (span) span.classList.add('text-primary');
-                            }}
-                            onMouseOut={(e) => {
-                                const span = e.currentTarget.querySelector('span.lesson-name');
-                                if (span) span.classList.remove('text-primary');
-                            }}
-                        >
-                            {hasChildren && (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (lesson.id) toggleItem(lesson.id);
-                                    }}
-                                    className="btn btn-sm btn-link p-0 me-2 text-secondary border-0"
-                                    style={{
-                                        fontSize: '16px',
-                                        lineHeight: 1,
-                                        textDecoration: 'none',
-                                        transition: 'color 0.15s'
-                                    }}
-                                    onMouseOver={(e) => e.currentTarget.classList.replace('text-secondary', 'text-dark')}
-                                    onMouseOut={(e) => e.currentTarget.classList.replace('text-dark', 'text-secondary')}
-                                >
-                                    <i className={`feather-chevron-${isExpanded ? 'down' : 'right'}`}></i>
-                                </button>
-                            )}
-                            {!hasChildren && (
-                                <span className="me-2" style={{width: '16px', display: 'inline-block'}}></span>
-                            )}
-                            <i 
-                                className={`${LevelIcon} ${iconColorClass} me-3`} 
-                                style={{fontSize: '18px'}}
-                            />
-                            <span className={`lesson-name ${level === 0 ? 'fw-semibold text-dark' : 'text-secondary'}`}>
-                                {level > 0 && `${numberPrefix} `}{lesson.name || 'İsimsiz'}
-                            </span>
-                        </div>
-                    </td>
-                    <td className="px-3 py-2">
-                        <span className={getLevelBadgeClass(lesson.lessonLevel || '')}>
-                            {getLevelText(lesson.lessonLevel || '')}
-                        </span>
-                    </td>
-                    <td className="px-3 py-2">
-                        <div className="d-flex align-items-center gap-2">
-                            {getLevelText(lesson.lessonLevel || '') !== 'LESSON' &&
-                                <button
-                                    className="btn btn-sm btn-light border-0 p-1 text-primary"
-                                    title="Alt Seviye Ekle"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        // TODO: Handle add child
-                                    }}
-                                    style={{transition: 'all 0.15s'}}
-                                    onMouseOver={(e) => {
-                                        e.currentTarget.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
-                                        e.currentTarget.style.color = '#0a58ca';
-                                    }}
-                                    onMouseOut={(e) => {
-                                        e.currentTarget.style.backgroundColor = '';
-                                        e.currentTarget.style.color = '';
-                                    }}
-                                >
-                                    <i className="feather-plus-circle" style={{fontSize: '16px'}} />
-                                </button>
-                            }
-                            <button
-                                className="btn btn-sm btn-light border-0 p-1 text-success"
-                                title="Düzenle"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    // TODO: Handle edit
-                                }}
-                                style={{transition: 'all 0.15s'}}
-                                onMouseOver={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'rgba(25, 135, 84, 0.1)';
-                                    e.currentTarget.style.color = '#157347';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.currentTarget.style.backgroundColor = '';
-                                    e.currentTarget.style.color = '';
-                                }}
-                            >
-                                <i className="feather-edit" style={{fontSize: '16px'}} />
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-
-                {/* Render child lessons - ONLY IF EXPANDED */}
-                {isExpanded && children && children.length > 0 && children.map((childLesson, childIndex) => (
-                    <React.Fragment key={`child-${childLesson.id}`}>
-                        <LessonRow
-                            lesson={childLesson}
-                            index={childIndex}
-                            level={level + 1}
-                            parentNumbers={numberPrefix}
-                        />
-                    </React.Fragment>
-                ))}
-
-                {/* Render lesson parts - ONLY IF EXPANDED */}
-                {isExpanded && lesson.lessonParts && lesson.lessonParts.length > 0 && 
-                    lesson.lessonParts
-                        .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0))
-                        .map((lessonPart, partIndex) => (
-                            <React.Fragment key={`part-${lessonPart.id}`}>
-                                <LessonPartRow
-                                    lesson={lessonPart}
-                                    index={partIndex}
-                                    level={level + 2}
-                                    parentNumbers={numberPrefix}
-                                />
-                            </React.Fragment>
-                        ))
-                }
-
-                {/* Spacer between main lessons */}
-                {level === 0 && index < hierarchicalLessons.length - 1 && (
-                    <tr>
-                        <td colSpan={4} className="p-0" style={{height: '8px', backgroundColor: '#f8f9fa'}}></td>
-                    </tr>
-                )}
-            </>
-        );
-    };
-
-    // Empty state
-    if (hierarchicalLessons.length === 0) {
-        return (
-            <div className="bg-white">
-                <div className="mb-4">
-                    <h2 className="fs-3 fw-bold text-dark mb-2">Course Curriculum</h2>
-                </div>
-                <div className="text-center py-5">
-                    <p className="text-secondary">Henüz ders içeriği eklenmemiş.</p>
-                </div>
-            </div>
-        );
+  // Helper function to get child lessons
+  const getChildLessons = (
+    parent: CourseLessonDetailDTOWithChildren
+  ): CourseLessonDetailDTOWithChildren[] => {
+    if (parent.childLessons && parent.childLessons.length > 0) {
+      return parent.childLessons;
     }
+    if (!lessons) return [];
+    return lessons.filter(
+      (lesson) => lesson.parentLessonId === parent.id
+    ) as CourseLessonDetailDTOWithChildren[];
+  };
+
+  // Helper functions for level styling
+  const getLevelBadgeStyle = (
+    level: LessonLevel | string
+  ): React.CSSProperties => {
+    const baseStyle: React.CSSProperties = {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "2px 10px",
+      borderRadius: "9999px",
+      fontSize: "16px",
+      fontWeight: 500,
+      fontFamily: 'Montserrat, "Montserrat Fallback", sans-serif',
+      textTransform: "uppercase",
+      letterSpacing: "0.025em",
+    };
+
+    switch (level) {
+      case "UNIT":
+        return { ...baseStyle, backgroundColor: "#dcfce7", color: "#166534" };
+      case "TOPIC":
+        return { ...baseStyle, backgroundColor: "#dbeafe", color: "#1e40af" };
+      case "LESSON":
+        return { ...baseStyle, backgroundColor: "#fef9c3", color: "#854d0e" };
+      default:
+        return { ...baseStyle, backgroundColor: "#f3f4f6", color: "#1f2937" };
+    }
+  };
+
+  const getLevelText = (level: LessonLevel | string): string => {
+    switch (level) {
+      case "UNIT":
+        return "UNIT";
+      case "TOPIC":
+        return "TOPIC";
+      case "LESSON":
+        return "LESSON";
+      default:
+        return "PART";
+    }
+  };
+
+  const getLevelIcon = (level: LessonLevel | string) => {
+    switch (level) {
+      case "UNIT":
+        return GraduationCap;
+      case "TOPIC":
+        return BookOpen;
+      case "LESSON":
+        return FileText;
+      default:
+        return Presentation;
+    }
+  };
+
+  // Lesson Part Row Component
+  const LessonPartRow: React.FC<{
+    lesson: CourseLessonPartDetailDTO;
+    index: number;
+    level: number;
+    parentNumbers?: string;
+  }> = ({ lesson, index, level, parentNumbers = "" }) => {
+    const LevelIcon = Presentation;
+    const [isHovered, setIsHovered] = useState(false);
+
+    const paddingLeft =
+      level === 0
+        ? "0"
+        : level === 1
+          ? "1.5rem"
+          : level === 2
+            ? "3rem"
+            : "5rem";
+    const bgColor = level === 0 ? "#f9fafb" : "#ffffff";
+    const hoverBgColor = "#f3f4f6";
+    const numberPrefix = parentNumbers
+      ? `${parentNumbers}.${index + 1}`
+      : `${index + 1}`;
 
     return (
-        <div className="bg-white">
-            <div className="mb-4">
-                <h2 className="fs-3 fw-bold text-dark mb-2">Course Curriculum</h2>
+      <>
+        <tr
+          style={{
+            backgroundColor: isHovered ? hoverBgColor : bgColor,
+            transition: "background-color 0.15s",
+            borderBottom: "1px solid #e5e7eb",
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <td
+            style={{
+              padding: "16px 24px",
+              fontSize: "16px",
+              fontWeight: 500,
+              fontFamily: 'Montserrat, "Montserrat Fallback", sans-serif',
+              color: "#111827",
+            }}
+          >
+            {level === 0 ? index + 1 : ""}
+          </td>
+          <td style={{ padding: "16px 24px" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+                paddingLeft,
+              }}
+            >
+              <LevelIcon
+                size={18}
+                style={{
+                  marginRight: "0.75rem",
+                  color:
+                    level === 0
+                      ? "#3b82f6"
+                      : level === 1
+                        ? "#6b7280"
+                        : level === 2
+                          ? "#f59e0b"
+                          : "#ef4444",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: "16px",
+                  fontWeight: level === 0 ? 600 : 400,
+                  fontFamily: 'Montserrat, "Montserrat Fallback", sans-serif',
+                  color: level === 0 ? "#111827" : "#374151",
+                }}
+              >
+                {level > 0 && `${numberPrefix} `}
+                {lesson.name}
+              </span>
             </div>
-
-            <div className="table-responsive">
-                <table className="table table-hover mb-0">
-                    <thead className="table-light">
-                        <tr>
-                            <th className="px-3 py-2 text-start text-uppercase text-secondary fw-medium" 
-                                style={{fontSize: '0.75rem', letterSpacing: '0.05em', width: '60px'}}>
-                                #
-                            </th>
-                            <th className="px-3 py-2 text-start text-uppercase text-secondary fw-medium" 
-                                style={{fontSize: '0.75rem', letterSpacing: '0.05em'}}>
-                                Ders Adı
-                            </th>
-                            <th className="px-3 py-2 text-start text-uppercase text-secondary fw-medium" 
-                                style={{fontSize: '0.75rem', letterSpacing: '0.05em', width: '120px'}}>
-                                Seviye
-                            </th>
-                            <th className="px-3 py-2 text-start text-uppercase text-secondary fw-medium" 
-                                style={{fontSize: '0.75rem', letterSpacing: '0.05em', width: '120px'}}>
-                                <button 
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        // TODO: Handle add unit
-                                    }}
-                                    className="btn btn-sm btn-light border-0 p-1 text-primary"
-                                    title="Yeni Unit Ekle"
-                                    style={{transition: 'all 0.15s'}}
-                                    onMouseOver={(e) => {
-                                        e.currentTarget.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
-                                        e.currentTarget.style.color = '#0a58ca';
-                                    }}
-                                    onMouseOut={(e) => {
-                                        e.currentTarget.style.backgroundColor = '';
-                                        e.currentTarget.style.color = '';
-                                    }}
-                                >
-                                    <i className="feather-plus-circle" style={{fontSize: '16px'}} />
-                                </button>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="border-top">
-                        {hierarchicalLessons.map((lesson, index) => (
-                            <LessonRow
-                                key={`main-${lesson.id}`}
-                                lesson={lesson}
-                                index={index}
-                                level={0}
-                            />
-                        ))}
-                    </tbody>
-                </table>
+          </td>
+          <td style={{ padding: "16px 24px", textAlign: "center" }}>
+            <span style={getLevelBadgeStyle("PART")}>PART</span>
+          </td>
+          <td style={{ padding: "16px 24px", textAlign: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem",
+              }}
+            >
+              <button
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "0.375rem",
+                  color: "#3b82f6",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  borderRadius: "0.25rem",
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                }}
+                title="Materyal Ekle"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // TODO: Handle add material
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "#2563eb";
+                  e.currentTarget.style.backgroundColor = "#eff6ff";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "#3b82f6";
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
+              >
+                <DiamondPlus size={16} />
+              </button>
+              <button
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "0.375rem",
+                  color: "#10b981",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  borderRadius: "0.25rem",
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                }}
+                title="Düzenle"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // TODO: Handle edit
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "#059669";
+                  e.currentTarget.style.backgroundColor = "#d1fae5";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "#10b981";
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
+              >
+                <Pencil size={16} />
+              </button>
             </div>
-        </div>
+          </td>
+        </tr>
+      </>
     );
+  };
+
+  // Lesson Row Component (Recursive)
+  const LessonRow: React.FC<{
+    lesson: CourseLessonDetailDTOWithChildren;
+    index: number;
+    level: number;
+    parentNumbers?: string;
+  }> = ({ lesson, index, level, parentNumbers = "" }) => {
+    const LevelIcon = getLevelIcon(lesson.lessonLevel || "");
+    const [isHovered, setIsHovered] = useState(false);
+
+    const paddingLeft =
+      level === 0
+        ? "0"
+        : level === 1
+          ? "1.5rem"
+          : level === 2
+            ? "3rem"
+            : "5rem";
+    const bgColor = level === 0 ? "#f9fafb" : "#ffffff";
+    const hoverBgColor = "#f3f4f6";
+    const numberPrefix = parentNumbers
+      ? `${parentNumbers}.${index + 1}`
+      : `${index + 1}`;
+
+    // UNIT seviyesinde mi kontrol et
+    const isUnit = lesson.lessonLevel === "UNIT" && level === 0;
+    const isOpen = openUnitId === lesson.id;
+
+    const children = getChildLessons(lesson);
+
+    const handleLessonClick = () => {
+      // Eğer UNIT seviyesindeyse, accordion toggle yap
+      if (isUnit) {
+        toggleUnit(lesson.id || "");
+        return;
+      }
+      // Diğer seviyeler için normal düzenleme işlemi
+      // TODO: Handle edit
+    };
+
+    return (
+      <>
+        <tr
+          style={{
+            backgroundColor: isHovered ? hoverBgColor : bgColor,
+            transition: "background-color 0.15s",
+            borderBottom: "1px solid #e5e7eb",
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <td
+            style={{
+              padding: "16px 24px",
+              fontSize: "16px",
+              fontWeight: 500,
+              fontFamily: 'Montserrat, "Montserrat Fallback", sans-serif',
+              color: "#111827",
+            }}
+          >
+            {level === 0 ? index + 1 : ""}
+          </td>
+          <td style={{ padding: "16px 24px" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+                paddingLeft,
+              }}
+              onClick={handleLessonClick}
+            >
+              {isUnit && (
+                <ChevronDown
+                  size={18}
+                  style={{
+                    marginRight: "0.5rem",
+                    color: "#1f2937",
+                    transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 0.2s",
+                  }}
+                />
+              )}
+              <LevelIcon
+                size={18}
+                style={{
+                  marginRight: "0.75rem",
+                  color:
+                    level === 0
+                      ? "#3b82f6"
+                      : level === 1
+                        ? "#6b7280"
+                        : level === 2
+                          ? "#f59e0b"
+                          : "#ef4444",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: "16px",
+                  fontWeight: level === 0 ? 600 : 400,
+                  fontFamily: 'Montserrat, "Montserrat Fallback", sans-serif',
+                  color: level === 0 ? "#111827" : "#374151",
+                }}
+              >
+                {level > 0 && `${numberPrefix} `}
+                {lesson.name}
+              </span>
+            </div>
+          </td>
+          <td style={{ padding: "16px 24px", textAlign: "center" }}>
+            <span style={getLevelBadgeStyle(lesson.lessonLevel || "")}>
+              {getLevelText(lesson.lessonLevel || "")}
+            </span>
+          </td>
+          <td style={{ padding: "16px 24px", textAlign: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem",
+              }}
+            >
+              {getLevelText(lesson.lessonLevel || "") !== "LESSON" && (
+                <button
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    padding: "0.375rem",
+                    color: "#3b82f6",
+                    backgroundColor: "transparent",
+                    border: "none",
+                    borderRadius: "0.25rem",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                  title="Alt Seviye Ekle"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // TODO: Handle add sublevel
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "#2563eb";
+                    e.currentTarget.style.backgroundColor = "#eff6ff";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "#3b82f6";
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                >
+                  <DiamondPlus size={16} />
+                </button>
+              )}
+              <button
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "0.375rem",
+                  color: "#10b981",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  borderRadius: "0.25rem",
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                }}
+                title="Düzenle"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // TODO: Handle edit
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "#059669";
+                  e.currentTarget.style.backgroundColor = "#d1fae5";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "#10b981";
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
+              >
+                <Pencil size={16} />
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        {/* Render child lessons - Sadece UNIT açıksa göster */}
+        {(!isUnit || isOpen) &&
+          children &&
+          children.length > 0 &&
+          children.map((childLesson, childIndex) => (
+            <React.Fragment key={`child-${childLesson.id}`}>
+              <LessonRow
+                lesson={childLesson}
+                index={childIndex}
+                level={level + 1}
+                parentNumbers={numberPrefix}
+              />
+            </React.Fragment>
+          ))}
+
+        {/* Render lesson parts - Sadece UNIT açıksa göster */}
+        {(!isUnit || isOpen) &&
+          lesson.lessonParts &&
+          lesson.lessonParts.length > 0 &&
+          lesson.lessonParts
+            .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0))
+            .map((lessonPart, partIndex) => (
+              <React.Fragment key={`part-${lessonPart.id}`}>
+                <LessonPartRow
+                  lesson={lessonPart}
+                  index={partIndex}
+                  level={level + 2}
+                  parentNumbers={numberPrefix}
+                />
+              </React.Fragment>
+            ))}
+
+        {/* Spacer between main lessons */}
+        {level === 0 && index < hierarchicalLessons.length - 1 && (
+          <tr>
+            <td
+              colSpan={4}
+              style={{
+                padding: 0,
+                height: "1rem",
+                backgroundColor: "#f3f4f6",
+              }}
+            ></td>
+          </tr>
+        )}
+      </>
+    );
+  };
+
+  // Empty state
+  if (hierarchicalLessons.length === 0) {
+    return (
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          style={{
+            flexShrink: 0,
+            padding: "1rem",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: "1.5rem",
+              fontWeight: 700,
+              color: "#111827",
+              marginBottom: "0.5rem",
+            }}
+          >
+            Course Curriculum
+          </h2>
+        </div>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <p style={{ color: "#6b7280" }}>Henüz ders içeriği eklenmemiş.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        backgroundColor: "#ffffff",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <div
+        style={{
+          flexShrink: 0,
+          padding: "1rem",
+        }}
+      >
+        <h2
+          style={{
+            fontSize: "1.5rem",
+            fontWeight: 700,
+            color: "#111827",
+            marginBottom: "0.5rem",
+          }}
+        >
+          Course Curriculum
+        </h2>
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          paddingLeft: "1rem",
+          paddingRight: "1rem",
+        }}
+      >
+        <div style={{ overflowX: "auto" }}>
+          <table
+            style={{
+              minWidth: "100%",
+              borderCollapse: "collapse",
+            }}
+          >
+            <thead>
+              <tr style={{ backgroundColor: "#092E5E" }}>
+                <th
+                  style={{
+                    padding: "16px 24px",
+                    textAlign: "left",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    fontFamily: 'Montserrat, "Montserrat Fallback", sans-serif',
+                    color: "#ffffff",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    width: "64px",
+                    cursor: "pointer",
+                    borderRight: "1px solid rgba(255, 255, 255, 0.2)",
+                  }}
+                >
+                  #
+                </th>
+                <th
+                  style={{
+                    padding: "16px 24px",
+                    textAlign: "left",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    fontFamily: 'Montserrat, "Montserrat Fallback", sans-serif',
+                    color: "#ffffff",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    cursor: "pointer",
+                    borderRight: "1px solid rgba(255, 255, 255, 0.2)",
+                  }}
+                >
+                  DERS ADI
+                </th>
+                <th
+                  style={{
+                    padding: "16px 24px",
+                    textAlign: "center",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    fontFamily: 'Montserrat, "Montserrat Fallback", sans-serif',
+                    color: "#ffffff",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    width: "128px",
+                    cursor: "pointer",
+                    borderRight: "1px solid rgba(255, 255, 255, 0.2)",
+                  }}
+                >
+                  SEVIYE
+                </th>
+                <th
+                  style={{
+                    padding: "16px 24px",
+                    textAlign: "center",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    fontFamily: 'Montserrat, "Montserrat Fallback", sans-serif',
+                    color: "#ffffff",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    width: "128px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // TODO: Handle add unit
+                    }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      padding: "0.375rem",
+                      backgroundColor: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "#ffffff",
+                      transition: "all 0.15s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = "#f3f4f6";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = "#ffffff";
+                    }}
+                  >
+                    <DiamondPlus size={16} />
+                  </button>
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              style={{
+                backgroundColor: "#ffffff",
+              }}
+            >
+              {hierarchicalLessons.map((lesson, index) => (
+                <LessonRow
+                  key={`main-${lesson.id}`}
+                  lesson={lesson}
+                  index={index}
+                  level={0}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 }
