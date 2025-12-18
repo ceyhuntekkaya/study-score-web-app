@@ -43,17 +43,6 @@ type ActiveExamInfo = {
 export default function DashboardPage() {
   const { data, isLoading, error } = useGetDashboard();
 
-  useEffect(() => {
-    if (data) {
-      console.log('Dashboard Data:', data);
-    }
-    if (error) {
-      console.error('Dashboard Error:', error);
-    }
-    if (isLoading) {
-      console.log('Loading dashboard data...');
-    }
-  }, [data, error, isLoading]);
 
   if (isLoading) {
     return (

@@ -5,8 +5,11 @@ import {
   streamChatWithLlama,
   checkLlamaHealth,
   clearChatHistory,
+  setLessonContext,
+  setStudentName,
 } from '@/services/ai/llama';
 import { convertToHtml } from '@/services/ai/format-helpers';
+import { useAuth } from '@/contexts/AuthContext';
 import LoadingSpinner from '@/components/ui/loading/LoadingSpinner';
 import LoadingDots from '@/components/ui/loading/LoadingDots';
 
@@ -23,6 +26,7 @@ interface AIChatProps {
 }
 
 export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,11 +37,23 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
+  // Kullanıcı adını set et
+  useEffect(() => {
+    if (user?.name) {
+      setStudentName(user.name);
+    }
+  }, [user?.name]);
+
   useEffect(() => {
     if (activeText && activeText.trim() !== '') {
+      // Lesson context'i set et
+      setLessonContext(activeText);
       clearChatHistory();
       setMessages([]);
-      setInput(activeText);
+      // Input alanını otomatik doldurma - kullanıcı kendi metnini yazacak
+    } else {
+      // Eğer activeText boşsa, context'i de temizle
+      setLessonContext('');
     }
   }, [activeText]);
 

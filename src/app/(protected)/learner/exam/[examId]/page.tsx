@@ -21,16 +21,6 @@ export default function ExamWelcomePage() {
     },
   });
 
-  // Log exam data to console
-  useEffect(() => {
-    if (data) {
-      console.log('Exam Data with User Data:', data);
-      console.log('Full Response:', JSON.stringify(data, null, 2));
-    }
-    if (error) {
-      console.error('Exam Data Error:', error);
-    }
-  }, [data, error]);
 
   if (!examId) {
     return (

@@ -14,7 +14,6 @@ export default function LearnerDashboardFooter() {
 
   const handleNewsletterSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Newsletter subscription:', email);
     // TODO: Implement newsletter subscription
     setEmail('');
   };

@@ -55,33 +55,44 @@ export function convertToHtml(text: string): string {
   html = html.replace(/```[\w]*\n?/g, '');
   html = html.replace(/```/g, '');
 
-  // Paragraf ayrımlarını koru
-  html = html.replace(/\n\n+/g, '</p><p>');
-
-  // Satır sonlarını br tag'ine çevir
-  html = html.replace(/\n/g, '<br />');
-
-  // Markdown formatlarını HTML'e dönüştür
+  // ÖNCE Markdown formatlarını HTML'e dönüştür (satır sonlarını değiştirmeden önce)
+  // Markdown başlıklarını işle (###, ##, #)
   html = html
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
     .replace(/^## (.+)$/gm, '<h2>$1</h2>')
     .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    // Horizontal rule
     .replace(/^--- *$/gm, '<hr />')
+    // Bold ve italic (satır içi formatlar)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    // Kod blokları (inline)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
     // Numaralı listeler
     .replace(/^(\d+\.\s+.+)$/gm, '<div class="numbered-item">$1</div>')
     // Bullet listeler
-    .replace(/^(-\s+.+)$/gm, '<div class="bullet-item">$1</div>')
-    // Kod blokları
-    .replace(/`([^`]+)`/g, '<code>$1</code>');
+    .replace(/^(-\s+.+)$/gm, '<div class="bullet-item">$1</div>');
+
+  // SONRA satır sonlarını işle
+  // Önce HTML tag'lerinden sonraki satır sonlarını geçici olarak işaretle
+  html = html.replace(/(<\/h[1-6]>|<\/div>|<\/hr>|<\/p>)\n/g, '$1__TEMP_NEWLINE__');
+  
+  // Paragraf ayrımlarını koru (çift satır sonları paragraf olur)
+  html = html.replace(/\n\n+/g, '</p><p>');
+  
+  // Tek satır sonlarını br tag'ine çevir
+  html = html.replace(/\n/g, '<br />');
+  
+  // Geçici işaretleri geri çevir (HTML tag'lerinden sonra br olmasın)
+  html = html.replace(/__TEMP_NEWLINE__/g, '');
 
   // Paragraf wrapper'ları ekle
   if (
     html &&
     !html.startsWith('<h') &&
     !html.startsWith('<div') &&
-    !html.startsWith('<hr')
+    !html.startsWith('<hr') &&
+    !html.startsWith('<p>')
   ) {
     html = '<p>' + html + '</p>';
   }
@@ -89,6 +100,10 @@ export function convertToHtml(text: string): string {
   // Boş paragrafları temizle
   html = html.replace(/<p><\/p>/g, '');
   html = html.replace(/<p>\s*<\/p>/g, '');
+  // HTML tag'lerinden hemen sonraki <br /> tag'lerini temizle
+  html = html.replace(/(<\/h[1-6]>|<\/div>|<\/hr>|<\/p>)<br \/>/g, '$1');
+  // Birden fazla ardışık <br /> tag'lerini tek bir <br /> yap
+  html = html.replace(/(<br \/>){2,}/g, '<br />');
 
   return html;
 }

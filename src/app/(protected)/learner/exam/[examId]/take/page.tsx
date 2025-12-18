@@ -60,7 +60,6 @@ export default function ExamTakePage() {
   const handleQuestionClick = (questionIndex: number) => {
     if (questionIndex >= 0 && questionIndex < questionCount) {
       setCurrentQuestionIndex(questionIndex);
-      console.log(`Navigated to question ${questionIndex + 1}`);
     }
   };
 

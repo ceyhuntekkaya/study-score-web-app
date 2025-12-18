@@ -1,7 +1,7 @@
 // services/ai/llama.ts
 
 import { getApiAiUrl } from '@/config';
-import { IELTS_SYSTEM_CONTEXT } from './prompts';
+import { getIELTSSystemContext } from './prompts';
 
 const OLLAMA_API_URL = process.env.NEXT_PUBLIC_OLLAMA_API_URL || getApiAiUrl();
 const DEFAULT_MODEL = 'qwen2.5:7b';
@@ -16,6 +16,8 @@ export class LlamaService {
   private modelName: string;
   private apiUrl: string;
   private conversationHistory: Array<{ role: string; content: string }>;
+  private lessonContext: string = '';
+  private studentName: string = '';
 
   constructor(modelName: string = DEFAULT_MODEL) {
     this.modelName = modelName;
@@ -23,7 +25,11 @@ export class LlamaService {
     this.conversationHistory = [
       {
         role: 'system',
-        content: IELTS_SYSTEM_CONTEXT,
+        content: getIELTSSystemContext(this.studentName),
+      },
+      {
+        role: 'system',
+        content: '',
       },
     ];
   }
@@ -35,6 +41,7 @@ export class LlamaService {
         role: 'user',
         content: prompt,
       });
+
 
       const response = await fetch(`${this.apiUrl}/api/chat`, {
         method: 'POST',
@@ -101,6 +108,8 @@ export class LlamaService {
         role: 'user',
         content: prompt,
       });
+
+
 
       const response = await fetch(`${this.apiUrl}/api/chat`, {
         method: 'POST',
@@ -183,13 +192,76 @@ export class LlamaService {
   }
 
   /**
+   * Kullanıcı adını set eder ve system context'i günceller
+   * @param name Kullanıcının adı ve soyadı
+   */
+  setStudentName(name: string): void {
+    this.studentName = name || '';
+    
+    // İlk system mesajını güncelle (index 0)
+    if (this.conversationHistory.length > 0) {
+      this.conversationHistory[0] = {
+        role: 'system',
+        content: getIELTSSystemContext(this.studentName),
+      };
+    } else {
+      // Eğer history boşsa, system mesajlarını yeniden ekle
+      this.conversationHistory = [
+        {
+          role: 'system',
+          content: getIELTSSystemContext(this.studentName),
+        },
+        {
+          role: 'system',
+          content: this.lessonContext,
+        },
+      ];
+    }
+    
+  }
+
+  /**
+   * Aktif lesson part context'ini set eder
+   * @param description Lesson part description
+   */
+  setLessonContext(description: string): void {
+    this.lessonContext = description || '';
+    
+    // İkinci system mesajını güncelle (index 1)
+    if (this.conversationHistory.length > 1) {
+      this.conversationHistory[1] = {
+        role: 'system',
+        content: this.lessonContext,
+      };
+    } else {
+      // Eğer history temizlenmişse, system mesajlarını yeniden ekle
+      this.conversationHistory = [
+        {
+          role: 'system',
+          content: getIELTSSystemContext(this.studentName),
+        },
+        {
+          role: 'system',
+          content: this.lessonContext,
+        },
+      ];
+    }
+    
+
+  }
+
+  /**
    * Konuşma geçmişini temizler
    */
   clearHistory(): void {
     this.conversationHistory = [
       {
         role: 'system',
-        content: IELTS_SYSTEM_CONTEXT,
+        content: getIELTSSystemContext(this.studentName),
+      },
+      {
+        role: 'system',
+        content: this.lessonContext,
       },
     ];
   }
@@ -259,4 +331,12 @@ export async function checkLlamaHealth(): Promise<{
 
 export function clearChatHistory(): void {
   return llamaService.clearHistory();
+}
+
+export function setLessonContext(description: string): void {
+  return llamaService.setLessonContext(description);
+}
+
+export function setStudentName(name: string): void {
+  return llamaService.setStudentName(name);
 }

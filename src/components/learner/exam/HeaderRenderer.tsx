@@ -24,8 +24,6 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
         ? `/assets/${content}` 
         : '';
     
-    // Debug log
-    console.log('IMAGE Header:', { mediaType, content, imageSrc });
     
     if (!content) {
       return (

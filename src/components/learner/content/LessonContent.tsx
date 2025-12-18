@@ -39,12 +39,7 @@ export default function LessonContent() {
     { query: { enabled: !!courseId } }
   );
 
-  // Console log course progress (for debugging)
-  useEffect(() => {
-    if (courseProgress) {
-      console.log('Course Progress Data:', courseProgress);
-    }
-  }, [courseProgress]);
+
 
   // Find selected lesson
   const selectedLesson = useMemo(() => {
