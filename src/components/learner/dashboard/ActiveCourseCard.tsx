@@ -33,7 +33,7 @@ export default function ActiveCourseCard({ course }: ActiveCourseCardProps) {
     courseName,
     imageUrl,
     category,
-    progressPercentage = 0,
+    progressPercentage: backendProgressPercentage = 0,
     completedParts = 0,
     totalParts = 0,
     nextContent,
@@ -42,6 +42,17 @@ export default function ActiveCourseCard({ course }: ActiveCourseCardProps) {
     thisWeekTimeSpentSeconds = 0,
     thisWeekAccessCount = 0,
   } = course;
+
+  // Calculate progress percentage from completedParts/totalParts if available
+  // This ensures consistency between the displayed fraction and the progress bar
+  const calculatedProgressPercentage = totalParts > 0 
+    ? (completedParts / totalParts) * 100 
+    : backendProgressPercentage;
+
+  // Use calculated percentage if it's more accurate, otherwise use backend value
+  const progressPercentage = totalParts > 0 && completedParts >= 0 
+    ? calculatedProgressPercentage 
+    : backendProgressPercentage;
 
   // Format time in seconds to readable format
   const formatTime = (seconds: number) => {

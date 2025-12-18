@@ -21,6 +21,7 @@ type ActiveCourseInfo = {
   daysRemaining?: number;
   thisWeekTimeSpentSeconds?: number;
   thisWeekAccessCount?: number;
+  totalTimeSpentSeconds?: number; // Total time spent on this course
 };
 
 type ActiveExamInfo = {
@@ -73,6 +74,59 @@ export default function DashboardPage() {
   const activeCourses = (Array.isArray(data?.activeCourses) ? data.activeCourses : []) as ActiveCourseInfo[];
   const activeExams = (Array.isArray(data?.activeExams) ? data.activeExams : []) as ActiveExamInfo[];
 
+  // Calculate average progress percentage from activeCourses
+  // This ensures consistency with what's shown in the Active Courses section
+  // Uses completedParts/totalParts for accuracy, falls back to progressPercentage if parts data is missing
+  const calculateAverageProgress = () => {
+    if (activeCourses.length === 0) return 0;
+    
+    const progressValues: number[] = [];
+    
+    activeCourses.forEach(course => {
+      // Prefer calculated progress from completedParts/totalParts for accuracy
+      if (course.totalParts && course.totalParts > 0 && course.completedParts !== undefined) {
+        const calculatedProgress = (course.completedParts / course.totalParts) * 100;
+        progressValues.push(calculatedProgress);
+      } 
+      // Fall back to backend progressPercentage if parts data is not available
+      else if (course.progressPercentage !== undefined && course.progressPercentage !== null) {
+        progressValues.push(course.progressPercentage);
+      }
+    });
+    
+    if (progressValues.length === 0) return 0;
+    
+    const sum = progressValues.reduce((acc, val) => acc + val, 0);
+    return sum / progressValues.length;
+  };
+
+  const calculatedAverageProgress = calculateAverageProgress();
+
+  // Calculate total study time from activeCourses if not provided by backend
+  const calculateTotalStudyTime = () => {
+    // If backend provides totalStudyTimeSeconds and it's > 0, use it
+    if (data?.overallStats?.totalStudyTimeSeconds && data.overallStats.totalStudyTimeSeconds > 0) {
+      return data.overallStats.totalStudyTimeSeconds;
+    }
+    
+    // Otherwise, try to sum up totalTimeSpentSeconds from activeCourses
+    const totalTime = activeCourses.reduce((sum, course) => {
+      return sum + (course.totalTimeSpentSeconds || 0);
+    }, 0);
+    
+    return totalTime > 0 ? totalTime : 0;
+  };
+
+  const calculatedTotalStudyTime = calculateTotalStudyTime();
+
+  // Use calculated average if available, otherwise fall back to backend value
+  // Also use calculated total study time if backend value is missing or 0
+  const overallStats = data?.overallStats ? {
+    ...data.overallStats,
+    averageProgressPercentage: calculatedAverageProgress > 0 ? calculatedAverageProgress : (data.overallStats.averageProgressPercentage || 0),
+    totalStudyTimeSeconds: calculatedTotalStudyTime > 0 ? calculatedTotalStudyTime : (data.overallStats.totalStudyTimeSeconds || 0)
+  } : undefined;
+
   return (
     <>
       <div className="section-title">
@@ -108,10 +162,10 @@ export default function DashboardPage() {
       )}
 
       {/* Overall Stats Section */}
-      {data?.overallStats && (
+      {overallStats && (
         <div className="mb--40">
           <div className="row">
-            <OverallStatsCard stats={data.overallStats} />
+            <OverallStatsCard stats={overallStats} />
           </div>
         </div>
       )}
