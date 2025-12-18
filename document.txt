@@ -1,0 +1,49 @@
+Aktivasyon Bilgileri
+------------------------------------
+IP	185.72.9.147
+Username	root
+Password	ced1a49c9fa1!diyo@
+
+
+ssh root@185.72.9.147
+ssh -o ServerAliveInterval=60 root@185.34.101.167
+
+------------------------------------
+IP Adresi	185.224.1.26
+// SİLİNDİ - 185.72.9.3
+Kullanıcı Adı	root
+Parola	ESKİSİ = kmk7eau6UFT!gvd9tjc
+kmk7eau6UFT!gvd9tjc!
+Str421900
+
+https://luvvoice.com - ses dönüştürme
+
+ssh -o ServerAliveInterval=60 root@185.224.1.26
+
+ssh root@185.72.9.3
+
+
+ssh -o ServerAliveInterval=60 root@185.224.1.26
+
+
+sudo systemctl restart nginx
+
+
+Host name/address: 185.34.101.167 (sunucunuzun IP'si)
+Port: 5432
+Maintenance database: postgres (veya genixo)
+Username: genixo
+Password: genixo
+
+
+
+DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose build
+docker push ctekkaya/study-score-app:2.0
+
+
+
+
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t ctekkaya/study-score-app:2.0 \
+  --push .
