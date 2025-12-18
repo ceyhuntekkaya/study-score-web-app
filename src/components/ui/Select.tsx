@@ -383,7 +383,7 @@ const selectContentStyle: React.CSSProperties = {
   top: "100%",
   left: 0,
   right: 0,
-  zIndex: 9999,
+  zIndex: 99999,
   width: "100%",
   maxHeight: "240px",
   overflowY: "auto",
@@ -453,12 +453,27 @@ export const SelectContent: React.FC<SelectContentProps> = ({
 
   useEffect(() => {
     if (open && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-      });
+      const updatePosition = () => {
+        if (!triggerRef.current) return;
+        const rect = triggerRef.current.getBoundingClientRect();
+        // Use getBoundingClientRect which gives viewport-relative position
+        // For fixed positioning, we don't need to add scroll offsets
+        setPosition({
+          top: rect.bottom + 4,
+          left: rect.left,
+          width: rect.width,
+        });
+      };
+      
+      updatePosition();
+      // Update on scroll/resize
+      window.addEventListener('scroll', updatePosition, true);
+      window.addEventListener('resize', updatePosition);
+      
+      return () => {
+        window.removeEventListener('scroll', updatePosition, true);
+        window.removeEventListener('resize', updatePosition);
+      };
     }
   }, [open, triggerRef]);
 
@@ -488,9 +503,10 @@ export const SelectContent: React.FC<SelectContentProps> = ({
       style={{
         ...selectContentStyle,
         position: "fixed",
-        top: position.top,
-        left: position.left,
-        width: position.width,
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        width: `${position.width}px`,
+        zIndex: 99999,
       }}
     >
       {(searchable || sortable) && (

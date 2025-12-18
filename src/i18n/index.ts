@@ -34,6 +34,7 @@ const translations: Record<Language, Translations> = {
     'common.showing': 'Showing',
     'common.of': 'of',
     'common.add': 'Add',
+    'common.close': 'Close',
     
     // Auth
     'auth.login.title': 'Login',
@@ -140,6 +141,7 @@ const translations: Record<Language, Translations> = {
     'common.showing': 'Gösteriliyor',
     'common.of': '/',
     'common.add': 'Ekle',
+    'common.close': 'Kapat',
     
     // Auth
     'auth.login.title': 'Giriş Yap',

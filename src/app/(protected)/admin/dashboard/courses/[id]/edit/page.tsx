@@ -8,14 +8,26 @@ import { useGetCourseWithAllDetails } from '@/generated/api/course-rest-controll
 import CourseForm from '@/components/admin/CourseForm';
 import CourseLessonsAccordion from '@/components/admin/CourseLessonsAccordion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import LessonForm from '@/components/admin/LessonForm';
+import LessonPartForm from '@/components/admin/LessonPartForm';
+import MaterialsTable from '@/components/admin/MaterialsTable';
+import { CourseLessonPartDTO, CourseLessonDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
 
 export default function EditCoursePage() {
   const { t } = useTranslation();
   const params = useParams();
   const courseId = params?.id as string;
   const [isCourseInfoOpen, setIsCourseInfoOpen] = useState(false);
+  
+  // Right panel states
+  const [selectedView, setSelectedView] = useState<'lesson' | 'part' | 'materials' | null>(null);
+  const [editingLesson, setEditingLesson] = useState<CourseLessonDetailDTO | null>(null);
+  const [editingPart, setEditingPart] = useState<CourseLessonPartDTO | null>(null);
+  const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
+  const [parentLessonId, setParentLessonId] = useState<string | undefined>(undefined);
+  const [lessonLevel, setLessonLevel] = useState<string>('UNIT');
 
-  const { data: courseDetails, isLoading } = useGetCourseWithAllDetails(courseId, {
+  const { data: courseDetails, isLoading, refetch } = useGetCourseWithAllDetails(courseId, {
     query: { enabled: !!courseId },
   });
 
@@ -95,14 +107,151 @@ export default function EditCoursePage() {
         <div className="row g-5">
           <div className="col-md-6">
             <div className="rbt-card rbt-card-body">
-              <CourseLessonsAccordion lessons={courseDetails.lessons} />
+              <CourseLessonsAccordion 
+                lessons={courseDetails.lessons}
+                courseId={courseId}
+                onAddLesson={(parentId, level) => {
+                  setParentLessonId(parentId);
+                  setLessonLevel(level);
+                  setEditingLesson(null);
+                  setSelectedView('lesson');
+                }}
+                onEditLesson={(lesson) => {
+                  setEditingLesson(lesson);
+                  setLessonLevel(lesson.lessonLevel || 'LESSON');
+                  setSelectedView('lesson');
+                }}
+                onAddPart={(lessonId) => {
+                  setParentLessonId(lessonId);
+                  setEditingPart(null);
+                  setSelectedView('part');
+                }}
+                onEditPart={(part) => {
+                  setEditingPart(part);
+                  setSelectedView('part');
+                }}
+                onShowMaterials={(partId) => {
+                  setSelectedPartId(partId);
+                  setSelectedView('materials');
+                }}
+                onRefresh={refetch}
+              />
             </div>
           </div>
           <div className="col-md-6">
-            <div className="rbt-card rbt-card-body">
-              <div className="text-center py-5">
-                <p className="text-muted">Bu alan gelecekte kullanılacak.</p>
-              </div>
+            <div className="rbt-card rbt-card-body" style={{ overflow: 'visible' }}>
+              {selectedView === 'lesson' && (
+                <div>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h3>
+                      {editingLesson 
+                        ? `Ders Düzenle (${editingLesson.lessonLevel || 'LESSON'})` 
+                        : `Yeni ${lessonLevel} Ekle`}
+                    </h3>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={() => {
+                        setSelectedView(null);
+                        setEditingLesson(null);
+                        setParentLessonId(undefined);
+                      }}
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <LessonForm
+                    courseId={courseId}
+                    parentLessonId={parentLessonId}
+                    initialData={editingLesson ? {
+                      id: editingLesson.id,
+                      name: editingLesson.name,
+                      description: editingLesson.description,
+                      lessonLevel: editingLesson.lessonLevel as any,
+                      orderNumber: editingLesson.orderNumber,
+                      courseId: courseId,
+                      parentLessonId: editingLesson.parentLessonId,
+                    } : {
+                      courseId: courseId,
+                      parentLessonId: parentLessonId,
+                      lessonLevel: lessonLevel as any,
+                    }}
+                    onSuccess={() => {
+                      setSelectedView(null);
+                      setEditingLesson(null);
+                      setParentLessonId(undefined);
+                      refetch();
+                    }}
+                    onCancel={() => {
+                      setSelectedView(null);
+                      setEditingLesson(null);
+                      setParentLessonId(undefined);
+                    }}
+                  />
+                </div>
+              )}
+
+              {selectedView === 'part' && (
+                <div>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h3>{editingPart ? "Part Düzenle" : "Yeni Part Ekle"}</h3>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={() => {
+                        setSelectedView(null);
+                        setEditingPart(null);
+                        setParentLessonId(undefined);
+                      }}
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <LessonPartForm
+                    courseLessonId={parentLessonId || editingPart?.courseLessonId || ""}
+                    initialData={editingPart ?? undefined}
+                    onSuccess={() => {
+                      setSelectedView(null);
+                      setEditingPart(null);
+                      setParentLessonId(undefined);
+                      refetch();
+                    }}
+                    onCancel={() => {
+                      setSelectedView(null);
+                      setEditingPart(null);
+                      setParentLessonId(undefined);
+                    }}
+                  />
+                </div>
+              )}
+
+              {selectedView === 'materials' && selectedPartId && (
+                <div>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Materyaller</h3>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={() => {
+                        setSelectedView(null);
+                        setSelectedPartId(null);
+                      }}
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <MaterialsTable
+                    partId={selectedPartId}
+                    onClose={() => {
+                      setSelectedView(null);
+                      setSelectedPartId(null);
+                    }}
+                  />
+                </div>
+              )}
+
+              {!selectedView && (
+                <div className="text-center py-5">
+                  <p className="text-muted">Sol taraftan bir işlem seçin.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

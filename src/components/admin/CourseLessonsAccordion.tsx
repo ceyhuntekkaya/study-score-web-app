@@ -17,6 +17,13 @@ import {
 
 interface CourseLessonsAccordionProps {
   lessons?: CourseLessonDetailDTO[];
+  courseId?: string;
+  onAddLesson?: (parentId: string | undefined, level: string) => void;
+  onEditLesson?: (lesson: CourseLessonDetailDTO) => void;
+  onAddPart?: (lessonId: string) => void;
+  onEditPart?: (part: CourseLessonPartDetailDTO) => void;
+  onShowMaterials?: (partId: string) => void;
+  onRefresh?: () => void;
 }
 
 interface CourseLessonDetailDTOWithChildren extends CourseLessonDetailDTO {
@@ -27,6 +34,13 @@ type LessonLevel = "UNIT" | "TOPIC" | "LESSON";
 
 export default function CourseLessonsAccordion({
   lessons = [],
+  courseId,
+  onAddLesson,
+  onEditLesson,
+  onAddPart,
+  onEditPart,
+  onShowMaterials,
+  onRefresh,
 }: CourseLessonsAccordionProps) {
   const [openUnitId, setOpenUnitId] = useState<string | null>(null);
 
@@ -126,7 +140,8 @@ export default function CourseLessonsAccordion({
     index: number;
     level: number;
     parentNumbers?: string;
-  }> = ({ lesson, index, level, parentNumbers = "" }) => {
+    parentLessonId?: string;
+  }> = ({ lesson, index, level, parentNumbers = "", parentLessonId }) => {
     const LevelIcon = Presentation;
     const [isHovered, setIsHovered] = useState(false);
 
@@ -229,7 +244,9 @@ export default function CourseLessonsAccordion({
                 title="Part Ekleme"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // TODO: buna tıklanınca aynı seviyede bir part eklemee componenti gelecek.
+                  if (parentLessonId && onAddPart) {
+                    onAddPart(parentLessonId);
+                  }
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = "#2563eb";
@@ -257,7 +274,9 @@ export default function CourseLessonsAccordion({
                 title="Düzenle"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // TODO: Part edit ekranı gelecek.
+                  if (onEditPart) {
+                    onEditPart(lesson);
+                  }
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = "#059669";
@@ -287,7 +306,9 @@ export default function CourseLessonsAccordion({
                 title="Materyal Listesi"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // TODO: buna tıklanınca aynı bu tablo gibi part'ın içindeki materyaller listelenecek. 
+                  if (lesson.id && onShowMaterials) {
+                    onShowMaterials(lesson.id);
+                  }
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = "#2563eb";
@@ -344,7 +365,9 @@ export default function CourseLessonsAccordion({
         return;
       }
       // Diğer seviyeler için normal düzenleme işlemi
-      // TODO: Handle edit
+      if (onEditLesson) {
+        onEditLesson(lesson);
+      }
     };
 
     return (
@@ -444,10 +467,27 @@ export default function CourseLessonsAccordion({
                     cursor: "pointer",
                     transition: "all 0.15s",
                   }}
-                  title="Alt Seviye Ekle"
+                  title={lesson.lessonLevel === "LESSON" ? "Part Ekle" : "Alt Seviye Ekle"}
                   onClick={(e) => {
                     e.stopPropagation();
-                    // TODO: buraya tıklanınca yine aynı seviyede bir obje eklenece. lesson yada lesonpart 
+                    if (lesson.lessonLevel === "LESSON") {
+                      // LESSON seviyesinde part ekle
+                      if (onAddPart && lesson.id) {
+                        onAddPart(lesson.id);
+                      }
+                    } else {
+                      // UNIT ve TOPIC seviyelerinde alt seviye ekle
+                      if (onAddLesson) {
+                        // Determine next level based on current level
+                        let nextLevel = "LESSON";
+                        if (lesson.lessonLevel === "UNIT") {
+                          nextLevel = "TOPIC";
+                        } else if (lesson.lessonLevel === "TOPIC") {
+                          nextLevel = "LESSON";
+                        }
+                        onAddLesson(lesson.id || undefined, nextLevel);
+                      }
+                    }
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = "#2563eb";
@@ -476,7 +516,9 @@ export default function CourseLessonsAccordion({
                 title="Düzenle"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // TODO: Buna tıklanınca edit componenti açılacak
+                  if (onEditLesson) {
+                    onEditLesson(lesson);
+                  }
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = "#059669";
@@ -521,6 +563,7 @@ export default function CourseLessonsAccordion({
                   index={partIndex}
                   level={level + 2}
                   parentNumbers={numberPrefix}
+                  parentLessonId={lesson.id}
                 />
               </React.Fragment>
             ))}
@@ -695,7 +738,9 @@ export default function CourseLessonsAccordion({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      // TODO: buna tıklanınca yeni bir birim ekleme sayfası açılacak ve seviyesi UNIT olacak kursa eklemek için. 
+                      if (onAddLesson) {
+                        onAddLesson(undefined, "UNIT");
+                      }
                     }}
                     style={{
                       display: "inline-flex",
