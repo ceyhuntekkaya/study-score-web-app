@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslation } from '@/i18n';
-import { Course } from '@/generated/api/openAPIDefinition.schemas';
-import { useUpdateCourse } from '@/generated/api/course-rest-controller/course-rest-controller';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
-import { Label } from '@/components/ui/Label';
-import { Button } from '@/components/ui/Button';
-import LoadingButton from '@/components/ui/LoadingButton';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslation } from "@/i18n";
+import { Course } from "@/generated/api/openAPIDefinition.schemas";
+import { useUpdateCourse } from "@/generated/api/course-rest-controller/course-rest-controller";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Label } from "@/components/ui/Label";
+import { Button } from "@/components/ui/Button";
+import LoadingButton from "@/components/ui/LoadingButton";
 
 interface CourseFormProps {
   initialData?: Course;
@@ -28,14 +28,14 @@ export default function CourseForm({
 
   // Form state
   const [formData, setFormData] = useState<Partial<Course>>({
-    name: '',
-    description: '',
-    code: '',
-    language: '',
-    level: '',
-    imageUrl: '',
-    category: 'IELTS',
-    status: 'ACTIVE',
+    name: "",
+    description: "",
+    code: "",
+    language: "",
+    level: "",
+    imageUrl: "",
+    category: "IELTS",
+    status: "ACTIVE",
   });
 
   // Mutation
@@ -45,20 +45,24 @@ export default function CourseForm({
   useEffect(() => {
     if (initialData) {
       setFormData({
-        name: initialData.name || '',
-        description: initialData.description || '',
-        code: initialData.code || '',
-        language: initialData.language || '',
-        level: initialData.level || '',
-        imageUrl: initialData.imageUrl || '',
-        category: initialData.category || 'IELTS',
-        status: initialData.status || 'ACTIVE',
+        name: initialData.name || "",
+        description: initialData.description || "",
+        code: initialData.code || "",
+        language: initialData.language || "",
+        level: initialData.level || "",
+        imageUrl: initialData.imageUrl || "",
+        category: initialData.category || "IELTS",
+        status: initialData.status || "ACTIVE",
         curriculum: initialData.curriculum,
       });
     }
   }, [initialData]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -68,19 +72,19 @@ export default function CourseForm({
 
     try {
       if (isEditMode && initialData?.id) {
-        await updateCourse.mutateAsync({ 
-          courseId: initialData.id, 
-          data: formData as Course 
+        await updateCourse.mutateAsync({
+          courseId: initialData.id,
+          data: formData as Course,
         });
 
         if (onSuccess) {
           onSuccess();
         } else {
-          router.push('/admin/dashboard/courses');
+          router.push("/admin/dashboard/courses");
         }
       }
     } catch (error) {
-      console.error('Form submission error:', error);
+      console.error("Form submission error:", error);
     }
   };
 
@@ -88,7 +92,7 @@ export default function CourseForm({
 
   return (
     <form onSubmit={handleSubmit} className="rbt-form-wrapper">
-      <div className="row g-5">
+      <div className="row">
         {/* Name - Required */}
         <div className="col-12">
           <div className="form-group">
@@ -221,10 +225,10 @@ export default function CourseForm({
               variant="primary"
               size="md"
               isLoading={isLoading}
-              loadingText={t('common.loading') || 'Yükleniyor...'}
+              loadingText={t("common.loading") || "Yükleniyor..."}
               disabled={isLoading}
             >
-              {t('common.save') || 'Kaydet'}
+              {t("common.save") || "Kaydet"}
             </LoadingButton>
             {onCancel && (
               <Button
@@ -234,7 +238,7 @@ export default function CourseForm({
                 onClick={onCancel}
                 disabled={isLoading}
               >
-                {t('common.cancel') || 'İptal'}
+                {t("common.cancel") || "İptal"}
               </Button>
             )}
           </div>
