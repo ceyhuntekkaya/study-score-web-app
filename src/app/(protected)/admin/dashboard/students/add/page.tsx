@@ -12,10 +12,10 @@ export default function AddStudentPage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>Yeni Öğrenci Ekle</h2>
+          <h2>{t('admin.entity.addStudent')}</h2>
           <Link href="/admin/dashboard/students" className="rbt-btn-link">
             <i className="feather-arrow-left me-1"></i>
-            Öğrenciler Listesine Dön
+            {t('admin.entity.backToStudentsList')}
           </Link>
         </div>
       </div>

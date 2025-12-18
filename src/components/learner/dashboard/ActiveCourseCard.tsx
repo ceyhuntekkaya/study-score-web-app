@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import ModalPanel from '@/components/ui/ModalPanel';
+import CourseReportDemo from '@/components/learner/course-report';
 
 // Type definition for ActiveCourseInfo (temporary until generated types are available)
 type ActiveCourseInfo = {
@@ -28,6 +31,8 @@ interface ActiveCourseCardProps {
  * Displays course information with progress and stats
  */
 export default function ActiveCourseCard({ course }: ActiveCourseCardProps) {
+  const [showReportModal, setShowReportModal] = useState(false);
+
   const {
     courseId,
     courseName,
@@ -119,10 +124,20 @@ export default function ActiveCourseCard({ course }: ActiveCourseCardProps) {
             <div className="rbt-card-body p--30">
               {/* Category Label */}
               {category && (
-                <div className="mb--10">
+                <div className="mb--10 d-flex align-items-center gap-2">
                   <span className="rbt-badge variation-02 bg-primary-opacity color-primary">
                     {category}
                   </span>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={() => setShowReportModal(true)}
+                    style={{ fontSize: '12px', padding: '4px 12px' }}
+                    title="View Progress Report"
+                  >
+                    <i className="feather-bar-chart-2 me-1"></i>
+                    Report
+                  </button>
                 </div>
               )}
 
@@ -202,6 +217,16 @@ export default function ActiveCourseCard({ course }: ActiveCourseCardProps) {
           </div>
         </div>
       </div>
+
+      {/* Report Modal */}
+      <ModalPanel
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        title="Course Progress Report"
+        size="large"
+      >
+        <CourseReportDemo />
+      </ModalPanel>
     </div>
   );
 }

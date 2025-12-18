@@ -1,0 +1,19 @@
+{
+    "main": {
+        "speaking":45,
+        "listening":30,
+        "reading":20,
+        "writing":15,
+        "grammar":10,
+        "vocabulary":5
+    },
+    "detail": {
+        "pronunciation":5,
+        "conversation":5,
+        "listeningComprehension":5,
+        "readingComprehension":5,
+        "writingComprehension":5,
+        "grammarComprehension":5
+    }
+
+}

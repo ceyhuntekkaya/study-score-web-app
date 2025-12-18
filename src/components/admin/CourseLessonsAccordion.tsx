@@ -14,6 +14,7 @@ import {
   Presentation,
   ListCheck,
 } from "lucide-react";
+import { useTranslation } from "@/i18n";
 
 interface CourseLessonsAccordionProps {
   lessons?: CourseLessonDetailDTO[];
@@ -42,6 +43,7 @@ export default function CourseLessonsAccordion({
   onShowMaterials,
   onRefresh,
 }: CourseLessonsAccordionProps) {
+  const { t } = useTranslation();
   const [openUnitId, setOpenUnitId] = useState<string | null>(null);
 
   // Transform lessons to hierarchical structure
@@ -241,7 +243,7 @@ export default function CourseLessonsAccordion({
                   cursor: "pointer",
                   transition: "all 0.15s",
                 }}
-                title="Part Ekleme"
+                title={t('admin.lesson.addPart')}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (parentLessonId && onAddPart) {
@@ -271,7 +273,7 @@ export default function CourseLessonsAccordion({
                   cursor: "pointer",
                   transition: "all 0.15s",
                 }}
-                title="Düzenle"
+                title={t('admin.lesson.editPart')}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (onEditPart) {
@@ -303,7 +305,7 @@ export default function CourseLessonsAccordion({
                   cursor: "pointer",
                   transition: "all 0.15s",
                 }}
-                title="Materyal Listesi"
+                title={t('admin.lesson.materialList')}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (lesson.id && onShowMaterials) {
@@ -467,7 +469,7 @@ export default function CourseLessonsAccordion({
                     cursor: "pointer",
                     transition: "all 0.15s",
                   }}
-                  title={lesson.lessonLevel === "LESSON" ? "Part Ekle" : "Alt Seviye Ekle"}
+                  title={lesson.lessonLevel === "LESSON" ? t('admin.lesson.addPartButton') : t('admin.lesson.addSubLevel')}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (lesson.lessonLevel === "LESSON") {
@@ -513,7 +515,7 @@ export default function CourseLessonsAccordion({
                   cursor: "pointer",
                   transition: "all 0.15s",
                 }}
-                title="Düzenle"
+                title={t('admin.lesson.edit')}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (onEditLesson) {
@@ -610,7 +612,7 @@ export default function CourseLessonsAccordion({
               marginBottom: "0.5rem",
             }}
           >
-            Course Curriculum
+            {t('admin.lesson.curriculum')}
           </h2>
         </div>
         <div
@@ -621,7 +623,7 @@ export default function CourseLessonsAccordion({
             justifyContent: "center",
           }}
         >
-          <p style={{ color: "#6b7280" }}>Henüz ders içeriği eklenmemiş.</p>
+          <p style={{ color: "#6b7280" }}>{t('admin.lesson.noContent')}</p>
         </div>
       </div>
     );
@@ -650,7 +652,7 @@ export default function CourseLessonsAccordion({
             marginBottom: "0.5rem",
           }}
         >
-          Course Curriculum
+          {t('admin.lesson.curriculum')}
         </h2>
       </div>
 
@@ -702,7 +704,7 @@ export default function CourseLessonsAccordion({
                     borderRight: "1px solid rgba(255, 255, 255, 0.2)",
                   }}
                 >
-                  DERS ADI
+                  {t('admin.lesson.lessonName')}
                 </th>
                 <th
                   style={{
@@ -719,7 +721,7 @@ export default function CourseLessonsAccordion({
                     borderRight: "1px solid rgba(255, 255, 255, 0.2)",
                   }}
                 >
-                  SEVIYE
+                  {t('admin.lesson.level')}
                 </th>
                 <th
                   style={{

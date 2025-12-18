@@ -122,7 +122,7 @@ export default function LessonForm({
         <div className="col-12">
           <div className="form-group">
             <Label htmlFor="name">
-              Ders Adı <span className="text-danger">*</span>
+              {t('admin.lesson.name')} <span className="text-danger">*</span>
             </Label>
             <Input
               id="name"
@@ -138,7 +138,7 @@ export default function LessonForm({
         {/* Description */}
         <div className="col-12">
           <div className="form-group">
-            <Label htmlFor="description">Açıklama</Label>
+            <Label htmlFor="description">{t('form.label.description')}</Label>
             <Textarea
               id="description"
               name="description"
@@ -153,7 +153,7 @@ export default function LessonForm({
         <div className="col-md-6">
           <div className="form-group">
             <Label htmlFor="lessonLevel">
-              Seviye <span className="text-danger">*</span>
+              {t('admin.lesson.level')} <span className="text-danger">*</span>
             </Label>
             <Select
               value={formData.lessonLevel}
@@ -162,7 +162,7 @@ export default function LessonForm({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seviye seçiniz" />
+                <SelectValue placeholder={t('admin.lesson.selectLevel')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -184,7 +184,7 @@ export default function LessonForm({
         {/* Order Number */}
         <div className="col-md-6">
           <div className="form-group">
-            <Label htmlFor="orderNumber">Sıra Numarası</Label>
+            <Label htmlFor="orderNumber">{t('form.label.orderNumber')}</Label>
             <Input
               id="orderNumber"
               name="orderNumber"

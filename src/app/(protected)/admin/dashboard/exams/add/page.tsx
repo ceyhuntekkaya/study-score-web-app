@@ -12,10 +12,10 @@ export default function AddExamPage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>Yeni Sınav Ekle</h2>
+          <h2>{t('admin.entity.addExam')}</h2>
           <Link href="/admin/dashboard/exams" className="rbt-btn-link">
             <i className="feather-arrow-left me-1"></i>
-            Sınavlar Listesine Dön
+            {t('admin.entity.backToExamsList')}
           </Link>
         </div>
       </div>

@@ -14,10 +14,10 @@ export default function AddCampusPage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>Yeni Kampüs Ekle</h2>
+          <h2>{t('admin.entity.addCampus')}</h2>
           <Link href={`/admin/dashboard/brands/${brandId}/campuses`} className="rbt-btn-link">
             <i className="feather-arrow-left me-1"></i>
-            Kampüsler Listesine Dön
+            {t('admin.entity.campusesList')}
           </Link>
         </div>
       </div>

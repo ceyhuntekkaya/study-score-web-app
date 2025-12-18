@@ -12,10 +12,10 @@ export default function AddCoursePage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>Yeni Kurs Ekle</h2>
+          <h2>{t('admin.course.add')}</h2>
           <Link href="/admin/dashboard/courses" className="rbt-btn-link">
             <i className="feather-arrow-left me-1"></i>
-            Kurslar Listesine Dön
+            {t('admin.course.backToList')}
           </Link>
         </div>
       </div>

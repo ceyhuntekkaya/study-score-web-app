@@ -97,7 +97,7 @@ export default function CourseForm({
         <div className="col-12">
           <div className="form-group">
             <Label htmlFor="name">
-              Kurs Adı <span className="text-danger">*</span>
+              {t('admin.course.name')} <span className="text-danger">*</span>
             </Label>
             <Input
               id="name"
@@ -113,7 +113,7 @@ export default function CourseForm({
         {/* Code */}
         <div className="col-md-6">
           <div className="form-group">
-            <Label htmlFor="code">Kurs Kodu</Label>
+            <Label htmlFor="code">{t('admin.course.code')}</Label>
             <Input
               id="code"
               name="code"
@@ -127,7 +127,7 @@ export default function CourseForm({
         {/* Category */}
         <div className="col-md-6">
           <div className="form-group">
-            <Label htmlFor="category">Kategori</Label>
+            <Label htmlFor="category">{t('admin.course.category')}</Label>
             <select
               id="category"
               name="category"
@@ -144,7 +144,7 @@ export default function CourseForm({
         {/* Language */}
         <div className="col-md-6">
           <div className="form-group">
-            <Label htmlFor="language">Dil</Label>
+            <Label htmlFor="language">{t('admin.course.language')}</Label>
             <Input
               id="language"
               name="language"
@@ -158,7 +158,7 @@ export default function CourseForm({
         {/* Level */}
         <div className="col-md-6">
           <div className="form-group">
-            <Label htmlFor="level">Seviye</Label>
+            <Label htmlFor="level">{t('admin.course.level')}</Label>
             <Input
               id="level"
               name="level"

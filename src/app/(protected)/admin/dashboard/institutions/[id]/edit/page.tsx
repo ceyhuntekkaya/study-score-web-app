@@ -27,13 +27,13 @@ export default function EditInstitutionPage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>Kurum Düzenle</h2>
+          <h2>{t('admin.entity.editInstitution')}</h2>
           <Link 
             href={institution?.campus?.id ? `/admin/dashboard/campuses/${institution.campus.id}/institutions` : '/admin/dashboard/brands'} 
             className="rbt-btn-link"
           >
             <i className="feather-arrow-left me-1"></i>
-            Kurumlar Listesine Dön
+            {t('admin.entity.institutionsList')}
           </Link>
         </div>
       </div>

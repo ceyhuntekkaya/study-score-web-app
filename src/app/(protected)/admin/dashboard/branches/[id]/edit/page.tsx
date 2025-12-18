@@ -27,13 +27,13 @@ export default function EditBranchPage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>Branch Düzenle</h2>
+          <h2>{t('admin.entity.editBranch')}</h2>
           <Link 
             href={branch?.institution?.id ? `/admin/dashboard/institutions/${branch.institution.id}/branches` : '/admin/dashboard/brands'} 
             className="rbt-btn-link"
           >
             <i className="feather-arrow-left me-1"></i>
-            Branch'ler Listesine Dön
+            {t('admin.entity.backToList')}
           </Link>
         </div>
       </div>

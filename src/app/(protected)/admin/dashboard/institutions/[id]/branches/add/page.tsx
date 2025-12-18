@@ -14,10 +14,10 @@ export default function AddBranchPage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>Yeni Branch Ekle</h2>
+          <h2>{t('admin.entity.addBranch')}</h2>
           <Link href={`/admin/dashboard/institutions/${institutionId}/branches`} className="rbt-btn-link">
             <i className="feather-arrow-left me-1"></i>
-            Branch'ler Listesine Dön
+            {t('admin.entity.backToList')}
           </Link>
         </div>
       </div>

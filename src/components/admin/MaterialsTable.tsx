@@ -70,12 +70,12 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
   const columns: Column<CourseLessonPartMaterial>[] = [
     {
       key: "name",
-      header: "Materyal Adı",
+      header: t('admin.material.name'),
       sortable: true,
     },
     {
       key: "mediaType",
-      header: "Medya Tipi",
+      header: t('admin.material.mediaType'),
       sortable: true,
       render: (value) => {
         const mediaType = value as string;
@@ -84,12 +84,12 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
     },
     {
       key: "orderNumber",
-      header: "Sıra",
+      header: t('admin.material.orderNumber'),
       sortable: true,
     },
     {
       key: "duration",
-      header: "Süre (sn)",
+      header: t('admin.material.duration'),
       sortable: true,
       render: (value) => {
         const duration = value as number;
@@ -98,7 +98,7 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
     },
     {
       key: "actions",
-      header: "İşlemler",
+      header: t('common.actions'),
       sortable: false,
       actions: [
         {
@@ -188,7 +188,7 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
           
           {previewData && previewData.content && (
             <div className="mt-4">
-              <h4 className="mb-3">Ön İzleme</h4>
+              <h4 className="mb-3">{t('admin.material.preview')}</h4>
               <div className="rbt-card rbt-card-body" style={{ backgroundColor: '#f9fafb' }}>
                 <MaterialRenderer
                   material={previewData}

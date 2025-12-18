@@ -102,7 +102,7 @@ export default function LessonPartForm({
         <div className="col-12">
           <div className="form-group">
             <Label htmlFor="name">
-              Part Adı <span className="text-danger">*</span>
+              {t('admin.part.name')} <span className="text-danger">*</span>
             </Label>
             <Input
               id="name"
@@ -118,7 +118,7 @@ export default function LessonPartForm({
         {/* Description */}
         <div className="col-12">
           <div className="form-group">
-            <Label htmlFor="description">Açıklama</Label>
+            <Label htmlFor="description">{t('form.label.description')}</Label>
             <Textarea
               id="description"
               name="description"
@@ -132,7 +132,7 @@ export default function LessonPartForm({
         {/* Order Number */}
         <div className="col-12">
           <div className="form-group">
-            <Label htmlFor="orderNumber">Sıra Numarası</Label>
+            <Label htmlFor="orderNumber">{t('form.label.orderNumber')}</Label>
             <Input
               id="orderNumber"
               name="orderNumber"

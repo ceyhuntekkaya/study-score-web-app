@@ -27,13 +27,13 @@ export default function EditCampusPage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>Kampüs Düzenle</h2>
+          <h2>{t('admin.entity.editCampus')}</h2>
           <Link 
             href={campus?.brand?.id ? `/admin/dashboard/brands/${campus.brand.id}/campuses` : '/admin/dashboard/brands'} 
             className="rbt-btn-link"
           >
             <i className="feather-arrow-left me-1"></i>
-            Kampüsler Listesine Dön
+            {t('admin.entity.campusesList')}
           </Link>
         </div>
       </div>

@@ -43,10 +43,10 @@ export default function EditCoursePage() {
   if (!courseDetails) {
     return (
       <div className="text-center py-5">
-        <p>Kurs bulunamadı.</p>
+        <p>{t('message.courseNotFound')}</p>
         <Link href="/admin/dashboard/courses" className="rbt-btn-link">
           <i className="feather-arrow-left me-1"></i>
-          Kurslar Listesine Dön
+          {t('admin.course.backToList')}
         </Link>
       </div>
     );
@@ -69,10 +69,10 @@ export default function EditCoursePage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>Kurs Düzenle</h2>
+          <h2>{t('admin.course.edit')}</h2>
           <Link href="/admin/dashboard/courses" className="rbt-btn-link">
             <i className="feather-arrow-left me-1"></i>
-            Kurslar Listesine Dön
+            {t('admin.course.backToList')}
           </Link>
         </div>
       </div>
@@ -88,7 +88,7 @@ export default function EditCoursePage() {
                 aria-expanded={isCourseInfoOpen}
                 aria-controls="collapse-course-info"
               >
-                <h3 className="mb-0">Kurs Bilgileri</h3>
+                <h3 className="mb-0">{t('admin.course.info')}</h3>
               </button>
             </h2>
             <div
@@ -145,8 +145,12 @@ export default function EditCoursePage() {
                   <div className="d-flex justify-content-between align-items-center mb-3">
                     <h3>
                       {editingLesson 
-                        ? `Ders Düzenle (${editingLesson.lessonLevel || 'LESSON'})` 
-                        : `Yeni ${lessonLevel} Ekle`}
+                        ? `${t('admin.lesson.edit')} (${editingLesson.lessonLevel || 'LESSON'})` 
+                        : lessonLevel === 'UNIT' 
+                          ? t('admin.lesson.newUnit')
+                          : lessonLevel === 'TOPIC'
+                            ? t('admin.lesson.newTopic')
+                            : t('admin.lesson.newLesson')}
                     </h3>
                     <button
                       type="button"
@@ -193,7 +197,7 @@ export default function EditCoursePage() {
               {selectedView === 'part' && (
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h3>{editingPart ? "Part Düzenle" : "Yeni Part Ekle"}</h3>
+                    <h3>{editingPart ? t('admin.part.edit') : t('admin.part.add')}</h3>
                     <button
                       type="button"
                       className="btn-close"
@@ -226,7 +230,7 @@ export default function EditCoursePage() {
               {selectedView === 'materials' && selectedPartId && (
                 <div>
                   <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h3>Materyaller</h3>
+                    <h3>{t('admin.material.title')}</h3>
                     <button
                       type="button"
                       className="btn-close"
@@ -249,7 +253,7 @@ export default function EditCoursePage() {
 
               {!selectedView && (
                 <div className="text-center py-5">
-                  <p className="text-muted">Sol taraftan bir işlem seçin.</p>
+                  <p className="text-muted">{t('message.selectOperation')}</p>
                 </div>
               )}
             </div>

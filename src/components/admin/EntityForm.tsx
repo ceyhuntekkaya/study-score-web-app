@@ -244,13 +244,13 @@ export default function EntityForm({
   const getEntityLabel = () => {
     switch (entityType) {
       case "brand":
-        return t("menu.institutions") || "Kurum";
+        return t("admin.entity.institution");
       case "campus":
-        return "Kampüs";
+        return t("admin.entity.campus");
       case "institution":
-        return "Kurum";
+        return t("admin.entity.institution");
       case "branch":
-        return "Branch";
+        return t("admin.entity.branch");
       default:
         return "Entity";
     }
@@ -263,7 +263,7 @@ export default function EntityForm({
         <div className="col-12">
           <div className="form-group">
             <Label htmlFor="name">
-              {getEntityLabel()} Adı <span className="text-danger">*</span>
+              {getEntityLabel()} {t('admin.entity.name')} <span className="text-danger">*</span>
             </Label>
             <Input
               id="name"
@@ -281,7 +281,7 @@ export default function EntityForm({
           <>
             <div className="col-12">
               <div className="form-group">
-                <Label htmlFor="description">Açıklama</Label>
+                <Label htmlFor="description">{t('form.label.description')}</Label>
                 <Textarea
                   id="description"
                   name="description"
@@ -293,7 +293,7 @@ export default function EntityForm({
             </div>
             <div className="col-md-6">
               <div className="form-group">
-                <Label htmlFor="email">E-posta</Label>
+                <Label htmlFor="email">{t('form.label.email')}</Label>
                 <Input
                   id="email"
                   name="email"
@@ -305,7 +305,7 @@ export default function EntityForm({
             </div>
             <div className="col-md-6">
               <div className="form-group">
-                <Label htmlFor="phone">Telefon</Label>
+                <Label htmlFor="phone">{t('form.label.phone')}</Label>
                 <Input
                   id="phone"
                   name="phone"
@@ -317,7 +317,7 @@ export default function EntityForm({
             </div>
             <div className="col-md-6">
               <div className="form-group">
-                <Label htmlFor="website">Website</Label>
+                <Label htmlFor="website">{t('form.label.website')}</Label>
                 <Input
                   id="website"
                   name="website"
@@ -329,7 +329,7 @@ export default function EntityForm({
             </div>
             <div className="col-md-6">
               <div className="form-group">
-                <Label htmlFor="contactPerson">İletişim Kişisi</Label>
+                <Label htmlFor="contactPerson">{t('form.label.contactPerson')}</Label>
                 <Input
                   id="contactPerson"
                   name="contactPerson"
@@ -341,7 +341,7 @@ export default function EntityForm({
             </div>
             <div className="col-12">
               <div className="form-group">
-                <Label htmlFor="address">Adres</Label>
+                <Label htmlFor="address">{t('form.label.address')}</Label>
                 <Textarea
                   id="address"
                   name="address"
@@ -353,7 +353,7 @@ export default function EntityForm({
             </div>
             <div className="col-12">
               <div className="form-group">
-                <Label htmlFor="logo">Logo URL</Label>
+                <Label htmlFor="logo">{t('form.label.logoUrl')}</Label>
                 <Input
                   id="logo"
                   name="logo"
@@ -370,8 +370,8 @@ export default function EntityForm({
         {entityType === "campus" && (
           <div className="col-12">
             <div className="form-group">
-              <Label htmlFor="brandId">
-                Kurum <span className="text-danger">*</span>
+                <Label htmlFor="brandId">
+                {t('admin.entity.institution')} <span className="text-danger">*</span>
               </Label>
               <select
                 id="brandId"
@@ -382,7 +382,7 @@ export default function EntityForm({
                 required
                 disabled={!!parentId} // Disable if parentId is provided (from URL)
               >
-                <option value="">Kurum Seçin</option>
+                <option value="">{t('admin.entity.selectInstitution')}</option>
                 {brands?.map((brand) => (
                   <option key={brand.id} value={brand.id}>
                     {brand.name}
@@ -398,7 +398,7 @@ export default function EntityForm({
           <div className="col-12">
             <div className="form-group">
               <Label htmlFor="campusId">
-                Kampüs <span className="text-danger">*</span>
+                {t('admin.entity.campus')} <span className="text-danger">*</span>
               </Label>
               <select
                 id="campusId"
@@ -409,7 +409,7 @@ export default function EntityForm({
                 required
                 disabled={!!parentId}
               >
-                <option value="">Kampüs Seçin</option>
+                <option value="">{t('admin.entity.selectCampus')}</option>
                 {campuses
                   ?.filter((campus) => !parentId || campus.id === parentId)
                   .map((campus) => (
@@ -428,7 +428,7 @@ export default function EntityForm({
             <div className="col-md-6">
               <div className="form-group">
                 <Label htmlFor="institutionId">
-                  Kurum <span className="text-danger">*</span>
+                  {t('admin.entity.institution')} <span className="text-danger">*</span>
                 </Label>
                 <select
                   id="institutionId"
@@ -439,7 +439,7 @@ export default function EntityForm({
                   required
                   disabled={!!parentId}
                 >
-                  <option value="">Kurum Seçin</option>
+                  <option value="">{t('admin.entity.selectInstitution')}</option>
                   {institutions
                     ?.filter((inst) => !parentId || inst.id === parentId)
                     .map((institution) => (
@@ -452,7 +452,7 @@ export default function EntityForm({
             </div>
             <div className="col-md-6">
               <div className="form-group">
-                <Label htmlFor="grade">Sınıf</Label>
+                <Label htmlFor="grade">{t('form.label.grade')}</Label>
                 <Input
                   id="grade"
                   name="grade"
@@ -468,7 +468,7 @@ export default function EntityForm({
         {/* Status - For all */}
         <div className="col-12">
           <div className="form-group">
-            <Label htmlFor="status">Durum</Label>
+            <Label htmlFor="status">{t('admin.entity.status')}</Label>
             <Select
               value={formData.status}
               onValueChange={(value) =>
@@ -476,12 +476,12 @@ export default function EntityForm({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Durum seçiniz" />
+                <SelectValue placeholder={t('admin.entity.selectStatus')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="ACTIVE">Aktif</SelectItem>
-                  <SelectItem value="PASSIVE">Pasif</SelectItem>
+                  <SelectItem value="ACTIVE">{t('admin.entity.active')}</SelectItem>
+                  <SelectItem value="PASSIVE">{t('admin.entity.passive')}</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>

@@ -29,12 +29,12 @@ export default function InstitutionBranchesPage() {
   const columns: Column<Branch>[] = [
     {
       key: 'name',
-      label: 'Branch Adı',
+      label: t('admin.entity.branchName'),
       sortable: true,
     },
     {
       key: 'grade',
-      label: 'Sınıf',
+      label: t('form.label.grade'),
       sortable: true,
       render: (value) => {
         if (!value) return '-';
@@ -43,7 +43,7 @@ export default function InstitutionBranchesPage() {
     },
     {
       key: 'status',
-      label: 'Durum',
+      label: t('admin.entity.status'),
       sortable: true,
       render: (value) => {
         const status = value as string;
@@ -58,7 +58,7 @@ export default function InstitutionBranchesPage() {
     },
     {
       key: 'createdAt',
-      label: 'Oluşturulma Tarihi',
+      label: t('admin.entity.createdAt'),
       sortable: true,
       render: (value) => {
         if (!value) return '-';
@@ -68,7 +68,7 @@ export default function InstitutionBranchesPage() {
     },
     {
       key: 'edit',
-      label: 'Düzenle',
+      label: t('common.edit'),
       sortable: false,
       clickable: true,
       render: (value, row) => {
@@ -106,10 +106,10 @@ export default function InstitutionBranchesPage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>{institution?.name || 'Kurum'} - Branch'ler</h2>
+          <h2>{institution?.name || t('admin.entity.institution')} - {t('admin.entity.branches')}</h2>
           <Link href={`/admin/dashboard/campuses/${institution?.campus?.id}/institutions`} className="rbt-btn-link">
             <i className="feather-arrow-left me-1"></i>
-            Kurumlar Listesine Dön
+            {t('admin.entity.institutionsList')}
           </Link>
         </div>
         <Link

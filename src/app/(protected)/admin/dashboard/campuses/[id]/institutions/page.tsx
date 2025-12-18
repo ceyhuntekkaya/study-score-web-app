@@ -29,12 +29,12 @@ export default function CampusInstitutionsPage() {
   const columns: Column<Institution>[] = [
     {
       key: 'name',
-      label: 'Kurum Adı',
+      label: t('admin.entity.institutionName'),
       sortable: true,
     },
     {
       key: 'status',
-      label: 'Durum',
+      label: t('admin.entity.status'),
       sortable: true,
       render: (value) => {
         const status = value as string;
@@ -49,7 +49,7 @@ export default function CampusInstitutionsPage() {
     },
     {
       key: 'createdAt',
-      label: 'Oluşturulma Tarihi',
+      label: t('admin.entity.createdAt'),
       sortable: true,
       render: (value) => {
         if (!value) return '-';
@@ -59,7 +59,7 @@ export default function CampusInstitutionsPage() {
     },
     {
       key: 'edit',
-      label: 'Düzenle',
+      label: t('common.edit'),
       sortable: false,
       clickable: true,
       render: (value, row) => {
@@ -79,7 +79,7 @@ export default function CampusInstitutionsPage() {
     },
     {
       key: 'actions',
-      label: 'İşlemler',
+      label: t('common.actions'),
       sortable: false,
       clickable: true,
       render: (value, row) => {
@@ -92,7 +92,7 @@ export default function CampusInstitutionsPage() {
             }}
           >
             <i className="feather-list me-1"></i>
-            Branch Listesi
+            {t('admin.entity.branchList')}
           </button>
         );
       },
@@ -117,10 +117,10 @@ export default function CampusInstitutionsPage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>{campus?.name || 'Kampüs'} - Kurumlar</h2>
+          <h2>{campus?.name || t('admin.entity.campus')} - {t('admin.entity.institutions')}</h2>
           <Link href={`/admin/dashboard/brands/${campus?.brand?.id}/campuses`} className="rbt-btn-link">
             <i className="feather-arrow-left me-1"></i>
-            Kampüsler Listesine Dön
+            {t('admin.entity.campusesList')}
           </Link>
         </div>
         <Link

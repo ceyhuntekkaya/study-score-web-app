@@ -141,7 +141,7 @@ export default function MaterialForm({
         <div className="col-12">
           <div className="form-group">
             <Label htmlFor="name">
-              Materyal Adı <span className="text-danger">*</span>
+              {t('admin.material.name')} <span className="text-danger">*</span>
             </Label>
             <Input
               id="name"
@@ -157,7 +157,7 @@ export default function MaterialForm({
         {/* Description */}
         <div className="col-12">
           <div className="form-group">
-            <Label htmlFor="description">Açıklama</Label>
+            <Label htmlFor="description">{t('form.label.description')}</Label>
             <Textarea
               id="description"
               name="description"
@@ -172,7 +172,7 @@ export default function MaterialForm({
         <div className="col-md-6">
           <div className="form-group">
             <Label htmlFor="mediaType">
-              Medya Tipi <span className="text-danger">*</span>
+              {t('admin.material.mediaType')} <span className="text-danger">*</span>
             </Label>
             <Select
               value={formData.mediaType || CourseLessonPartMaterialDetailDTOMediaType.VIDEO}
@@ -183,7 +183,7 @@ export default function MaterialForm({
               sortable={false}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Medya tipi seçiniz" />
+                <SelectValue placeholder={t('admin.material.selectMediaType')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
@@ -220,7 +220,7 @@ export default function MaterialForm({
         {/* Order Number */}
         <div className="col-md-6">
           <div className="form-group">
-            <Label htmlFor="orderNumber">Sıra Numarası</Label>
+            <Label htmlFor="orderNumber">{t('form.label.orderNumber')}</Label>
             <Input
               id="orderNumber"
               name="orderNumber"
@@ -235,7 +235,7 @@ export default function MaterialForm({
         {/* Duration */}
         <div className="col-md-6">
           <div className="form-group">
-            <Label htmlFor="duration">Süre (saniye)</Label>
+            <Label htmlFor="duration">{t('form.label.duration')}</Label>
             <Input
               id="duration"
               name="duration"
@@ -250,7 +250,7 @@ export default function MaterialForm({
         {/* Uploaded File ID */}
         <div className="col-md-6">
           <div className="form-group">
-            <Label htmlFor="uploadedFileId">Yüklenen Dosya ID</Label>
+            <Label htmlFor="uploadedFileId">{t('admin.material.uploadedFileId')}</Label>
             <Input
               id="uploadedFileId"
               name="uploadedFileId"
@@ -264,7 +264,7 @@ export default function MaterialForm({
         {/* Content */}
         <div className="col-12">
           <div className="form-group">
-            <Label htmlFor="content">İçerik</Label>
+            <Label htmlFor="content">{t('admin.material.content')}</Label>
             <Textarea
               id="content"
               name="content"

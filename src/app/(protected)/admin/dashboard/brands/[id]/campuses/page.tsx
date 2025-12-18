@@ -29,12 +29,12 @@ export default function BrandCampusesPage() {
   const columns: Column<Campus>[] = [
     {
       key: 'name',
-      label: 'Kampüs Adı',
+      label: t('admin.entity.campusName'),
       sortable: true,
     },
     {
       key: 'status',
-      label: 'Durum',
+      label: t('admin.entity.status'),
       sortable: true,
       render: (value) => {
         const status = value as string;
@@ -49,7 +49,7 @@ export default function BrandCampusesPage() {
     },
     {
       key: 'createdAt',
-      label: 'Oluşturulma Tarihi',
+      label: t('admin.entity.createdAt'),
       sortable: true,
       render: (value) => {
         if (!value) return '-';
@@ -59,7 +59,7 @@ export default function BrandCampusesPage() {
     },
     {
       key: 'edit',
-      label: 'Düzenle',
+      label: t('common.edit'),
       sortable: false,
       clickable: true,
       render: (value, row) => {
@@ -79,7 +79,7 @@ export default function BrandCampusesPage() {
     },
     {
       key: 'actions',
-      label: 'İşlemler',
+      label: t('common.actions'),
       sortable: false,
       clickable: true,
       render: (value, row) => {
@@ -92,7 +92,7 @@ export default function BrandCampusesPage() {
             }}
           >
             <i className="feather-list me-1"></i>
-            Kurumlar
+            {t('admin.entity.institutions')}
           </button>
         );
       },
@@ -117,10 +117,10 @@ export default function BrandCampusesPage() {
     <>
       <div className="rbt-page-title d-flex justify-content-between align-items-center mb--20">
         <div>
-          <h2>{brand?.name || 'Kurum'} - Kampüsler</h2>
+          <h2>{brand?.name || t('admin.entity.institution')} - {t('admin.entity.campuses')}</h2>
           <Link href="/admin/dashboard/brands" className="rbt-btn-link">
             <i className="feather-arrow-left me-1"></i>
-            Kurumlar Listesine Dön
+            {t('admin.entity.institutionsList')}
           </Link>
         </div>
         <Link

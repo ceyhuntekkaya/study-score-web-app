@@ -55,15 +55,17 @@ const ModalPanel: React.FC<ModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="modal fade show d-block" style={{ zIndex: 1050 }} onClick={onClose}>
-            <div className="modal-backdrop fade show"></div>
-            <div
-                className={cn("modal-dialog modal-dialog-centered modal-dialog-scrollable", sizeClasses[size])}
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="modal-content">
-                    {title && (
-                        <div className="modal-header">
+        <>
+            <div className="modal-backdrop fade show" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1040, backgroundColor: 'rgba(0, 0, 0, 0.5)' }} onClick={onClose}></div>
+            <div className="modal fade show d-block" style={{ zIndex: 1050, position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={onClose}>
+                <div
+                    className={cn("modal-dialog modal-dialog-centered modal-dialog-scrollable", sizeClasses[size])}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ zIndex: 1055, position: 'relative', maxHeight: '90vh', margin: '20px auto' }}
+                >
+                    <div className="modal-content" style={{ position: 'relative', zIndex: 1, maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+                        {title && (
+                        <div className="modal-header" style={{ flexShrink: 0 }}>
                             <h5 className="modal-title">{title}</h5>
                             <button
                                 type="button"
@@ -73,11 +75,11 @@ const ModalPanel: React.FC<ModalProps> = ({
                             ></button>
                         </div>
                     )}
-                    <div className="modal-body">
+                    <div className="modal-body" style={{ overflowY: 'auto', flex: 1, minHeight: 0 }}>
                         {children}
                     </div>
                     {(confirmText || cancelText) && (
-                        <div className="modal-footer">
+                        <div className="modal-footer" style={{ flexShrink: 0 }}>
                             {cancelText && onCancel && (
                                 <button
                                     type="button"
@@ -97,10 +99,11 @@ const ModalPanel: React.FC<ModalProps> = ({
                                 </button>
                             )}
                         </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
