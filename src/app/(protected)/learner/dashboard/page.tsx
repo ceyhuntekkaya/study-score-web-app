@@ -37,12 +37,26 @@ type ActiveExamInfo = {
   daysRemaining?: number;
 };
 
+type OverallStats = {
+  averageProgressPercentage?: number;
+  totalStudyTimeSeconds?: number;
+  [key: string]: unknown;
+};
+
+type DashboardData = {
+  activeCourses?: ActiveCourseInfo[];
+  activeExams?: ActiveExamInfo[];
+  overallStats?: OverallStats;
+  [key: string]: unknown;
+};
+
 /**
  * Learner Dashboard Page
  * Template content converted to React components
  */
 export default function DashboardPage() {
   const { data, isLoading, error } = useGetDashboard();
+  const dashboardData = data as DashboardData | undefined;
 
 
   if (isLoading) {
@@ -71,8 +85,8 @@ export default function DashboardPage() {
     );
   }
 
-  const activeCourses = (Array.isArray(data?.activeCourses) ? data.activeCourses : []) as ActiveCourseInfo[];
-  const activeExams = (Array.isArray(data?.activeExams) ? data.activeExams : []) as ActiveExamInfo[];
+  const activeCourses = (Array.isArray(dashboardData?.activeCourses) ? dashboardData.activeCourses : []) as ActiveCourseInfo[];
+  const activeExams = (Array.isArray(dashboardData?.activeExams) ? dashboardData.activeExams : []) as ActiveExamInfo[];
 
   // Calculate average progress percentage from activeCourses
   // This ensures consistency with what's shown in the Active Courses section
@@ -105,8 +119,8 @@ export default function DashboardPage() {
   // Calculate total study time from activeCourses if not provided by backend
   const calculateTotalStudyTime = () => {
     // If backend provides totalStudyTimeSeconds and it's > 0, use it
-    if (data?.overallStats?.totalStudyTimeSeconds && data.overallStats.totalStudyTimeSeconds > 0) {
-      return data.overallStats.totalStudyTimeSeconds;
+    if (dashboardData?.overallStats?.totalStudyTimeSeconds && dashboardData.overallStats.totalStudyTimeSeconds > 0) {
+      return dashboardData.overallStats.totalStudyTimeSeconds;
     }
     
     // Otherwise, try to sum up totalTimeSpentSeconds from activeCourses
@@ -121,10 +135,10 @@ export default function DashboardPage() {
 
   // Use calculated average if available, otherwise fall back to backend value
   // Also use calculated total study time if backend value is missing or 0
-  const overallStats = data?.overallStats ? {
-    ...data.overallStats,
-    averageProgressPercentage: calculatedAverageProgress > 0 ? calculatedAverageProgress : (data.overallStats.averageProgressPercentage || 0),
-    totalStudyTimeSeconds: calculatedTotalStudyTime > 0 ? calculatedTotalStudyTime : (data.overallStats.totalStudyTimeSeconds || 0)
+  const overallStats = dashboardData?.overallStats ? {
+    ...dashboardData.overallStats,
+    averageProgressPercentage: calculatedAverageProgress > 0 ? calculatedAverageProgress : (dashboardData.overallStats.averageProgressPercentage || 0),
+    totalStudyTimeSeconds: calculatedTotalStudyTime > 0 ? calculatedTotalStudyTime : (dashboardData.overallStats.totalStudyTimeSeconds || 0)
   } : undefined;
 
   return (

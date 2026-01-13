@@ -44,7 +44,7 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
     // Set initial preview data
     setPreviewData({
       id: material.id,
-      name: material.name || "",
+      name: "", // CourseLessonPartMaterial doesn't have name property
       description: "",
       content: material.content || "",
       mediaType: material.mediaType as any,
@@ -69,9 +69,13 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
 
   const columns: Column<CourseLessonPartMaterial>[] = [
     {
-      key: "name",
-      header: t('admin.material.name'),
+      key: "id",
+      header: t('admin.material.name') || "ID",
       sortable: true,
+      render: (value) => {
+        const id = value as string;
+        return <span>{id || "-"}</span>;
+      },
     },
     {
       key: "mediaType",
@@ -171,7 +175,7 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
             courseLessonPartId={partId}
             initialData={editingMaterial ? {
               id: editingMaterial.id,
-              name: editingMaterial.name || "",
+              name: "", // CourseLessonPartMaterial doesn't have name property
               description: "",
               content: editingMaterial.content || "",
               mediaType: editingMaterial.mediaType as any,

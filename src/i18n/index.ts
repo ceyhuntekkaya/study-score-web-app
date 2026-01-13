@@ -64,13 +64,11 @@ const translations: Record<Language, Translations> = {
     'admin.lesson.curriculum': 'Course Curriculum',
     'admin.lesson.noContent': 'No lesson content has been added yet.',
     'admin.lesson.lessonName': 'LESSON NAME',
-    'admin.lesson.level': 'LEVEL',
+    'admin.lesson.levelHeader': 'LEVEL',
     'admin.lesson.addPart': 'Add Part',
     'admin.lesson.editPart': 'Edit',
     'admin.lesson.materialList': 'Material List',
     'admin.lesson.addSubLevel': 'Add Sub Level',
-    'admin.lesson.addPart': 'Add Part',
-    'admin.lesson.edit': 'Edit',
     'admin.lesson.addUnit': 'Add New Unit',
     
     // Admin - Part Management
@@ -279,13 +277,12 @@ const translations: Record<Language, Translations> = {
     'admin.lesson.curriculum': 'Kurs Müfredatı',
     'admin.lesson.noContent': 'Henüz ders içeriği eklenmemiş.',
     'admin.lesson.lessonName': 'DERS ADI',
-    'admin.lesson.level': 'SEVIYE',
+    'admin.lesson.levelHeader': 'SEVIYE',
     'admin.lesson.addPart': 'Part Ekleme',
     'admin.lesson.editPart': 'Düzenle',
     'admin.lesson.materialList': 'Materyal Listesi',
     'admin.lesson.addSubLevel': 'Alt Seviye Ekle',
     'admin.lesson.addPartButton': 'Part Ekle',
-    'admin.lesson.edit': 'Düzenle',
     'admin.lesson.addUnit': 'Yeni Birim Ekle',
     
     // Admin - Part Management

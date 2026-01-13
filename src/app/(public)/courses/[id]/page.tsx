@@ -117,7 +117,7 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
       'Access to our database of 10,000+ adaptive questions.',
     ],
     instructor: {
-      name: 'Dr. Ceyhun Tekkaya',
+      name: 'Dr. Murat Koçar',
       avatar: '/assets/images/testimonial/testimonial-7.jpg',
       profileLink: '/author',
       title: 'Founder & AI Visionary',

@@ -156,9 +156,9 @@ export default function LessonForm({
               {t('admin.lesson.level')} <span className="text-danger">*</span>
             </Label>
             <Select
-              value={formData.lessonLevel}
+              value={formData.lessonLevel || CourseLessonDTOLessonLevel.LESSON}
               onValueChange={(value) =>
-                handleSelectChange("lessonLevel", value)
+                handleSelectChange("lessonLevel", String(value))
               }
             >
               <SelectTrigger>

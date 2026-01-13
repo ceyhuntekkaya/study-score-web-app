@@ -46,7 +46,7 @@ export default function CourseGridSection({ courses, viewMode = 'grid' }: Course
       rating: 5,
       reviews: 340,
       author: {
-        name: 'Dr. Ceyhun Tekkaya',
+        name: 'Dr. Murat Koçar',
         avatar: '/assets/images/client/avatar-02.png',
         profileLink: '/profile',
       },

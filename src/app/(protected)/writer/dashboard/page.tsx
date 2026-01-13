@@ -27,7 +27,7 @@ export default function WriterDashboardPage() {
       rating: 5,
       reviews: 342,
       author: {
-        name: 'Dr. Ceyhun Tekkaya',
+        name: 'Murat Koçar',
         avatar: '/assets/images/client/avatar-02.png',
         profileLink: '/profile',
       },
