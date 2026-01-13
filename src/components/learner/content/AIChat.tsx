@@ -7,6 +7,7 @@ import {
   clearChatHistory,
   setLessonContext,
   setStudentName,
+  setAIMode, // YENİ: Mod set etmek için
 } from '@/services/ai/llama';
 import { convertToHtml } from '@/services/ai/format-helpers';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,9 +24,14 @@ type Message = {
 interface AIChatProps {
   activeText?: string;
   lessonPartName?: string;
+  mode?: 'learning' | 'analysis' | 'practice'; // YENİ: Mod parametresi
 }
 
-export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
+export default function AIChat({ 
+  activeText, 
+  lessonPartName,
+  mode = 'learning' // Varsayılan: learning
+}: AIChatProps) {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -44,15 +50,20 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
     }
   }, [user?.name]);
 
+  // YENİ: Mod değiştiğinde AI modunu güncelle ve history'yi temizle
+  useEffect(() => {
+    setAIMode(mode);
+    clearChatHistory();
+    setMessages([]);
+  }, [mode]);
+
   useEffect(() => {
     if (activeText && activeText.trim() !== '') {
       // Lesson context'i set et
       setLessonContext(activeText);
       clearChatHistory();
       setMessages([]);
-      // Input alanını otomatik doldurma - kullanıcı kendi metnini yazacak
     } else {
-      // Eğer activeText boşsa, context'i de temizle
       setLessonContext('');
     }
   }, [activeText]);
@@ -139,11 +150,8 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
     }, 10);
 
     try {
-      // Context'i prompt'a ekle
+      // Prompt'u direkt gönder (context zaten llama.ts'de set edilmiş)
       let prompt = currentInput;
-      if (activeText && activeText.trim() !== '') {
-        prompt = `Context from the lesson: "${activeText.substring(0, 500)}"\n\nUser question: ${currentInput}`;
-      }
 
       // Her yeni parça geldiğinde mesajı güncelle
       await streamChatWithLlama(
@@ -215,6 +223,37 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
     }
   };
 
+  // Mod'a göre placeholder metni
+  const getPlaceholder = () => {
+    switch (mode) {
+      case 'learning':
+        return 'Ask about the concept or IELTS topic...';
+      case 'analysis':
+        return 'Ask about this question or answer...';
+      case 'practice':
+        return 'Say "give me a question" to start...';
+      default:
+        return 'Ask me anything...';
+    }
+  };
+
+  // Mod'a göre başlık metni
+  const getModeTitle = () => {
+
+
+    //return activeText ? activeText : 'AI Assistant';
+    switch (mode) {
+      case 'learning':
+        return '📚 Learn with AI (Socratic Method)';
+      case 'analysis':
+        return '🔍 Analyze Question & Answer';
+      case 'practice':
+        return '✏️ Practice with Questions';
+      default:
+        return 'AI Assistant';
+    }
+  };
+
   // Servis durumuna göre UI göster
   if (serviceStatus === 'checking') {
     return (
@@ -278,12 +317,12 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
               </div>
             </div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              AI Assistant Ready
+              {getModeTitle()}
             </h3>
             <p className="text-gray-600 max-w-md">
               {activeText
-                ? 'Ask me anything about the selected content or IELTS-related questions.'
-                : 'Ask me anything about IELTS-related questions.'}
+                ? 'Ready to help you with the content above.'
+                : 'Ask me anything about IELTS.'}
             </p>
           </div>
         ) : (
@@ -351,7 +390,7 @@ export default function AIChat({ activeText, lessonPartName }: AIChatProps) {
                 }
               }
             }}
-            placeholder="Ask about the content or IELTS questions..."
+            placeholder={getPlaceholder()}
             className="ai-chat-input"
             style={{
               minHeight: '48px',

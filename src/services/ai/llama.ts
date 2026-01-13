@@ -18,6 +18,7 @@ export class LlamaService {
   private conversationHistory: Array<{ role: string; content: string }>;
   private lessonContext: string = '';
   private studentName: string = '';
+  private currentMode: 'learning' | 'analysis' | 'practice' = 'learning';
 
   constructor(modelName: string = DEFAULT_MODEL) {
     this.modelName = modelName;
@@ -25,7 +26,7 @@ export class LlamaService {
     this.conversationHistory = [
       {
         role: 'system',
-        content: getIELTSSystemContext(this.studentName),
+        content: getIELTSSystemContext(this.studentName, this.currentMode),
       },
       {
         role: 'system',
@@ -42,7 +43,6 @@ export class LlamaService {
         content: prompt,
       });
 
-
       const response = await fetch(`${this.apiUrl}/api/chat`, {
         method: 'POST',
         headers: {
@@ -52,6 +52,13 @@ export class LlamaService {
           model: this.modelName,
           messages: this.conversationHistory,
           stream: false,
+          options: {
+            temperature: 0.7,
+            top_p: 0.9,
+            top_k: 40,
+            repeat_penalty: 1.1, // ÇOOK ÖNEMLİ - Tekrarları önler
+            num_predict: 2048,
+          },
         }),
       });
 
@@ -109,8 +116,6 @@ export class LlamaService {
         content: prompt,
       });
 
-
-
       const response = await fetch(`${this.apiUrl}/api/chat`, {
         method: 'POST',
         headers: {
@@ -120,6 +125,13 @@ export class LlamaService {
           model: this.modelName,
           messages: this.conversationHistory,
           stream: true,
+          options: {
+            temperature: 0.7,
+            top_p: 0.9,
+            top_k: 40,
+            repeat_penalty: 1.1, // ÇOOK ÖNEMLİ - Tekrarları önler
+            num_predict: 2048,
+          },
         }),
       });
 
@@ -202,14 +214,14 @@ export class LlamaService {
     if (this.conversationHistory.length > 0) {
       this.conversationHistory[0] = {
         role: 'system',
-        content: getIELTSSystemContext(this.studentName),
+        content: getIELTSSystemContext(this.studentName, this.currentMode),
       };
     } else {
       // Eğer history boşsa, system mesajlarını yeniden ekle
       this.conversationHistory = [
         {
           role: 'system',
-          content: getIELTSSystemContext(this.studentName),
+          content: getIELTSSystemContext(this.studentName, this.currentMode),
         },
         {
           role: 'system',
@@ -217,7 +229,6 @@ export class LlamaService {
         },
       ];
     }
-    
   }
 
   /**
@@ -238,7 +249,7 @@ export class LlamaService {
       this.conversationHistory = [
         {
           role: 'system',
-          content: getIELTSSystemContext(this.studentName),
+          content: getIELTSSystemContext(this.studentName, this.currentMode),
         },
         {
           role: 'system',
@@ -246,8 +257,22 @@ export class LlamaService {
         },
       ];
     }
-    
+  }
 
+  /**
+   * YENİ: AI modunu set eder (learning, analysis, practice)
+   * @param mode AI çalışma modu
+   */
+  setMode(mode: 'learning' | 'analysis' | 'practice'): void {
+    this.currentMode = mode;
+    
+    // System context'i yeni mod ile güncelle
+    if (this.conversationHistory.length > 0) {
+      this.conversationHistory[0] = {
+        role: 'system',
+        content: getIELTSSystemContext(this.studentName, this.currentMode),
+      };
+    }
   }
 
   /**
@@ -257,7 +282,7 @@ export class LlamaService {
     this.conversationHistory = [
       {
         role: 'system',
-        content: getIELTSSystemContext(this.studentName),
+        content: getIELTSSystemContext(this.studentName, this.currentMode),
       },
       {
         role: 'system',
@@ -339,4 +364,11 @@ export function setLessonContext(description: string): void {
 
 export function setStudentName(name: string): void {
   return llamaService.setStudentName(name);
+}
+
+/**
+ * YENİ: AI modunu set et
+ */
+export function setAIMode(mode: 'learning' | 'analysis' | 'practice'): void {
+  return llamaService.setMode(mode);
 }

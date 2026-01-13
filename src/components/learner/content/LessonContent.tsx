@@ -19,7 +19,7 @@ export default function LessonContent() {
   const pathname = usePathname();
   const router = useRouter();
   const { sidebarOpen, toggleSidebar } = useContent();
-  
+
   // Parse courseId and lessonId from pathname
   const pathParts = pathname?.split('/').filter(Boolean) || [];
   const courseId = pathParts[2];
@@ -94,13 +94,13 @@ export default function LessonContent() {
 
     const collectParts = (lessons: CourseLessonDetailDTO[]): Array<{ part: CourseLessonPartDetailDTO; lessonId: string; lessonName: string }> => {
       const parts: Array<{ part: CourseLessonPartDetailDTO; lessonId: string; lessonName: string }> = [];
-      
+
       for (const lesson of lessons) {
         if (lesson.lessonParts?.length) {
           const sortedParts = lesson.lessonParts
             .filter((part): part is CourseLessonPartDetailDTO => !!part)
             .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
-          
+
           sortedParts.forEach((part) => {
             parts.push({
               part,
@@ -109,14 +109,14 @@ export default function LessonContent() {
             });
           });
         }
-        
+
         const lessonWithChildren = lesson as CourseLessonDetailDTO & { childLessons?: CourseLessonDetailDTO[] };
         if (lessonWithChildren.childLessons?.length) {
           const childParts = collectParts(lessonWithChildren.childLessons);
           parts.push(...childParts);
         }
       }
-      
+
       return parts;
     };
 
@@ -168,12 +168,12 @@ export default function LessonContent() {
           return;
         }
       }
-      
+
       if (selectedPartId) {
         const partExists = lessonParts.some((part) => part.id === selectedPartId);
         if (partExists) return;
       }
-      
+
       // Only set if different to avoid unnecessary updates
       const firstPartId = lessonParts[0].id || null;
       if (firstPartId !== selectedPartId) {
@@ -225,7 +225,7 @@ export default function LessonContent() {
           </div>
         </div>
       </div>
-      
+
       {/* Lesson Parts Navigation */}
       {lessonParts.length > 0 && (
         <div className="lesson-parts-nav bg-color-extra2 ptb--15">
@@ -235,11 +235,13 @@ export default function LessonContent() {
                 <div className="rbt-button-group d-flex flex-wrap gap-2">
                   {lessonParts.map((part) => {
                     const isActive = selectedPartId === part.id;
-                    return (
+                    return ( 
                       <button
                         key={part.id}
                         className={`rbt-btn btn-sm ${isActive ? 'bg-primary' : 'bg-primary-opacity'}`}
-                        onClick={() => setSelectedPartId(part.id || null)}
+                        onClick={() => {setSelectedPartId(part.id || null)
+                          setShowAIChat(false)
+                        }}
                         style={{ whiteSpace: 'nowrap', minWidth: 'auto' }}
                       >
                         <span className="btn-text">{part.name || `Part ${part.orderNumber || ''}`}</span>
@@ -260,13 +262,13 @@ export default function LessonContent() {
           </div>
         </div>
       )}
-      
+
       {/* Content */}
       <div className="inner">
         {showAIChat ? (
-          <div 
-            className="ai-chat-container" 
-            style={{ 
+          <div
+            className="ai-chat-container"
+            style={{
               height: 'calc(100vh - 250px)',
               minHeight: '600px',
               maxHeight: 'calc(100vh - 250px)',
@@ -277,15 +279,16 @@ export default function LessonContent() {
             }}
           >
             <AIChat
-              activeText={selectedPart?.description || ''}
-              lessonPartName={selectedPart?.name}
+              activeText={lessonParts[0].description || ''}
+              lessonPartName={lessonParts[0].name}
+              mode="learning" 
             />
           </div>
         ) : (
           <>
             {materials.length > 0 ? (
               <div className="materials-content p-4">
-                {materials.map((material) => (
+                {selectedPart?.name !== 'Practice' && materials.map((material) => (
                   <MaterialRenderer
                     key={material.id}
                     material={material}
@@ -295,6 +298,28 @@ export default function LessonContent() {
                     onLinkClick={handleLinkClick}
                   />
                 ))}
+
+                {(selectedPart?.name === 'Practice') && (
+                  <div className="mt-4">
+                    <AIChat
+                      activeText={selectedLesson?.name || ''}
+                      lessonPartName={selectedPart?.name}
+                            mode="practice"
+                    />
+                  </div>
+                )}
+
+                {(selectedPart?.name?.toLowerCase().startsWith('example')) && (
+                  <div className="mt-4">
+                    <AIChat
+                      activeText={selectedPart?.description || ''}
+                      lessonPartName={selectedPart?.name}
+                            mode="analysis"
+                    />
+                  </div>
+                )}
+
+
               </div>
             ) : (
               <div className="content">
@@ -309,7 +334,7 @@ export default function LessonContent() {
       </div>
 
       {/* Fixed Navigation Buttons */}
-      <div 
+      <div
         className="bg-color-extra2 ptb--15 overflow-hidden"
         style={{
           position: 'fixed',
@@ -343,7 +368,7 @@ export default function LessonContent() {
           </div>
         </div>
       </div>
-      
+
       {/* Spacer */}
       <div style={{ height: '80px' }}></div>
     </div>

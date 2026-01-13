@@ -3,7 +3,7 @@
       "invokeUrl": "https://api.studyscore.ai/api",
       "baseUrl": "https://api.studyscore.ai",
       "aiUrl": "https://chat.studyscore.ai/ollama",
-      "aiUrl2": "http://185.72.9.3:11434i"
+      "aiUrl2": "http://185.72.9.3:11434"
     },
     "apiLocal": {
       "invokeUrl": "http://localhost:8080/api",
