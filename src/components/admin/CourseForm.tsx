@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n";
-import { Course } from "@/generated/api/openAPIDefinition.schemas";
-import { useUpdateCourse } from "@/generated/api/course-rest-controller/course-rest-controller";
+import { Course, CourseDetailDTO } from "@/generated/api/openAPIDefinition.schemas";
+import { useUpdateCourse, useCreateCourse } from "@/generated/api/course-rest-controller/course-rest-controller";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
@@ -38,8 +38,9 @@ export default function CourseForm({
     status: "ACTIVE",
   });
 
-  // Mutation
+  // Mutations
   const updateCourse = useUpdateCourse();
+  const createCourse = useCreateCourse();
 
   // Initialize form with initial data
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function CourseForm({
 
     try {
       if (isEditMode && initialData?.id) {
+        // Update existing course
         await updateCourse.mutateAsync({
           courseId: initialData.id,
           data: formData as Course,
@@ -82,13 +84,40 @@ export default function CourseForm({
         } else {
           router.push("/admin/dashboard/courses");
         }
+      } else {
+        // Create new course
+        const courseDetailDTO: CourseDetailDTO = {
+          name: formData.name,
+          description: formData.description,
+          code: formData.code,
+          language: formData.language,
+          level: formData.level,
+          imageUrl: formData.imageUrl,
+          category: formData.category as any,
+          status: formData.status as any,
+        };
+
+        const result = await createCourse.mutateAsync({
+          data: courseDetailDTO,
+        });
+
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          // Redirect to edit page with the new course ID
+          if (result?.id) {
+            router.push(`/admin/dashboard/courses/${result.id}/edit`);
+          } else {
+            router.push("/admin/dashboard/courses");
+          }
+        }
       }
     } catch (error) {
       console.error("Form submission error:", error);
     }
   };
 
-  const isLoading = updateCourse.isPending;
+  const isLoading = updateCourse.isPending || createCourse.isPending;
 
   return (
     <form onSubmit={handleSubmit} className="rbt-form-wrapper">
@@ -137,6 +166,9 @@ export default function CourseForm({
             >
               <option value="IELTS">IELTS</option>
               <option value="TOEFL">TOEFL</option>
+              <option value="SAT_ENGLISH">SAT English</option>
+              <option value="SAT_MATH">SAT Math</option>
+              <option value="GENERAL_ENGLISH">General English</option>
             </select>
           </div>
         </div>

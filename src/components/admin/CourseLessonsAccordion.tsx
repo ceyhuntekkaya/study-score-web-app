@@ -619,11 +619,46 @@ export default function CourseLessonsAccordion({
           style={{
             flex: 1,
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
+            gap: "1rem",
           }}
         >
           <p style={{ color: "#6b7280" }}>{t('admin.lesson.noContent')}</p>
+          {onAddLesson && (
+            <button
+              onClick={() => {
+                if (onAddLesson) {
+                  onAddLesson(undefined, "UNIT");
+                }
+              }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                padding: "0.75rem 1.5rem",
+                backgroundColor: "#3b82f6",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: "0.5rem",
+                fontSize: "1rem",
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.15s",
+                fontFamily: 'Montserrat, "Montserrat Fallback", sans-serif',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#2563eb";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#3b82f6";
+              }}
+            >
+              <DiamondPlus size={20} />
+              {t('admin.lesson.addFirstUnit') || 'İlk UNIT Ekle'}
+            </button>
+          )}
         </div>
       </div>
     );

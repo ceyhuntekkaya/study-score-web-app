@@ -45,5 +45,5 @@ docker push ctekkaya/study-score-app:2.0
 
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
-  -t ctekkaya/study-score-app:3.0 \
+  -t ctekkaya/study-score-app:4.0 \
   --push .

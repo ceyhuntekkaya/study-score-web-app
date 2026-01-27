@@ -6,7 +6,6 @@ import { userStorage } from '@/utils/userStorage';
 import { User, UserRole } from '@/types';
 import { ROLE_ROUTES } from '@/constants';
 import { useRouter } from 'next/navigation';
-import { socketService } from '@/services/socket/socketService';
 
 interface AuthContextType {
   accessToken: string | null;
@@ -41,11 +40,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setAccessToken(tokens.accessToken);
       setRefreshToken(tokens.refreshToken);
       setUser(savedUser);
-      
-      // Connect socket if authenticated
-      socketService.connect().catch((error) => {
-        console.error('Socket connection failed:', error);
-      });
     }
     
     setIsInitialized(true);
@@ -78,11 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setRefreshToken(tokens.refreshToken);
     setUser(newUser);
     
-    // Connect socket after login
-    socketService.connect().catch((error) => {
-      console.error('Socket connection failed:', error);
-    });
-    
     // Redirect to role-based dashboard
     const roleRoute = ROLE_ROUTES[newUser.role];
     if (roleRoute) {
@@ -96,9 +85,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     tokenStorage.clearTokens();
     userStorage.clearUser();
-    
-    // Disconnect socket on logout
-    socketService.disconnect();
     
     // Redirect to login
     router.push('/login');

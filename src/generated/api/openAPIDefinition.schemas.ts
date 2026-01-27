@@ -298,17 +298,17 @@ export interface User {
   roleSet?: UserRoleSetItem[];
   authoritySet?: UserAuthoritySetItem[];
   enabled?: boolean;
+  learner?: boolean;
+  manager?: boolean;
+  tutor?: boolean;
+  writer?: boolean;
+  admin?: boolean;
   authorities?: GrantedAuthority[];
   institutionalLearner?: boolean;
   individualLearner?: boolean;
   accountNonExpired?: boolean;
   accountNonLocked?: boolean;
   credentialsNonExpired?: boolean;
-  learner?: boolean;
-  manager?: boolean;
-  tutor?: boolean;
-  writer?: boolean;
-  admin?: boolean;
 }
 
 export type UserAssignmentStatus =
@@ -614,6 +614,9 @@ export type CurriculumDtoCategory =
 export const CurriculumDtoCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
 } as const;
 
 export interface CurriculumDto {
@@ -708,6 +711,9 @@ export type CourseCategory =
 export const CourseCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
 } as const;
 
 export interface Course {
@@ -758,6 +764,9 @@ export type CurriculumCategory =
 export const CurriculumCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
 } as const;
 
 export interface Curriculum {
@@ -1083,6 +1092,9 @@ export type ExamCreateRequestCategory =
 export const ExamCreateRequestCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
 } as const;
 
 export type ExamCreateRequestExamType =
@@ -1103,28 +1115,13 @@ export interface ExamCreateRequest {
    * @maxLength 255
    */
   name: string;
-  /**
-   * @minLength 1
-   * @pattern ^[A-Z0-9_-]+$
-   */
+  /** @minLength 1 */
   code: string;
   category: ExamCreateRequestCategory;
   examLevel?: string;
   examType?: ExamCreateRequestExamType;
-  /**
-   * @minimum 1
-   * @maximum 1440
-   */
   timeLimitMinutes?: number;
-  /**
-   * @minimum 0
-   * @maximum 100
-   */
   passingScorePercentage?: number;
-  /**
-   * @minimum 1
-   * @maximum 10
-   */
   maxAttempts?: number;
   shuffleQuestions?: boolean;
   shuffleAnswers?: boolean;
@@ -1134,13 +1131,8 @@ export interface ExamCreateRequest {
   resultsReleaseType?: string;
   availableFrom?: string;
   availableUntil?: string;
-  /**
-   * @minLength 0
-   * @maxLength 50
-   */
   accessCode?: string;
   requireProctoring?: boolean;
-  dateRangeValid?: boolean;
 }
 
 export type CurriculumFilterDtoCategory =
@@ -1150,6 +1142,9 @@ export type CurriculumFilterDtoCategory =
 export const CurriculumFilterDtoCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
 } as const;
 
 export interface CurriculumFilterDto {
@@ -1190,6 +1185,9 @@ export type CourseDetailDTOCategory =
 export const CourseDetailDTOCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
 } as const;
 
 export interface CourseDetailDTO {
@@ -1399,8 +1397,8 @@ export interface PageCurriculumDto {
   content?: CurriculumDto[];
   number?: number;
   sort?: SortObject;
-  pageable?: PageableObject;
   numberOfElements?: number;
+  pageable?: PageableObject;
   empty?: boolean;
 }
 
@@ -1408,9 +1406,9 @@ export interface PageableObject {
   offset?: number;
   sort?: SortObject;
   paged?: boolean;
+  unpaged?: boolean;
   pageNumber?: number;
   pageSize?: number;
-  unpaged?: boolean;
 }
 
 export interface SortObject {
@@ -1630,6 +1628,9 @@ export type GetCurriculumVersionsCategory =
 export const GetCurriculumVersionsCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
 } as const;
 
 export type SearchCurriculumsParams = {
@@ -1692,6 +1693,9 @@ export type GetLatestVersionCategory =
 export const GetLatestVersionCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
 } as const;
 
 export type FindByNameAndCategoryParams = {
@@ -1709,6 +1713,9 @@ export type FindByNameAndCategoryCategory =
 export const FindByNameAndCategoryCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
 } as const;
 
 export type ExistsByNameParams = {
@@ -1726,6 +1733,9 @@ export type ExistsByNameCategory =
 export const ExistsByNameCategory = {
   IELTS: "IELTS",
   TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
 } as const;
 
 export type SearchContentsByCurriculumParams = {

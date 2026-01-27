@@ -8,6 +8,7 @@ import {
   setLessonContext,
   setStudentName,
   setAIMode, // YENİ: Mod set etmek için
+  setCourseCategory, // YENİ: Course category set etmek için
 } from '@/services/ai/llama';
 import { convertToHtml } from '@/services/ai/format-helpers';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,12 +26,14 @@ interface AIChatProps {
   activeText?: string;
   lessonPartName?: string;
   mode?: 'learning' | 'analysis' | 'practice'; // YENİ: Mod parametresi
+  courseCategory?: string; // YENİ: Course category (IELTS, TOEFL, SAT_ENGLISH, SAT_MATH, GENERAL_ENGLISH)
 }
 
 export default function AIChat({ 
   activeText, 
   lessonPartName,
-  mode = 'learning' // Varsayılan: learning
+  mode = 'learning', // Varsayılan: learning
+  courseCategory // YENİ: Course category
 }: AIChatProps) {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -49,6 +52,17 @@ export default function AIChat({
       setStudentName(user.name);
     }
   }, [user?.name]);
+
+  // YENİ: Course category değiştiğinde AI category'yi güncelle
+  useEffect(() => {
+    if (courseCategory) {
+      // Category'yi LlamaService'e gönder
+      // SAT_ENGLISH için SAT prompt, diğerleri için IELTS prompt kullanılacak
+      setCourseCategory(courseCategory);
+      clearChatHistory();
+      setMessages([]);
+    }
+  }, [courseCategory]);
 
   // YENİ: Mod değiştiğinde AI modunu güncelle ve history'yi temizle
   useEffect(() => {

@@ -2,6 +2,7 @@
 
 import { getApiAiUrl } from '@/config';
 import { getIELTSSystemContext } from './prompts';
+import { getSATSystemContext } from './sat-prompts';
 
 const OLLAMA_API_URL = process.env.NEXT_PUBLIC_OLLAMA_API_URL || getApiAiUrl();
 const DEFAULT_MODEL = 'qwen2.5:7b';
@@ -19,20 +20,37 @@ export class LlamaService {
   private lessonContext: string = '';
   private studentName: string = '';
   private currentMode: 'learning' | 'analysis' | 'practice' = 'learning';
+  private courseCategory: string = 'IELTS'; // Default: IELTS
 
-  constructor(modelName: string = DEFAULT_MODEL) {
+  constructor(modelName: string = DEFAULT_MODEL, courseCategory: string = 'IELTS') {
     this.modelName = modelName;
     this.apiUrl = OLLAMA_API_URL;
+    this.courseCategory = courseCategory;
     this.conversationHistory = [
       {
         role: 'system',
-        content: getIELTSSystemContext(this.studentName, this.currentMode),
+        content: this.getSystemContext(this.studentName, this.currentMode),
       },
       {
         role: 'system',
         content: '',
       },
     ];
+  }
+
+  /**
+   * Course category'ye göre doğru system context'i döndürür
+   * @private
+   */
+  private getSystemContext(
+    studentName?: string,
+    mode?: 'learning' | 'analysis' | 'practice'
+  ): string {
+    if (this.courseCategory === 'SAT_ENGLISH') {
+      return getSATSystemContext(studentName, mode);
+    }
+    // Default: IELTS
+    return getIELTSSystemContext(studentName, mode);
   }
 
   async chat(prompt: string): Promise<ChatResponse | { message: { content: string } }> {
@@ -214,14 +232,14 @@ export class LlamaService {
     if (this.conversationHistory.length > 0) {
       this.conversationHistory[0] = {
         role: 'system',
-        content: getIELTSSystemContext(this.studentName, this.currentMode),
+        content: this.getSystemContext(this.studentName, this.currentMode),
       };
     } else {
       // Eğer history boşsa, system mesajlarını yeniden ekle
       this.conversationHistory = [
         {
           role: 'system',
-          content: getIELTSSystemContext(this.studentName, this.currentMode),
+          content: this.getSystemContext(this.studentName, this.currentMode),
         },
         {
           role: 'system',
@@ -249,7 +267,7 @@ export class LlamaService {
       this.conversationHistory = [
         {
           role: 'system',
-          content: getIELTSSystemContext(this.studentName, this.currentMode),
+          content: this.getSystemContext(this.studentName, this.currentMode),
         },
         {
           role: 'system',
@@ -270,8 +288,36 @@ export class LlamaService {
     if (this.conversationHistory.length > 0) {
       this.conversationHistory[0] = {
         role: 'system',
-        content: getIELTSSystemContext(this.studentName, this.currentMode),
+        content: this.getSystemContext(this.studentName, this.currentMode),
       };
+    }
+  }
+
+  /**
+   * Course category'yi set eder ve system context'i günceller
+   * @param category Course category ('IELTS' veya 'SAT_ENGLISH')
+   */
+  setCourseCategory(category: string): void {
+    this.courseCategory = category || 'IELTS';
+    
+    // System context'i yeni category ile güncelle
+    if (this.conversationHistory.length > 0) {
+      this.conversationHistory[0] = {
+        role: 'system',
+        content: this.getSystemContext(this.studentName, this.currentMode),
+      };
+    } else {
+      // Eğer history boşsa, system mesajlarını yeniden ekle
+      this.conversationHistory = [
+        {
+          role: 'system',
+          content: this.getSystemContext(this.studentName, this.currentMode),
+        },
+        {
+          role: 'system',
+          content: this.lessonContext,
+        },
+      ];
     }
   }
 
@@ -282,7 +328,7 @@ export class LlamaService {
     this.conversationHistory = [
       {
         role: 'system',
-        content: getIELTSSystemContext(this.studentName, this.currentMode),
+        content: this.getSystemContext(this.studentName, this.currentMode),
       },
       {
         role: 'system',
@@ -371,4 +417,11 @@ export function setStudentName(name: string): void {
  */
 export function setAIMode(mode: 'learning' | 'analysis' | 'practice'): void {
   return llamaService.setMode(mode);
+}
+
+/**
+ * YENİ: Course category'yi set et
+ */
+export function setCourseCategory(category: string): void {
+  return llamaService.setCourseCategory(category);
 }

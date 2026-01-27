@@ -84,22 +84,36 @@ export default function ExamsPage() {
       },
     },
     {
-      key: 'edit',
-      label: 'Düzenle',
+      key: 'actions',
+      label: t('common.actions') || 'İşlemler',
       sortable: false,
       clickable: true,
       render: (value, row) => {
         return (
-          <button
-            className="rbt-btn btn-sm btn-border-gradient"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/admin/dashboard/exams/${row.id}/edit`);
-            }}
-          >
-            <i className="feather-edit me-1"></i>
-            {t('common.edit') || 'Düzenle'}
-          </button>
+          <div className="d-flex gap-2">
+            <button
+              className="rbt-btn btn-sm btn-border-gradient"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/admin/dashboard/exams/${row.id}/edit`);
+              }}
+              title={t('common.edit') || 'Düzenle'}
+            >
+              <i className="feather-edit me-1"></i>
+              {t('common.edit') || 'Düzenle'}
+            </button>
+            <button
+              className="rbt-btn btn-sm btn-border"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/admin/dashboard/exams/${row.id}/question-groups`);
+              }}
+              title={t('admin.exam.questionGroups') || 'Soru Grupları'}
+            >
+              <i className="feather-list me-1"></i>
+              {t('admin.exam.questionGroups') || 'Soru Grupları'}
+            </button>
+          </div>
         );
       },
     },

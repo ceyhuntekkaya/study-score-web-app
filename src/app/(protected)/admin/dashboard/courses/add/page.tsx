@@ -3,10 +3,15 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslation } from '@/i18n';
+import CourseForm from '@/components/admin/CourseForm';
 
 export default function AddCoursePage() {
   const { t } = useTranslation();
   const router = useRouter();
+
+  const handleSuccess = () => {
+    router.push('/admin/dashboard/courses');
+  };
 
   return (
     <>
@@ -20,7 +25,12 @@ export default function AddCoursePage() {
         </div>
       </div>
       <div className="rbt-dashboard-content-wrapper">
-        <p>Form içeriği yakında eklenecek...</p>
+        <div className="rbt-card rbt-card-body">
+          <CourseForm 
+            onSuccess={handleSuccess}
+            onCancel={() => router.push('/admin/dashboard/courses')}
+          />
+        </div>
       </div>
     </>
   );

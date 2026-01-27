@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "@/i18n";
 import {
   CourseLessonPartMaterialDetailDTO,
@@ -10,11 +10,13 @@ import {
   useCreateCoursePartMaterial,
   useUpdateCoursePartMaterial,
 } from "@/generated/api/course-lesson-part-material-rest-controller/course-lesson-part-material-rest-controller";
+import { useUploadFile } from "@/generated/api/file-rest-controller/file-rest-controller";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import LoadingButton from "@/components/ui/LoadingButton";
+import SimpleHtmlEditor from "@/components/ui/SimpleHtmlEditor";
 import {
   Select,
   SelectTrigger,
@@ -56,6 +58,11 @@ export default function MaterialForm({
   // Mutations
   const createMaterial = useCreateCoursePartMaterial();
   const updateMaterial = useUpdateCoursePartMaterial();
+  const uploadFileMutation = useUploadFile();
+  
+  // File upload ref
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   // Initialize form with initial data - only when initialData.id changes (not the whole object)
   useEffect(() => {
@@ -102,9 +109,63 @@ export default function MaterialForm({
 
   const handleSelectChange = (name: string, value: string) => {
     const newFormData = { ...formData, [name]: value };
+    // If media type changes to TEXT, clear uploadedFileId
+    if (name === 'mediaType' && value === CourseLessonPartMaterialDetailDTOMediaType.TEXT) {
+      newFormData.uploadedFileId = undefined;
+    }
+    // If media type changes to LINK, clear uploadedFileId
+    if (name === 'mediaType' && value === CourseLessonPartMaterialDetailDTOMediaType.LINK) {
+      newFormData.uploadedFileId = undefined;
+    }
+    // If media type changes from TEXT or LINK, clear content
+    if (name === 'mediaType' && 
+        value !== CourseLessonPartMaterialDetailDTOMediaType.TEXT && 
+        value !== CourseLessonPartMaterialDetailDTOMediaType.LINK) {
+      newFormData.content = '';
+    }
     setFormData(newFormData);
     if (onFormDataChange) {
       onFormDataChange(newFormData);
+    }
+  };
+
+  const handleContentChange = (content: string) => {
+    const newFormData = { ...formData, content };
+    setFormData(newFormData);
+    if (onFormDataChange) {
+      onFormDataChange(newFormData);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingFile(true);
+    try {
+      const result = await uploadFileMutation.mutateAsync({
+        data: { file },
+      });
+      
+      if (result?.id) {
+        const newFormData = {
+          ...formData,
+          uploadedFileId: result.id,
+          uploadedFileName: result.fileOriginalName || result.fileName,
+        };
+        setFormData(newFormData);
+        if (onFormDataChange) {
+          onFormDataChange(newFormData);
+        }
+      }
+    } catch (error) {
+      console.error('File upload error:', error);
+      alert('Dosya yüklenirken bir hata oluştu.');
+    } finally {
+      setUploadingFile(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -132,7 +193,7 @@ export default function MaterialForm({
     }
   };
 
-  const isLoading = createMaterial.isPending || updateMaterial.isPending;
+  const isLoading = createMaterial.isPending || updateMaterial.isPending || uploadingFile;
 
   return (
     <form onSubmit={handleSubmit} className="rbt-form-wrapper">
@@ -247,33 +308,79 @@ export default function MaterialForm({
           </div>
         </div>
 
-        {/* Uploaded File ID */}
-        <div className="col-md-6">
-          <div className="form-group">
-            <Label htmlFor="uploadedFileId">{t('admin.material.uploadedFileId')}</Label>
-            <Input
-              id="uploadedFileId"
-              name="uploadedFileId"
-              type="text"
-              value={formData.uploadedFileId || ""}
-              onChange={handleChange}
-            />
+        {/* Content / File Upload / Link URL - Conditional based on Media Type */}
+        {formData.mediaType === CourseLessonPartMaterialDetailDTOMediaType.TEXT ? (
+          <div className="col-12">
+            <div className="form-group">
+              <Label htmlFor="content">{t('admin.material.content')}</Label>
+              <SimpleHtmlEditor
+                value={formData.content || ''}
+                onChange={handleContentChange}
+                placeholder={t('admin.material.contentPlaceholder') || 'İçerik girin...'}
+              />
+            </div>
           </div>
-        </div>
-
-        {/* Content */}
-        <div className="col-12">
-          <div className="form-group">
-            <Label htmlFor="content">{t('admin.material.content')}</Label>
-            <Textarea
-              id="content"
-              name="content"
-              rows={4}
-              value={formData.content}
-              onChange={handleChange}
-            />
+        ) : formData.mediaType === CourseLessonPartMaterialDetailDTOMediaType.LINK ? (
+          <div className="col-12">
+            <div className="form-group">
+              <Label htmlFor="content">
+                {t('admin.material.linkUrl') || 'Link URL'} <span className="text-danger">*</span>
+              </Label>
+              <Input
+                id="content"
+                name="content"
+                type="url"
+                value={formData.content || ''}
+                onChange={handleChange}
+                placeholder="https://example.com"
+                required
+              />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="col-12">
+            <div className="form-group">
+              <Label htmlFor="fileUpload">
+                {t('admin.material.fileUpload') || 'Dosya Yükle'} <span className="text-danger">*</span>
+              </Label>
+              <div className="d-flex gap-2 align-items-center">
+                <input
+                  ref={fileInputRef}
+                  id="fileUpload"
+                  type="file"
+                  className="form-control"
+                  onChange={handleFileChange}
+                  disabled={uploadingFile}
+                  accept={
+                    formData.mediaType === CourseLessonPartMaterialDetailDTOMediaType.IMAGE
+                      ? 'image/*'
+                      : formData.mediaType === CourseLessonPartMaterialDetailDTOMediaType.VIDEO
+                      ? 'video/*'
+                      : formData.mediaType === CourseLessonPartMaterialDetailDTOMediaType.AUDIO
+                      ? 'audio/*'
+                      : formData.mediaType === CourseLessonPartMaterialDetailDTOMediaType.PDF
+                      ? 'application/pdf'
+                      : '*/*'
+                  }
+                />
+                {uploadingFile && (
+                  <span className="text-muted">
+                    <i className="feather-loader me-1"></i>
+                    {t('common.uploading') || 'Yükleniyor...'}
+                  </span>
+                )}
+              </div>
+              {formData.uploadedFileId && (
+                <div className="mt-2">
+                  <small className="text-success">
+                    <i className="feather-check-circle me-1"></i>
+                    {t('admin.material.fileUploaded') || 'Dosya yüklendi:'} {formData.uploadedFileName || formData.uploadedFileId}
+                  </small>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Submit buttons */}
         <div className="col-12">

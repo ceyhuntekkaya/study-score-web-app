@@ -54,7 +54,6 @@
 - ✅ Error handling (Spring Boot error format desteği)
 - ✅ Token refresh mekanizması
 - ✅ Auth service
-- ✅ Socket service (login sonrası otomatik bağlanır)
 
 ### 7. Internationalization (i18n)
 - ✅ İngilizce (varsayılan) ve Türkçe desteği
@@ -110,8 +109,6 @@ src/
 │   ├── api/
 │   │   ├── client.ts
 │   │   └── authService.ts
-│   └── socket/
-│       └── socketService.ts
 ├── types/
 │   └── index.ts
 ├── utils/
@@ -158,7 +155,6 @@ src/
 ## 📝 Notlar
 
 - Backend entegrasyonu henüz yapılmadı (dummy authentication kullanılıyor)
-- Socket bağlantısı login sonrası otomatik başlatılıyor
 - Tüm context state'leri localStorage'da saklanıyor (F5 sonrası restore)
 - API client Spring Boot error format'ını destekliyor
 
@@ -166,7 +162,6 @@ src/
 
 1. Backend API entegrasyonu
 2. Gerçek authentication flow
-3. Socket event handling
-4. UI/UX iyileştirmeleri
+3. UI/UX iyileştirmeleri
 5. Test coverage
 

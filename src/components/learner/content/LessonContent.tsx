@@ -281,7 +281,8 @@ export default function LessonContent() {
             <AIChat
               activeText={lessonParts[0].description || ''}
               lessonPartName={lessonParts[0].name}
-              mode="learning" 
+              mode="learning"
+              courseCategory={courseDetails?.category}
             />
           </div>
         ) : (
@@ -304,7 +305,8 @@ export default function LessonContent() {
                     <AIChat
                       activeText={selectedLesson?.name || ''}
                       lessonPartName={selectedPart?.name}
-                            mode="practice"
+                      mode="practice"
+                      courseCategory={courseDetails?.category}
                     />
                   </div>
                 )}
@@ -314,7 +316,8 @@ export default function LessonContent() {
                     <AIChat
                       activeText={selectedPart?.description || ''}
                       lessonPartName={selectedPart?.name}
-                            mode="analysis"
+                      mode="analysis"
+                      courseCategory={courseDetails?.category}
                     />
                   </div>
                 )}

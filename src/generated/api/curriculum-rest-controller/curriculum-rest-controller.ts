@@ -1387,7 +1387,7 @@ export function useGetTotalCurriculumCount<
 }
 
 export const getCurriculumCountByCategory = (
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
@@ -1402,7 +1402,7 @@ export const getCurriculumCountByCategory = (
 };
 
 export const getGetCurriculumCountByCategoryQueryKey = (
-  category?: "IELTS" | "TOEFL",
+  category?: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
 ) => {
   return [`/curriculum/statistics/count-by-category/${category}`] as const;
 };
@@ -1411,7 +1411,7 @@ export const getGetCurriculumCountByCategoryQueryOptions = <
   TData = Awaited<ReturnType<typeof getCurriculumCountByCategory>>,
   TError = unknown,
 >(
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -1454,7 +1454,7 @@ export function useGetCurriculumCountByCategory<
   TData = Awaited<ReturnType<typeof getCurriculumCountByCategory>>,
   TError = unknown,
 >(
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options: {
     query: Partial<
       UseQueryOptions<
@@ -1481,7 +1481,7 @@ export function useGetCurriculumCountByCategory<
   TData = Awaited<ReturnType<typeof getCurriculumCountByCategory>>,
   TError = unknown,
 >(
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -1508,7 +1508,7 @@ export function useGetCurriculumCountByCategory<
   TData = Awaited<ReturnType<typeof getCurriculumCountByCategory>>,
   TError = unknown,
 >(
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -1528,7 +1528,7 @@ export function useGetCurriculumCountByCategory<
   TData = Awaited<ReturnType<typeof getCurriculumCountByCategory>>,
   TError = unknown,
 >(
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -3133,7 +3133,7 @@ export function useGetCurriculumDtoById<
 }
 
 export const getCurriculumsByCategory = (
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
@@ -3144,7 +3144,7 @@ export const getCurriculumsByCategory = (
 };
 
 export const getGetCurriculumsByCategoryQueryKey = (
-  category?: "IELTS" | "TOEFL",
+  category?: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
 ) => {
   return [`/curriculum/by-category/${category}`] as const;
 };
@@ -3153,7 +3153,7 @@ export const getGetCurriculumsByCategoryQueryOptions = <
   TData = Awaited<ReturnType<typeof getCurriculumsByCategory>>,
   TError = unknown,
 >(
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -3196,7 +3196,7 @@ export function useGetCurriculumsByCategory<
   TData = Awaited<ReturnType<typeof getCurriculumsByCategory>>,
   TError = unknown,
 >(
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options: {
     query: Partial<
       UseQueryOptions<
@@ -3223,7 +3223,7 @@ export function useGetCurriculumsByCategory<
   TData = Awaited<ReturnType<typeof getCurriculumsByCategory>>,
   TError = unknown,
 >(
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -3250,7 +3250,7 @@ export function useGetCurriculumsByCategory<
   TData = Awaited<ReturnType<typeof getCurriculumsByCategory>>,
   TError = unknown,
 >(
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -3270,7 +3270,7 @@ export function useGetCurriculumsByCategory<
   TData = Awaited<ReturnType<typeof getCurriculumsByCategory>>,
   TError = unknown,
 >(
-  category: "IELTS" | "TOEFL",
+  category: "IELTS" | "TOEFL" | "SAT_ENGLISH" | "SAT_MATH" | "GENERAL_ENGLISH",
   options?: {
     query?: Partial<
       UseQueryOptions<

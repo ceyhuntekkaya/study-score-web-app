@@ -29,8 +29,6 @@ export const DEFAULT_LANGUAGE: Language = 'en';
 
 export const API_BASE_URL = getApiInvokeUrl();
 
-export const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:8080';
-
 // Role-based route paths
 export const ROLE_ROUTES: Record<UserRole, string> = {
   learner: '/learner/dashboard',

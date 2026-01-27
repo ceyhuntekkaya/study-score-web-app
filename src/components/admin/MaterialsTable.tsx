@@ -41,16 +41,25 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
   const handleEditClick = (material: CourseLessonPartMaterial) => {
     setEditingMaterial(material);
     setShowAddForm(false);
-    // Set initial preview data
+    // Set initial preview data - try to get name and description from various sources
+    const materialWithDetails = material as any;
+    const name = 
+      materialWithDetails.name || 
+      materialWithDetails.uploadedFileName ||
+      "";
+    const description = materialWithDetails.description || "";
+    
     setPreviewData({
       id: material.id,
-      name: "", // CourseLessonPartMaterial doesn't have name property
-      description: "",
+      name: name,
+      description: description,
       content: material.content || "",
       mediaType: material.mediaType as any,
       orderNumber: material.orderNumber || 0,
       duration: material.duration || 0,
       courseLessonPartId: partId,
+      uploadedFileId: materialWithDetails.uploadedFileId || material.uploadedFile?.id,
+      uploadedFileName: materialWithDetails.uploadedFileName || material.uploadedFile?.fileOriginalName || material.uploadedFile?.fileName,
     });
   };
 
@@ -69,12 +78,21 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
 
   const columns: Column<CourseLessonPartMaterial>[] = [
     {
-      key: "id",
-      header: t('admin.material.name') || "ID",
+      key: "id" as any, // Using id as key since name doesn't exist in type
+      header: t('admin.material.name') || "Name",
       sortable: true,
-      render: (value) => {
-        const id = value as string;
-        return <span>{id || "-"}</span>;
+      render: (value, item) => {
+        // Try to get name from various sources
+        const material = item as CourseLessonPartMaterial;
+        const materialWithDetails = material as any;
+        const name = 
+          materialWithDetails.name || 
+          materialWithDetails.uploadedFileName ||
+          material.uploadedFile?.id || 
+          material.content?.substring(0, 50) || 
+          material.id || 
+          "-";
+        return <span>{name}</span>;
       },
     },
     {
@@ -173,16 +191,28 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
         <div className="rbt-card rbt-card-body mt-3" style={{ overflow: 'visible' }}>
           <MaterialForm
             courseLessonPartId={partId}
-            initialData={editingMaterial ? {
-              id: editingMaterial.id,
-              name: "", // CourseLessonPartMaterial doesn't have name property
-              description: "",
-              content: editingMaterial.content || "",
-              mediaType: editingMaterial.mediaType as any,
-              orderNumber: editingMaterial.orderNumber || 0,
-              duration: editingMaterial.duration || 0,
-              courseLessonPartId: partId,
-            } : undefined}
+            initialData={editingMaterial ? (() => {
+              // Try to get name and description from various sources
+              const materialWithDetails = editingMaterial as any;
+              const name = 
+                materialWithDetails.name || 
+                materialWithDetails.uploadedFileName ||
+                "";
+              const description = materialWithDetails.description || "";
+              
+              return {
+                id: editingMaterial.id,
+                name: name,
+                description: description,
+                content: editingMaterial.content || "",
+                mediaType: editingMaterial.mediaType as any,
+                orderNumber: editingMaterial.orderNumber || 0,
+                duration: editingMaterial.duration || 0,
+                courseLessonPartId: partId,
+                uploadedFileId: materialWithDetails.uploadedFileId || editingMaterial.uploadedFile?.id,
+                uploadedFileName: materialWithDetails.uploadedFileName || editingMaterial.uploadedFile?.fileOriginalName || editingMaterial.uploadedFile?.fileName,
+              };
+            })() : undefined}
             onSuccess={handleFormSuccess}
             onCancel={handleFormCancel}
             onFormDataChange={(data) => {
@@ -190,7 +220,11 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
             }}
           />
           
-          {previewData && previewData.content && (
+          {previewData && (
+            (previewData.mediaType === 'TEXT' && previewData.content) ||
+            (previewData.mediaType !== 'TEXT' && previewData.mediaType !== 'LINK' && (previewData.content || previewData.uploadedFileId)) ||
+            (previewData.mediaType === 'LINK' && previewData.content)
+          ) && (
             <div className="mt-4">
               <h4 className="mb-3">{t('admin.material.preview')}</h4>
               <div className="rbt-card rbt-card-body" style={{ backgroundColor: '#f9fafb' }}>

@@ -208,15 +208,41 @@ export default function MaterialRenderer({
     );
   }
 
-  // TEXT or OTHER
-  if (mediaType === 'TEXT' || mediaType === 'OTHER' || !mediaType) {
+  // TEXT - Must be checked before OTHER to ensure proper rendering
+  if (mediaType === 'TEXT') {
     return (
       <div className="material-item material-text mb--30">
-        {content && (
+        {content ? (
           <div
             className="text-content"
             dangerouslySetInnerHTML={{ __html: content }}
+            style={{
+              lineHeight: '1.6',
+              wordWrap: 'break-word',
+            }}
           />
+        ) : (
+          <div className="text-muted">No content</div>
+        )}
+      </div>
+    );
+  }
+
+  // OTHER
+  if (mediaType === 'OTHER' || !mediaType) {
+    return (
+      <div className="material-item material-text mb--30">
+        {content ? (
+          <div
+            className="text-content"
+            dangerouslySetInnerHTML={{ __html: content }}
+            style={{
+              lineHeight: '1.6',
+              wordWrap: 'break-word',
+            }}
+          />
+        ) : (
+          <div className="text-muted">No content</div>
         )}
       </div>
     );
