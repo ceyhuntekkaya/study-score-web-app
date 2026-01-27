@@ -10,6 +10,7 @@ import type { CourseLessonDetailDTO, CourseLessonPartDetailDTO } from '@/generat
 import MaterialRenderer from './MaterialRenderer';
 import { useProgressTracking } from './useProgressTracking';
 import AIChat from './AIChat';
+import TtsService from '@/components/common/TtsService';
 
 /**
  * Lesson Content Component
@@ -360,6 +361,8 @@ export default function LessonContent() {
               <span className="btn-text">Previous</span>
             </button>
 
+              <TtsService text="Matching Headings questions require you to match each paragraph in a passage to the most suitable heading from a given list. Each heading represents the main idea of the paragraph, not the details." />
+
             <button
               className="rbt-btn icon-hover btn-md bg-primary-opacity"
               disabled={!nextPart}
@@ -371,6 +374,8 @@ export default function LessonContent() {
           </div>
         </div>
       </div>
+
+     
 
       {/* Spacer */}
       <div style={{ height: '80px' }}></div>

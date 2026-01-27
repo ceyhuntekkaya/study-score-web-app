@@ -12,14 +12,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import LoadingButton from "@/components/ui/LoadingButton";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from "../ui/Select";
+import { Select } from "@/components/ui/Select";
 
 interface LessonFormProps {
   courseId: string;
@@ -117,7 +110,7 @@ export default function LessonForm({
 
   return (
     <form onSubmit={handleSubmit} className="rbt-form-wrapper">
-      <div className="row">
+      <div className="row g-3">
         {/* Name - Required */}
         <div className="col-12">
           <div className="form-group">
@@ -156,27 +149,20 @@ export default function LessonForm({
               {t('admin.lesson.level')} <span className="text-danger">*</span>
             </Label>
             <Select
+              id="lessonLevel"
+              name="lessonLevel"
               value={formData.lessonLevel || CourseLessonDTOLessonLevel.LESSON}
-              onValueChange={(value) =>
-                handleSelectChange("lessonLevel", String(value))
-              }
+              onChange={(e) => handleSelectChange("lessonLevel", e.target.value)}
             >
-              <SelectTrigger>
-                <SelectValue placeholder={t('admin.lesson.selectLevel')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value={CourseLessonDTOLessonLevel.UNIT}>
-                    UNIT
-                  </SelectItem>
-                  <SelectItem value={CourseLessonDTOLessonLevel.TOPIC}>
-                    TOPIC
-                  </SelectItem>
-                  <SelectItem value={CourseLessonDTOLessonLevel.LESSON}>
-                    LESSON
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
+              <option value={CourseLessonDTOLessonLevel.UNIT}>
+                UNIT
+              </option>
+              <option value={CourseLessonDTOLessonLevel.TOPIC}>
+                TOPIC
+              </option>
+              <option value={CourseLessonDTOLessonLevel.LESSON}>
+                LESSON
+              </option>
             </Select>
           </div>
         </div>

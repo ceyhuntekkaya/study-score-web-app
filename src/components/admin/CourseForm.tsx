@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import LoadingButton from "@/components/ui/LoadingButton";
+import { Select } from "@/components/ui/Select";
 
 interface CourseFormProps {
   initialData?: Course;
@@ -121,7 +122,7 @@ export default function CourseForm({
 
   return (
     <form onSubmit={handleSubmit} className="rbt-form-wrapper">
-      <div className="row">
+      <div className="row g-3">
         {/* Name - Required */}
         <div className="col-12">
           <div className="form-group">
@@ -157,10 +158,9 @@ export default function CourseForm({
         <div className="col-md-6">
           <div className="form-group">
             <Label htmlFor="category">{t('admin.course.category')}</Label>
-            <select
+            <Select
               id="category"
               name="category"
-              className="form-control"
               value={formData.category}
               onChange={handleChange}
             >
@@ -169,7 +169,7 @@ export default function CourseForm({
               <option value="SAT_ENGLISH">SAT English</option>
               <option value="SAT_MATH">SAT Math</option>
               <option value="GENERAL_ENGLISH">General English</option>
-            </select>
+            </Select>
           </div>
         </div>
 
@@ -233,10 +233,9 @@ export default function CourseForm({
         <div className="col-12">
           <div className="form-group">
             <Label htmlFor="status">Durum</Label>
-            <select
+            <Select
               id="status"
               name="status"
-              className="form-control"
               value={formData.status}
               onChange={handleChange}
             >
@@ -245,7 +244,7 @@ export default function CourseForm({
               <option value="WAITING">Beklemede</option>
               <option value="IN_PROGRESS">Devam Ediyor</option>
               <option value="COMPLETED">Tamamlandı</option>
-            </select>
+            </Select>
           </div>
         </div>
 

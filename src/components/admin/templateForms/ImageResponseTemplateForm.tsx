@@ -1,0 +1,256 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useTranslation } from "@/i18n";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
+import { Label } from "@/components/ui/Label";
+import { Select } from "@/components/ui/Select";
+import { Checkbox } from "@/components/ui/Checkbox";
+import ScoringConfigForm from "./ScoringConfigForm";
+import { TemplateFormProps } from "./types";
+
+export default function ImageResponseTemplateForm({
+  templateData,
+  onChange,
+}: TemplateFormProps) {
+  const { t } = useTranslation();
+  const [localData, setLocalData] = useState<any>(templateData || {});
+
+  useEffect(() => {
+    setLocalData(templateData || {});
+  }, [templateData]);
+
+  const updateData = (newData: any) => {
+    setLocalData(newData);
+    onChange(newData);
+  };
+
+  const criteria = localData.criteria || [];
+
+const addCriterion = () => {
+  const newCriterion = {
+    name: "",
+    description: "",
+    maxScore: 0,
+  };
+  updateData({
+    ...localData,
+    prompt: localData.prompt || "",
+    maxFileSize: localData.maxFileSize ?? 5242880,
+    allowedFormats: localData.allowedFormats || "",
+    gradingType: localData.gradingType || "MANUAL",
+    criteria: [...criteria, newCriterion],
+    allowMultipleImages: localData.allowMultipleImages ?? false,
+    maxImages: localData.maxImages ?? 1,
+    requiredResolution: localData.requiredResolution || "",
+    scoringConfig: localData.scoringConfig || {
+      strategy: "MANUAL",
+      allowPartialCredit: false,
+      penaltyPerWrong: 0.0,
+      roundScore: false,
+      decimalPlaces: 2,
+    },
+  });
+};
+
+const updateCriterion = (index: number, field: string, value: any) => {
+  const updated = [...criteria];
+  updated[index] = { ...updated[index], [field]: value };
+  updateData({ ...localData, criteria: updated });
+};
+
+const removeCriterion = (index: number) => {
+  const updated = criteria.filter((_: any, i: number) => i !== index);
+  updateData({ ...localData, criteria: updated });
+};
+
+return (
+  <div className="rbt-card rbt-card-body" style={{ backgroundColor: '#f9fafb' }}>
+    <div className="form-group mb--20">
+      <Label htmlFor="prompt">
+        {t("admin.exam.prompt") || "Prompt"} <span className="text-danger">*</span>
+      </Label>
+      <Textarea
+        id="prompt"
+        value={localData.prompt || ""}
+        onChange={(e) => updateData({ ...localData, prompt: e.target.value })}
+        rows={4}
+        className="form-control"
+      />
+    </div>
+
+    <div className="row g-3 mb--20">
+      <div className="col-md-6">
+        <div className="form-group">
+          <Label htmlFor="maxFileSize">
+            {t("admin.exam.maxFileSize") || "Max File Size (bytes)"}
+          </Label>
+          <Input
+            id="maxFileSize"
+            type="number"
+            min="1"
+            max="10485760"
+            value={localData.maxFileSize ?? 5242880}
+            onChange={(e) =>
+              updateData({ ...localData, maxFileSize: parseInt(e.target.value) })
+            }
+          />
+        </div>
+      </div>
+      <div className="col-md-6">
+        <div className="form-group">
+          <Label htmlFor="allowedFormats">
+            {t("admin.exam.allowedFormats") || "Allowed Formats (comma-separated)"}
+          </Label>
+          <Input
+            id="allowedFormats"
+            value={localData.allowedFormats || ""}
+            onChange={(e) =>
+              updateData({ ...localData, allowedFormats: e.target.value })
+            }
+            placeholder="JPG, PNG, PDF"
+          />
+        </div>
+      </div>
+      <div className="col-md-4">
+        <div className="form-group">
+          <Label htmlFor="gradingType">
+            {t("admin.exam.gradingType") || "Grading Type"}
+          </Label>
+          <Select
+            id="gradingType"
+            value={localData.gradingType || "MANUAL"}
+            onChange={(e) =>
+              updateData({ ...localData, gradingType: e.target.value })
+            }
+          >
+            <option value="MANUAL">MANUAL</option>
+            <option value="AI">AI</option>
+            <option value="HYBRID">HYBRID</option>
+          </Select>
+        </div>
+      </div>
+      <div className="col-md-4">
+        <div className="form-group">
+          <Checkbox
+            id="allowMultipleImages"
+            checked={localData.allowMultipleImages ?? false}
+            onChange={(e) =>
+              updateData({ ...localData, allowMultipleImages: e.target.checked })
+            }
+            label={t("admin.exam.allowMultipleImages") || "Allow Multiple Images"}
+          />
+        </div>
+      </div>
+      <div className="col-md-4">
+        <div className="form-group">
+          <Label htmlFor="maxImages">
+            {t("admin.exam.maxImages") || "Max Images"}
+          </Label>
+          <Input
+            id="maxImages"
+            type="number"
+            min="1"
+            max="10"
+            value={localData.maxImages ?? 1}
+            onChange={(e) =>
+              updateData({ ...localData, maxImages: parseInt(e.target.value) })
+            }
+          />
+        </div>
+      </div>
+      <div className="col-md-6">
+        <div className="form-group">
+          <Label htmlFor="requiredResolution">
+            {t("admin.exam.requiredResolution") || "Required Resolution (e.g., 1024x768)"}
+          </Label>
+          <Input
+            id="requiredResolution"
+            value={localData.requiredResolution || ""}
+            onChange={(e) =>
+              updateData({ ...localData, requiredResolution: e.target.value })
+            }
+            placeholder="1024x768"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div className="d-flex justify-content-between align-items-center mb--20">
+      <label className="mb--0">{t("admin.exam.criteria") || "Grading Criteria"}</label>
+      <button
+        type="button"
+        className="rbt-btn btn-sm btn-border-gradient"
+        onClick={addCriterion}
+      >
+        <i className="feather-plus me-1"></i>
+        {t("admin.exam.addCriterion") || "Add Criterion"}
+      </button>
+    </div>
+
+    {criteria.map((item: any, index: number) => (
+      <div key={index} className="rbt-card rbt-card-body mb--10" style={{ backgroundColor: '#ffffff' }}>
+        <div className="row g-3">
+          <div className="col-md-4">
+            <div className="form-group">
+              <Label htmlFor={`criterion-name-${index}`}>
+                {t("admin.exam.name") || "Name"}
+              </Label>
+              <Input
+                id={`criterion-name-${index}`}
+                value={item.name || ""}
+                onChange={(e) => updateCriterion(index, "name", e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="form-group">
+              <Label htmlFor={`criterion-maxScore-${index}`}>
+                {t("admin.exam.maxScore") || "Max Score"}
+              </Label>
+              <Input
+                id={`criterion-maxScore-${index}`}
+                type="number"
+                min="0"
+                value={item.maxScore || 0}
+                onChange={(e) =>
+                  updateCriterion(index, "maxScore", parseFloat(e.target.value))
+                }
+              />
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="form-group">
+              <Label htmlFor={`criterion-desc-${index}`}>
+                {t("admin.exam.description") || "Description"}
+              </Label>
+              <Input
+                id={`criterion-desc-${index}`}
+                value={item.description || ""}
+                onChange={(e) => updateCriterion(index, "description", e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="col-12">
+            <button
+              type="button"
+              className="rbt-btn btn-sm btn-border"
+              onClick={() => removeCriterion(index)}
+            >
+              <i className="feather-trash-2 me-1"></i>
+              {t("common.delete")}
+            </button>
+          </div>
+        </div>
+      </div>
+    ))}
+
+    <ScoringConfigForm
+      scoringConfig={localData.scoringConfig}
+      onChange={(config) => updateData({ ...localData, scoringConfig: config })}
+      defaultStrategy="MANUAL"
+    />
+  </div>
+  );
+}

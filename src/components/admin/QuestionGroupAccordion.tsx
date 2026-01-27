@@ -108,7 +108,7 @@ export default function QuestionGroupAccordion({
       {showAddForm && (
         <div className="rbt-card rbt-card-body mb--30" style={{ backgroundColor: '#f9fafb' }}>
           <h5 className="mb--20">{t("admin.exam.addQuestionGroup")}</h5>
-          <div className="row g-5">
+          <div className="row g-3">
             <div className="col-12">
               <div className="form-group">
                 <label htmlFor="newGroupCode">

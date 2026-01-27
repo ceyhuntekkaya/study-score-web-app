@@ -3,13 +3,17 @@
       "invokeUrl": "https://api.studyscore.ai/api",
       "baseUrl": "https://api.studyscore.ai",
       "aiUrl": "https://chat.studyscore.ai/ollama",
-      "aiUrl2": "http://185.72.9.3:11434"
+      "aiUrl2": "http://185.72.9.3:11434",
+      "stt": "https://stt.studyscore.ai",
+      "tts": "https://tts.studyscore.ai"
     },
     "apiLocal": {
       "invokeUrl": "http://localhost:8080/api",
       "baseUrl": "http://localhost:3000",
       "aiUrl2": "http://185.72.9.3:11434i",
-      "aiUrl": "https://chat.studyscore.ai/ollama"
+      "aiUrl": "https://chat.studyscore.ai/ollama",
+      "stt": "https://stt.studyscore.ai",
+      "tts": "https://tts.studyscore.ai"
     }
   }
   

@@ -97,7 +97,7 @@ export default function LessonPartForm({
 
   return (
     <form onSubmit={handleSubmit} className="rbt-form-wrapper">
-      <div className="row">
+      <div className="row g-3">
         {/* Name - Required */}
         <div className="col-12">
           <div className="form-group">

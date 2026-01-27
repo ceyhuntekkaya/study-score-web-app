@@ -33,14 +33,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import LoadingButton from "@/components/ui/LoadingButton";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from "../ui/Select";
+import { Select } from "@/components/ui/Select";
 
 type EntityType = "brand" | "campus" | "institution" | "branch";
 type EntityData = Brand | Campus | Institution | Branch;
@@ -258,7 +251,7 @@ export default function EntityForm({
 
   return (
     <form onSubmit={handleSubmit} className="rbt-form-wrapper">
-      <div className="row">
+      <div className="row g-3">
         {/* Name - Required for all */}
         <div className="col-12">
           <div className="form-group">
@@ -373,10 +366,9 @@ export default function EntityForm({
                 <Label htmlFor="brandId">
                 {t('admin.entity.institution')} <span className="text-danger">*</span>
               </Label>
-              <select
+              <Select
                 id="brandId"
                 name="brandId"
-                className="form-control"
                 value={formData.brand?.id || parentId || ""}
                 onChange={handleChange}
                 required
@@ -388,7 +380,7 @@ export default function EntityForm({
                     {brand.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
         )}
@@ -400,10 +392,9 @@ export default function EntityForm({
               <Label htmlFor="campusId">
                 {t('admin.entity.campus')} <span className="text-danger">*</span>
               </Label>
-              <select
+              <Select
                 id="campusId"
                 name="campusId"
-                className="form-control"
                 value={formData.campus?.id || parentId || ""}
                 onChange={handleChange}
                 required
@@ -417,7 +408,7 @@ export default function EntityForm({
                       {campus.name}
                     </option>
                   ))}
-              </select>
+              </Select>
             </div>
           </div>
         )}
@@ -430,10 +421,9 @@ export default function EntityForm({
                 <Label htmlFor="institutionId">
                   {t('admin.entity.institution')} <span className="text-danger">*</span>
                 </Label>
-                <select
+                <Select
                   id="institutionId"
                   name="institutionId"
-                  className="form-control"
                   value={formData.institution?.id || parentId || ""}
                   onChange={handleChange}
                   required
@@ -447,7 +437,7 @@ export default function EntityForm({
                         {institution.name}
                       </option>
                     ))}
-                </select>
+                </Select>
               </div>
             </div>
             <div className="col-md-6">
@@ -470,20 +460,13 @@ export default function EntityForm({
           <div className="form-group">
             <Label htmlFor="status">{t('admin.entity.status')}</Label>
             <Select
+              id="status"
+              name="status"
               value={formData.status}
-              onValueChange={(value) =>
-                handleChange({ target: { name: "status", value } } as any)
-              }
+              onChange={handleChange}
             >
-              <SelectTrigger>
-                <SelectValue placeholder={t('admin.entity.selectStatus')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="ACTIVE">{t('admin.entity.active')}</SelectItem>
-                  <SelectItem value="PASSIVE">{t('admin.entity.passive')}</SelectItem>
-                </SelectGroup>
-              </SelectContent>
+              <option value="ACTIVE">{t('admin.entity.active')}</option>
+              <option value="PASSIVE">{t('admin.entity.passive')}</option>
             </Select>
           </div>
         </div>

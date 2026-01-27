@@ -17,7 +17,7 @@ interface CourseLessonDetailDTOWithChildren extends CourseLessonDetailDTO {
   childLessons?: CourseLessonDetailDTOWithChildren[];
 }
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/Select';
+import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { Pencil, Plus } from 'lucide-react';
 
@@ -218,15 +218,8 @@ export default function EditCoursePage() {
   };
 
   // Reset dependent selects when parent changes
-  const handleUnitChange = (value: string | number | (string | number)[]) => {
-    let unitId: string;
-    if (Array.isArray(value)) {
-      unitId = value.length > 0 ? String(value[0]) : '';
-    } else {
-      unitId = String(value);
-    }
-    
-    // Ensure we have a valid unit ID
+  const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const unitId = e.target.value;
     if (unitId && unitId !== '') {
       setSelectedUnitId(unitId);
       setSelectedTopicId('');
@@ -235,25 +228,21 @@ export default function EditCoursePage() {
     }
   };
 
-  const handleTopicChange = (value: string | number | (string | number)[]) => {
-    const topicId = String(value);
+  const handleTopicChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const topicId = e.target.value;
     setSelectedTopicId(topicId);
     setSelectedLessonId('');
     setSelectedPartIdForm('');
   };
 
-  const handleLessonChange = (value: string | number | (string | number)[]) => {
-    const lessonId = String(value);
+  const handleLessonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const lessonId = e.target.value;
     setSelectedLessonId(lessonId);
     setSelectedPartIdForm('');
   };
 
-  const handlePartChange = (value: string | number | (string | number)[]) => {
-    if (Array.isArray(value)) {
-      setSelectedPartIdForm(value.length > 0 ? String(value[0]) : '');
-    } else {
-      setSelectedPartIdForm(String(value));
-    }
+  const handlePartChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPartIdForm(e.target.value);
   };
 
   // Action handlers for form view
@@ -415,22 +404,18 @@ export default function EditCoursePage() {
                         <div style={{ flex: 1 }}>
                           <Select
                             value={selectedUnitId || ''}
-                            onValueChange={handleUnitChange}
+                            onChange={handleUnitChange}
                           >
-                            <SelectTrigger>
-                              <SelectValue placeholder={t('admin.lesson.selectUnit') || 'Select Unit...'} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {units.map((unit) => {
-                                // Ensure unit.id is a valid string
-                                const unitId = unit.id || '';
-                                return (
-                                  <SelectItem key={unitId} value={unitId}>
-                                    {unit.name || 'Unnamed Unit'}
-                                  </SelectItem>
-                                );
-                              })}
-                            </SelectContent>
+                            <option value="">{t('admin.lesson.selectUnit') || 'Select Unit...'}</option>
+                            {units.map((unit) => {
+                              // Ensure unit.id is a valid string
+                              const unitId = unit.id || '';
+                              return (
+                                <option key={unitId} value={unitId}>
+                                  {unit.name || 'Unnamed Unit'}
+                                </option>
+                              );
+                            })}
                           </Select>
                         </div>
                           <div style={{ display: 'flex', gap: '0.25rem' }}>
@@ -466,24 +451,17 @@ export default function EditCoursePage() {
                           <div style={{ flex: 1 }}>
                             <Select
                               value={selectedTopicId || ''}
-                              onValueChange={handleTopicChange}
+                              onChange={handleTopicChange}
+                              disabled={!selectedUnitId || selectedUnitId === ''}
                             >
-                              <SelectTrigger>
-                                <SelectValue placeholder={t('admin.lesson.selectTopic') || 'Select Topic...'} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {topics.length > 0 ? (
-                                  topics.map((topic) => (
-                                    <SelectItem key={topic.id} value={topic.id || ''}>
-                                      {topic.name}
-                                    </SelectItem>
-                                  ))
-                                ) : (
-                                  <div style={{ padding: '8px 16px', color: '#6b7280', fontSize: '12px' }}>
-                                    {t('admin.lesson.noTopics') || 'No topics available'}
-                                  </div>
-                                )}
-                              </SelectContent>
+                              <option value="">{t('admin.lesson.selectTopic') || 'Select Topic...'}</option>
+                              {topics.length > 0 ? (
+                                topics.map((topic) => (
+                                  <option key={topic.id} value={topic.id || ''}>
+                                    {topic.name}
+                                  </option>
+                                ))
+                              ) : null}
                             </Select>
                           </div>
                           <div style={{ display: 'flex', gap: '0.25rem' }}>
@@ -520,24 +498,17 @@ export default function EditCoursePage() {
                           <div style={{ flex: 1 }}>
                             <Select
                               value={selectedLessonId || ''}
-                              onValueChange={handleLessonChange}
+                              onChange={handleLessonChange}
+                              disabled={!selectedTopicId || selectedTopicId === ''}
                             >
-                              <SelectTrigger>
-                                <SelectValue placeholder={t('admin.lesson.selectLesson') || 'Select Lesson...'} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {lessons.length > 0 ? (
-                                  lessons.map((lesson) => (
-                                    <SelectItem key={lesson.id} value={lesson.id || ''}>
-                                      {lesson.name}
-                                    </SelectItem>
-                                  ))
-                                ) : (
-                                  <div style={{ padding: '8px 16px', color: '#6b7280', fontSize: '12px' }}>
-                                    {t('admin.lesson.noLessons') || 'No lessons available'}
-                                  </div>
-                                )}
-                              </SelectContent>
+                              <option value="">{t('admin.lesson.selectLesson') || 'Select Lesson...'}</option>
+                              {lessons.length > 0 ? (
+                                lessons.map((lesson) => (
+                                  <option key={lesson.id} value={lesson.id || ''}>
+                                    {lesson.name}
+                                  </option>
+                                ))
+                              ) : null}
                             </Select>
                           </div>
                           <div style={{ display: 'flex', gap: '0.25rem' }}>
@@ -574,24 +545,17 @@ export default function EditCoursePage() {
                           <div style={{ flex: 1 }}>
                             <Select
                               value={selectedPartIdForm || ''}
-                              onValueChange={handlePartChange}
+                              onChange={handlePartChange}
+                              disabled={!selectedLessonId || selectedLessonId === ''}
                             >
-                              <SelectTrigger>
-                                <SelectValue placeholder={t('admin.part.selectPart') || 'Select Part...'} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {parts.length > 0 ? (
-                                  parts.map((part) => (
-                                    <SelectItem key={part.id} value={part.id || ''}>
-                                      {part.name}
-                                    </SelectItem>
-                                  ))
-                                ) : (
-                                  <div style={{ padding: '8px 16px', color: '#6b7280', fontSize: '12px' }}>
-                                    {t('admin.part.noParts') || 'No parts available'}
-                                  </div>
-                                )}
-                              </SelectContent>
+                              <option value="">{t('admin.part.selectPart') || 'Select Part...'}</option>
+                              {parts.length > 0 ? (
+                                parts.map((part) => (
+                                  <option key={part.id} value={part.id || ''}>
+                                    {part.name}
+                                  </option>
+                                ))
+                              ) : null}
                             </Select>
                           </div>
                           <div style={{ display: 'flex', gap: '0.25rem' }}>

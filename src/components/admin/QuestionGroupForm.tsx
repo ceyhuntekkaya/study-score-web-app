@@ -126,7 +126,7 @@ export default function QuestionGroupForm({
           : t("admin.exam.addQuestionGroup") || "Soru Grubu Ekle"}
       </h5>
 
-      <div className="row g-5">
+      <div className="row g-3">
         <div className="col-md-6">
           <div className="form-group">
             <label htmlFor="code">

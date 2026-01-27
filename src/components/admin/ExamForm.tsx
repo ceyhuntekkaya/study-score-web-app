@@ -15,6 +15,8 @@ import {
 } from "@/generated/api/exam-controller/exam-controller";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { Select } from "@/components/ui/Select";
+import { Checkbox } from "@/components/ui/Checkbox";
 
 interface ExamFormProps {
   examId?: string;
@@ -275,7 +277,7 @@ export default function ExamForm({
 
   return (
     <form onSubmit={handleSubmit} className="rbt-form-wrapper">
-      <div className="row g-5">
+      <div className="row g-3">
         {/* Name */}
         <div className="col-12">
           <div className="form-group">
@@ -326,10 +328,9 @@ export default function ExamForm({
               <Label htmlFor="category">
                 {t("admin.exam.category")} <span className="text-danger">*</span>
               </Label>
-              <select
+              <Select
                 id="category"
                 name="category"
-                className="form-control"
                 value={formData.category}
                 onChange={handleChange}
               >
@@ -338,7 +339,7 @@ export default function ExamForm({
                 <option value={ExamCreateRequestCategory.SAT_ENGLISH}>SAT English</option>
                 <option value={ExamCreateRequestCategory.SAT_MATH}>SAT Math</option>
                 <option value={ExamCreateRequestCategory.GENERAL_ENGLISH}>General English</option>
-              </select>
+              </Select>
             </div>
           </div>
         )}
@@ -373,10 +374,9 @@ export default function ExamForm({
         <div className="col-md-6">
           <div className="form-group">
             <Label htmlFor="examType">{t("admin.exam.examType")}</Label>
-            <select
+            <Select
               id="examType"
               name="examType"
-              className="form-control"
               value={formData.examType}
               onChange={handleChange}
             >
@@ -395,7 +395,7 @@ export default function ExamForm({
               <option value={ExamCreateRequestExamType.DEGREE}>
                 {t("admin.exam.degree")}
               </option>
-            </select>
+            </Select>
           </div>
         </div>
 
@@ -515,110 +515,91 @@ export default function ExamForm({
         <div className="col-md-6">
           <div className="form-group">
             <Label htmlFor="resultsReleaseType">{t("admin.exam.resultsReleaseType") || "Results Release Type"}</Label>
-            <select
+            <Select
               id="resultsReleaseType"
               name="resultsReleaseType"
-              className="form-control"
               value={formData.resultsReleaseType || "IMMEDIATE"}
               onChange={handleChange}
             >
               <option value="IMMEDIATE">{t("admin.exam.immediate") || "Immediate"}</option>
               <option value="AFTER_COMPLETION">{t("admin.exam.afterCompletion") || "After Completion"}</option>
               <option value="MANUAL">{t("admin.exam.manual") || "Manual"}</option>
-            </select>
+            </Select>
           </div>
         </div>
       </div>
 
       {/* Checkboxes */}
-      <div className="row g-5">
+      <div className="row g-3">
         <div className="col-md-6">
-          <div className="form-group d-flex gap-3">
-            <input
-              type="checkbox"
+          <div className="form-group">
+            <Checkbox
               id="shuffleQuestions"
               name="shuffleQuestions"
               checked={formData.shuffleQuestions || false}
               onChange={handleChange}
+              label={t("admin.exam.shuffleQuestions")}
             />
-            <Label htmlFor="shuffleQuestions" className="cursor-pointer mb--0">
-              {t("admin.exam.shuffleQuestions")}
-            </Label>
           </div>
         </div>
 
         <div className="col-md-6">
-          <div className="form-group d-flex gap-3">
-            <input
-              type="checkbox"
+          <div className="form-group">
+            <Checkbox
               id="shuffleAnswers"
               name="shuffleAnswers"
               checked={formData.shuffleAnswers || false}
               onChange={handleChange}
+              label={t("admin.exam.shuffleAnswers")}
             />
-            <Label htmlFor="shuffleAnswers" className="cursor-pointer mb--0">
-              {t("admin.exam.shuffleAnswers")}
-            </Label>
           </div>
         </div>
 
         <div className="col-md-6">
-          <div className="form-group d-flex gap-3">
-            <input
-              type="checkbox"
+          <div className="form-group">
+            <Checkbox
               id="allowBackward"
               name="allowBackward"
               checked={formData.allowBackward || false}
               onChange={handleChange}
+              label={t("admin.exam.allowBackward")}
             />
-            <Label htmlFor="allowBackward" className="cursor-pointer mb--0">
-              {t("admin.exam.allowBackward")}
-            </Label>
           </div>
         </div>
 
         <div className="col-md-6">
-          <div className="form-group d-flex gap-3">
-            <input
-              type="checkbox"
+          <div className="form-group">
+            <Checkbox
               id="showQuestionsOneAtTime"
               name="showQuestionsOneAtTime"
               checked={formData.showQuestionsOneAtTime || false}
               onChange={handleChange}
+              label={t("admin.exam.showQuestionsOneAtTime")}
             />
-            <Label htmlFor="showQuestionsOneAtTime" className="cursor-pointer mb--0">
-              {t("admin.exam.showQuestionsOneAtTime")}
-            </Label>
           </div>
         </div>
 
         <div className="col-md-6">
-          <div className="form-group d-flex gap-3">
-            <input
-              type="checkbox"
+          <div className="form-group">
+            <Checkbox
               id="requireCompleteAttempt"
               name="requireCompleteAttempt"
               checked={formData.requireCompleteAttempt || false}
               onChange={handleChange}
+              label={t("admin.exam.requireCompleteAttempt")}
             />
-            <Label htmlFor="requireCompleteAttempt" className="cursor-pointer mb--0">
-              {t("admin.exam.requireCompleteAttempt")}
-            </Label>
           </div>
         </div>
 
         <div className="col-md-6">
-          <div className="form-group d-flex gap-3">
-            <input
-              type="checkbox"
+          <div className="form-group">
+            <Checkbox
               id="requireProctoring"
               name="requireProctoring"
               checked={formData.requireProctoring || false}
               onChange={handleChange}
+              label={t("admin.exam.requireProctoring")}
             />
-            <Label htmlFor="requireProctoring" className="cursor-pointer mb--0">
-              {t("admin.exam.requireProctoring")}
-            </Label>
           </div>
         </div>
       </div>

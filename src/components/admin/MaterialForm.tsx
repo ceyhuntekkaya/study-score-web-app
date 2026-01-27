@@ -17,14 +17,7 @@ import { Label } from "@/components/ui/Label";
 import { Button } from "@/components/ui/Button";
 import LoadingButton from "@/components/ui/LoadingButton";
 import SimpleHtmlEditor from "@/components/ui/SimpleHtmlEditor";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from "../ui/Select";
+import { Select } from "@/components/ui/Select";
 
 interface MaterialFormProps {
   courseLessonPartId: string;
@@ -197,7 +190,7 @@ export default function MaterialForm({
 
   return (
     <form onSubmit={handleSubmit} className="rbt-form-wrapper">
-      <div className="row">
+      <div className="row g-3">
         {/* Name - Required */}
         <div className="col-12">
           <div className="form-group">
@@ -236,44 +229,35 @@ export default function MaterialForm({
               {t('admin.material.mediaType')} <span className="text-danger">*</span>
             </Label>
             <Select
+              id="mediaType"
+              name="mediaType"
               value={formData.mediaType || CourseLessonPartMaterialDetailDTOMediaType.VIDEO}
-              onValueChange={(value) =>
-                handleSelectChange("mediaType", value as string)
-              }
-              searchable={false}
-              sortable={false}
+              onChange={(e) => handleSelectChange("mediaType", e.target.value)}
             >
-              <SelectTrigger>
-                <SelectValue placeholder={t('admin.material.selectMediaType')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value={CourseLessonPartMaterialDetailDTOMediaType.VIDEO}>
-                    VIDEO
-                  </SelectItem>
-                  <SelectItem value={CourseLessonPartMaterialDetailDTOMediaType.AUDIO}>
-                    AUDIO
-                  </SelectItem>
-                  <SelectItem value={CourseLessonPartMaterialDetailDTOMediaType.IMAGE}>
-                    IMAGE
-                  </SelectItem>
-                  <SelectItem value={CourseLessonPartMaterialDetailDTOMediaType.PDF}>
-                    PDF
-                  </SelectItem>
-                  <SelectItem value={CourseLessonPartMaterialDetailDTOMediaType.DOCUMENT}>
-                    DOCUMENT
-                  </SelectItem>
-                  <SelectItem value={CourseLessonPartMaterialDetailDTOMediaType.TEXT}>
-                    TEXT
-                  </SelectItem>
-                  <SelectItem value={CourseLessonPartMaterialDetailDTOMediaType.LINK}>
-                    LINK
-                  </SelectItem>
-                  <SelectItem value={CourseLessonPartMaterialDetailDTOMediaType.OTHER}>
-                    OTHER
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
+              <option value={CourseLessonPartMaterialDetailDTOMediaType.VIDEO}>
+                VIDEO
+              </option>
+              <option value={CourseLessonPartMaterialDetailDTOMediaType.AUDIO}>
+                AUDIO
+              </option>
+              <option value={CourseLessonPartMaterialDetailDTOMediaType.IMAGE}>
+                IMAGE
+              </option>
+              <option value={CourseLessonPartMaterialDetailDTOMediaType.PDF}>
+                PDF
+              </option>
+              <option value={CourseLessonPartMaterialDetailDTOMediaType.DOCUMENT}>
+                DOCUMENT
+              </option>
+              <option value={CourseLessonPartMaterialDetailDTOMediaType.TEXT}>
+                TEXT
+              </option>
+              <option value={CourseLessonPartMaterialDetailDTOMediaType.LINK}>
+                LINK
+              </option>
+              <option value={CourseLessonPartMaterialDetailDTOMediaType.OTHER}>
+                OTHER
+              </option>
             </Select>
           </div>
         </div>

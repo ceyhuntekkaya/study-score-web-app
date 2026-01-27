@@ -1,139 +1,123 @@
-'use client';
+"use client";
 
-import React, { forwardRef } from 'react';
-import { cn } from "@/lib/utils";
+import * as React from "react";
+import { Label } from "./Label";
 
-export interface CheckboxProps {
-    id?: string;
-    checked?: boolean;
-    defaultChecked?: boolean;
-    disabled?: boolean;
-    indeterminate?: boolean;
-    label?: string;
-    description?: string;
-    size?: 'sm' | 'md' | 'lg';
-    variant?: 'default' | 'success' | 'warning' | 'error';
-    className?: string;
-    onChange?: (checked: boolean, event: React.ChangeEvent<HTMLInputElement>) => void;
-    onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
-    onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
-    'aria-label'?: string;
-    'aria-describedby'?: string;
-    name?: string;
-    value?: string;
+export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
+  error?: boolean;
+  label?: string;
+  labelClassName?: string;
 }
 
-const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
-    ({
-         id,
-         checked,
-         defaultChecked,
-         disabled = false,
-         indeterminate = false,
-         label,
-         description,
-         size = 'md',
-         variant = 'default',
-         className = '',
-         onChange,
-         onFocus,
-         onBlur,
-         'aria-label': ariaLabel,
-         'aria-describedby': ariaDescribedby,
-         name,
-         value,
-         ...props
-     }, ref) => {
-        const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-            if (onChange) {
-                onChange(event.target.checked, event);
-            }
-        };
+const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
+  (
+    { className = "", error, style, label, labelClassName = "", id, ...props },
+    ref
+  ) => {
+    const checkboxId = id || `checkbox-${Math.random().toString(36).substr(2, 9)}`;
 
-        const sizeStyles: Record<string, React.CSSProperties> = {
-            sm: { width: '1rem', height: '1rem' },
-            md: { width: '1.25rem', height: '1.25rem' },
-            lg: { width: '1.5rem', height: '1.5rem' }
-        };
+    const checkboxStyle: React.CSSProperties = {
+      // Reset all inherited styles
+      all: "unset" as React.CSSProperties["all"],
+      boxSizing: "border-box",
 
-        const variantStyles = {
-            default: { borderColor: '#d1d5db', accentColor: '#2563eb' },
-            success: { borderColor: '#10b981', accentColor: '#10b981' },
-            warning: { borderColor: '#f59e0b', accentColor: '#f59e0b' },
-            error: { borderColor: '#ef4444', accentColor: '#ef4444' }
-        };
+      // Size
+      width: "18px",
+      height: "18px",
+      minWidth: "18px",
+      minHeight: "18px",
 
-        const checkboxId = id || `checkbox-${Math.random().toString(36).substr(2, 9)}`;
+      // Background
+      backgroundColor: props.checked ? "#2563eb" : "#FFFFFF",
+      border: "0.125rem solid",
+      borderColor: error ? "#ef4444" : (props.checked ? "#2563eb" : "#d1d5db"),
+      borderRadius: "4px",
 
-        React.useEffect(() => {
-            if (ref && typeof ref === 'object' && ref.current) {
-                ref.current.indeterminate = indeterminate;
-            }
-        }, [indeterminate, ref]);
+      // Cursor
+      cursor: props.disabled ? "not-allowed" : "pointer",
 
-        return (
-            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <input
-                        ref={ref}
-                        id={checkboxId}
-                        type="checkbox"
-                        checked={checked}
-                        defaultChecked={defaultChecked}
-                        disabled={disabled}
-                        name={name}
-                        value={value}
-                        className={cn("ui-checkbox", className)}
-                        style={{
-                            ...sizeStyles[size],
-                            border: `2px solid ${variantStyles[variant].borderColor}`,
-                            borderRadius: '0.25rem',
-                            backgroundColor: 'white',
-                            cursor: disabled ? 'not-allowed' : 'pointer',
-                            opacity: disabled ? 0.5 : 1,
-                            accentColor: variantStyles[variant].accentColor,
-                        }}
-                        onChange={handleChange}
-                        onFocus={onFocus}
-                        onBlur={onBlur}
-                        aria-label={ariaLabel}
-                        aria-describedby={ariaDescribedby}
-                        {...props}
-                    />
-                </div>
-                {(label || description) && (
-                    <div style={{ marginLeft: '0.75rem' }}>
-                        {label && (
-                            <label
-                                htmlFor={checkboxId}
-                                style={{
-                                    fontSize: size === 'sm' ? '0.875rem' : size === 'lg' ? '1.125rem' : '1rem',
-                                    fontWeight: 500,
-                                    color: '#1f2937',
-                                    cursor: disabled ? 'not-allowed' : 'pointer',
-                                    opacity: disabled ? 0.5 : 1,
-                                }}
-                            >
-                                {label}
-                            </label>
-                        )}
-                        {description && (
-                            <p style={{
-                                fontSize: size === 'sm' ? '0.75rem' : size === 'lg' ? '1rem' : '0.875rem',
-                                color: '#6b7280',
-                                marginTop: '0.25rem',
-                                marginBottom: 0,
-                            }}>
-                                {description}
-                            </p>
-                        )}
-                    </div>
-                )}
-            </div>
-        );
+      // Transition
+      transition: "all 0.2s ease",
+
+      // Appearance
+      appearance: "none",
+      WebkitAppearance: "none",
+      MozAppearance: "none",
+
+      // Position
+      position: "relative",
+      display: "inline-block",
+      verticalAlign: "middle",
+      flexShrink: 0,
+
+      ...style,
+    };
+
+    const checkmarkStyle: React.CSSProperties = {
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "10px",
+      height: "10px",
+      opacity: props.checked ? 1 : 0,
+      transition: "opacity 0.2s ease",
+      pointerEvents: "none",
+    };
+
+    const wrapperStyle: React.CSSProperties = {
+      display: "flex",
+      alignItems: "center",
+      gap: "12px",
+    };
+
+    const checkboxElement = (
+      <div style={{ position: "relative", display: "inline-block" }}>
+        <input
+          type="checkbox"
+          id={checkboxId}
+          className={className}
+          style={checkboxStyle}
+          ref={ref}
+          {...props}
+        />
+        {props.checked && (
+          <svg
+            style={checkmarkStyle}
+            viewBox="0 0 12 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 3L4.5 8.5L2 6"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
+      </div>
+    );
+
+    if (label) {
+      return (
+        <div style={wrapperStyle}>
+          {checkboxElement}
+          <Label
+            htmlFor={checkboxId}
+            className={`cursor-pointer mb--0 ${labelClassName}`}
+          >
+            {label}
+          </Label>
+        </div>
+      );
     }
+
+    return checkboxElement;
+  }
 );
 
-Checkbox.displayName = 'Checkbox';
+Checkbox.displayName = "Checkbox";
 
-export default Checkbox;
+export { Checkbox };

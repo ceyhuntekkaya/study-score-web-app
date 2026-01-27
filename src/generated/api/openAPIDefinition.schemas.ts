@@ -303,9 +303,9 @@ export interface User {
   tutor?: boolean;
   writer?: boolean;
   admin?: boolean;
-  authorities?: GrantedAuthority[];
   institutionalLearner?: boolean;
   individualLearner?: boolean;
+  authorities?: GrantedAuthority[];
   accountNonExpired?: boolean;
   accountNonLocked?: boolean;
   credentialsNonExpired?: boolean;

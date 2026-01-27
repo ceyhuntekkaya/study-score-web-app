@@ -13,6 +13,7 @@ import {
 } from "@/generated/api/question-controller/question-controller";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { Select } from "@/components/ui/Select";
 import SimpleHtmlEditor from "../ui/SimpleHtmlEditor";
 import QuestionTemplateForm from "./QuestionTemplateForm";
 
@@ -151,7 +152,7 @@ export default function QuestionForm({
           : t("admin.exam.addQuestion") || "Soru Ekle"}
       </h5>
 
-      <div className="row g-5">
+      <div className="row g-3">
         {/* Name */}
         <div className="col-12">
           <div className="form-group">
@@ -178,10 +179,9 @@ export default function QuestionForm({
             <Label htmlFor="questionType">
               {t("admin.exam.questionType")} <span className="text-danger">*</span>
             </Label>
-            <select
+            <Select
               id="questionType"
               name="questionType"
-              className="form-control"
               value={formData.questionType}
               onChange={handleChange}
             >
@@ -224,7 +224,7 @@ export default function QuestionForm({
               <option value={QuestionCreateRequestQuestionType.IMAGE_RESPONSE}>
                 {t("admin.exam.imageResponse")}
               </option>
-            </select>
+            </Select>
           </div>
         </div>
 
@@ -255,17 +255,16 @@ export default function QuestionForm({
         <div className="col-md-3">
           <div className="form-group">
             <Label htmlFor="difficulty">{t("admin.exam.difficulty")}</Label>
-            <select
+            <Select
               id="difficulty"
               name="difficulty"
-              className="form-control"
               value={formData.difficulty || "MEDIUM"}
               onChange={handleChange}
             >
               <option value="EASY">{t("admin.exam.easy")}</option>
               <option value="MEDIUM">{t("admin.exam.medium")}</option>
               <option value="HARD">{t("admin.exam.hard")}</option>
-            </select>
+            </Select>
           </div>
         </div>
 
@@ -285,7 +284,7 @@ export default function QuestionForm({
       </div>
 
       {/* Question Text */}
-      <div className="row g-5">
+      <div className="row g-3">
         <div className="col-12">
           <div className="form-group">
             <Label htmlFor="questionText">
@@ -304,7 +303,7 @@ export default function QuestionForm({
       </div>
 
       {/* Template Data Form */}
-      <div className="row g-5">
+      <div className="row g-3">
         <div className="col-12">
           <div className="form-group">
             <Label>{t("admin.exam.templateData")}</Label>
