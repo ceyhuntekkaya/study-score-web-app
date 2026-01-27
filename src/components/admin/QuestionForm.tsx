@@ -62,6 +62,21 @@ export default function QuestionForm({
   useEffect(() => {
     if (isEditMode && questionData) {
       const q = questionData as any;
+      
+      // Safely parse templateData with error handling
+      let parsedTemplateData = {};
+      if (typeof q.templateData === "string") {
+        try {
+          parsedTemplateData = JSON.parse(q.templateData);
+        } catch (error) {
+          console.error("Failed to parse templateData JSON:", error);
+          // Use empty object as fallback for malformed JSON
+          parsedTemplateData = {};
+        }
+      } else {
+        parsedTemplateData = q.templateData || {};
+      }
+      
       setFormData({
         name: q.name || "",
         questionGroupId: q.questionGroupId || questionGroupId,
@@ -70,9 +85,7 @@ export default function QuestionForm({
         subject: q.subject || "",
         difficulty: q.difficulty || "MEDIUM",
         questionText: q.questionText || "",
-        templateData: typeof q.templateData === "string" 
-          ? JSON.parse(q.templateData) 
-          : q.templateData || {},
+        templateData: parsedTemplateData,
       });
     }
   }, [isEditMode, questionData, questionGroupId]);

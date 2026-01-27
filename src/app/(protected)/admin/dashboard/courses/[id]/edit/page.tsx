@@ -220,12 +220,10 @@ export default function EditCoursePage() {
   // Reset dependent selects when parent changes
   const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const unitId = e.target.value;
-    if (unitId && unitId !== '') {
-      setSelectedUnitId(unitId);
-      setSelectedTopicId('');
-      setSelectedLessonId('');
-      setSelectedPartIdForm('');
-    }
+    setSelectedUnitId(unitId);
+    setSelectedTopicId('');
+    setSelectedLessonId('');
+    setSelectedPartIdForm('');
   };
 
   const handleTopicChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
