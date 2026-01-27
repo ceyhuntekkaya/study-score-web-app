@@ -120,11 +120,17 @@ export default function ExamForm({
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
 
-    let processedValue = value;
+    let processedValue: any = value;
     
     // For code field, convert to uppercase and filter invalid characters
     if (name === "code") {
       processedValue = value.toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+    }
+    
+    // Convert number inputs to numbers
+    if (type === "number") {
+      const numValue = value === "" ? undefined : Number(value);
+      processedValue = isNaN(numValue as number) ? undefined : numValue;
     }
 
     setFormData({
@@ -185,9 +191,15 @@ export default function ExamForm({
         code: formData.code,
         category: formData.category,
         examType: formData.examType,
-        timeLimitMinutes: formData.timeLimitMinutes,
-        passingScorePercentage: formData.passingScorePercentage ? Number(formData.passingScorePercentage) : undefined,
-        maxAttempts: formData.maxAttempts,
+        timeLimitMinutes: formData.timeLimitMinutes !== null && formData.timeLimitMinutes !== undefined 
+          ? Number(formData.timeLimitMinutes) 
+          : undefined,
+        passingScorePercentage: formData.passingScorePercentage !== null && formData.passingScorePercentage !== undefined 
+          ? Number(formData.passingScorePercentage) 
+          : undefined,
+        maxAttempts: formData.maxAttempts !== null && formData.maxAttempts !== undefined 
+          ? Number(formData.maxAttempts) 
+          : undefined,
         shuffleQuestions: formData.shuffleQuestions ?? false,
         shuffleAnswers: formData.shuffleAnswers ?? true,
         allowBackward: formData.allowBackward ?? true,
