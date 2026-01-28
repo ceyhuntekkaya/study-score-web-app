@@ -5,6 +5,8 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslation } from '@/i18n';
 import { useGetCourseWithAllDetails } from '@/generated/api/course-rest-controller/course-rest-controller';
+import { useDeleteActivity5 } from '@/generated/api/course-lesson-rest-controller/course-lesson-rest-controller';
+import { useDeleteActivity3 } from '@/generated/api/course-lesson-part-rest-controller/course-lesson-part-rest-controller';
 import CourseForm from '@/components/admin/CourseForm';
 import CourseLessonsAccordion from '@/components/admin/CourseLessonsAccordion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -19,7 +21,7 @@ interface CourseLessonDetailDTOWithChildren extends CourseLessonDetailDTO {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
-import { Pencil, Plus } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 
 export default function EditCoursePage() {
   const { t } = useTranslation();
@@ -43,6 +45,12 @@ export default function EditCoursePage() {
 
   const { data: courseDetails, isLoading, refetch } = useGetCourseWithAllDetails(courseId, {
     query: { enabled: !!courseId },
+  });
+  const deleteLessonMutation = useDeleteActivity5({
+    mutation: { onSuccess: () => refetch() },
+  });
+  const deletePartMutation = useDeleteActivity3({
+    mutation: { onSuccess: () => refetch() },
   });
 
   // Helper functions for form view - MUST be called before early returns to maintain hook order
@@ -280,6 +288,36 @@ export default function EditCoursePage() {
     handleView(type, id);
   };
 
+  const handleDeleteLesson = (lesson: CourseLessonDetailDTO) => {
+    if (!t('admin.lesson.confirmDeleteLesson') || !window.confirm(t('admin.lesson.confirmDeleteLesson'))) return;
+    const id = lesson.id;
+    if (!id) return;
+    deleteLessonMutation.mutate({ courseLessonId: id }, {
+      onSuccess: () => {
+        setSelectedView(null);
+        setEditingLesson(null);
+        setParentLessonId(undefined);
+        setSelectedUnitId('');
+        setSelectedTopicId('');
+        setSelectedLessonId('');
+      },
+    });
+  };
+
+  const handleDeletePart = (part: CourseLessonPartDTO) => {
+    if (!t('admin.part.confirmDeletePart') || !window.confirm(t('admin.part.confirmDeletePart'))) return;
+    const id = part.id;
+    if (!id) return;
+    deletePartMutation.mutate({ coursePartId: id }, {
+      onSuccess: () => {
+        setSelectedView(null);
+        setEditingPart(null);
+        setParentLessonId(undefined);
+        setSelectedPartIdForm('');
+      },
+    });
+  };
+
   const handleAdd = (type: 'unit' | 'topic' | 'lesson' | 'part', parentId?: string) => {
     if (type === 'unit') {
       setParentLessonId(undefined);
@@ -379,6 +417,8 @@ export default function EditCoursePage() {
                       setEditingPart(part);
                       setSelectedView('part');
                     }}
+                    onDeleteLesson={handleDeleteLesson}
+                    onDeletePart={handleDeletePart}
                     onShowMaterials={(partId) => {
                       setSelectedPartId(partId);
                       setSelectedView('materials');
@@ -418,14 +458,28 @@ export default function EditCoursePage() {
                         </div>
                           <div style={{ display: 'flex', gap: '0.25rem' }}>
                             {selectedUnitId && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEdit('unit', selectedUnitId)}
-                                title={t('common.edit') || 'Edit'}
-                              >
-                                <Pencil size={16} />
-                              </Button>
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEdit('unit', selectedUnitId)}
+                                  title={t('common.edit') || 'Edit'}
+                                >
+                                  <Pencil size={16} />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const unit = units.find(u => u.id === selectedUnitId);
+                                    if (unit) handleDeleteLesson(unit);
+                                  }}
+                                  title={t('common.delete') || 'Delete'}
+                                  className="text-danger"
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              </>
                             )}
                             <Button
                               variant="ghost"
@@ -464,14 +518,28 @@ export default function EditCoursePage() {
                           </div>
                           <div style={{ display: 'flex', gap: '0.25rem' }}>
                             {selectedTopicId && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEdit('topic', selectedTopicId)}
-                                title={t('common.edit') || 'Edit'}
-                              >
-                                <Pencil size={16} />
-                              </Button>
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEdit('topic', selectedTopicId)}
+                                  title={t('common.edit') || 'Edit'}
+                                >
+                                  <Pencil size={16} />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const tpc = topics.find((tp) => tp.id === selectedTopicId);
+                                    if (tpc) handleDeleteLesson(tpc);
+                                  }}
+                                  title={t('common.delete') || 'Delete'}
+                                  className="text-danger"
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              </>
                             )}
                             <Button
                               variant="ghost"
@@ -511,14 +579,28 @@ export default function EditCoursePage() {
                           </div>
                           <div style={{ display: 'flex', gap: '0.25rem' }}>
                             {selectedLessonId && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEdit('lesson', selectedLessonId)}
-                                title={t('common.edit') || 'Edit'}
-                              >
-                                <Pencil size={16} />
-                              </Button>
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEdit('lesson', selectedLessonId)}
+                                  title={t('common.edit') || 'Edit'}
+                                >
+                                  <Pencil size={16} />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const lesson = lessons.find((l: CourseLessonDetailDTO) => l.id === selectedLessonId);
+                                    if (lesson) handleDeleteLesson(lesson);
+                                  }}
+                                  title={t('common.delete') || 'Delete'}
+                                  className="text-danger"
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              </>
                             )}
                             <Button
                               variant="ghost"
@@ -558,14 +640,28 @@ export default function EditCoursePage() {
                           </div>
                           <div style={{ display: 'flex', gap: '0.25rem' }}>
                             {selectedPartIdForm && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEdit('part', selectedPartIdForm)}
-                                title={t('common.edit') || 'Edit'}
-                              >
-                                <Pencil size={16} />
-                              </Button>
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEdit('part', selectedPartIdForm)}
+                                  title={t('common.edit') || 'Edit'}
+                                >
+                                  <Pencil size={16} />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const part = parts.find(p => p.id === selectedPartIdForm);
+                                    if (part) handleDeletePart(part);
+                                  }}
+                                  title={t('common.delete') || 'Delete'}
+                                  className="text-danger"
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              </>
                             )}
                             <Button
                               variant="ghost"

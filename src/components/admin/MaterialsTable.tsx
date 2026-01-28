@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n";
 import {
   useGetCourseLessonPartMaterialByCourseLessonId,
+  useDeleteActivity4,
 } from "@/generated/api/course-lesson-part-material-rest-controller/course-lesson-part-material-rest-controller";
 import { CourseLessonPartMaterial, CourseLessonPartMaterialDetailDTO } from "@/generated/api/openAPIDefinition.schemas";
 import DynamicTable from "@/components/ui/DynamicTable";
@@ -31,6 +32,9 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
       query: { enabled: !!partId },
     }
   );
+  const deleteMaterialMutation = useDeleteActivity4({
+    mutation: { onSuccess: () => refetch() },
+  });
 
   const handleAddClick = () => {
     setShowAddForm(true);
@@ -74,6 +78,23 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
     setShowAddForm(false);
     setEditingMaterial(null);
     setPreviewData(null);
+  };
+
+  const handleDeleteClick = (material: CourseLessonPartMaterial) => {
+    if (!window.confirm(t('admin.material.confirmDeleteMaterial'))) return;
+    const id = material.id;
+    if (!id) return;
+    deleteMaterialMutation.mutate(
+      { coursePartMaterialId: id },
+      {
+        onSuccess: () => {
+          if (editingMaterial?.id === id) {
+            setEditingMaterial(null);
+            setPreviewData(null);
+          }
+        },
+      }
+    );
   };
 
   const columns: Column<CourseLessonPartMaterial>[] = [
@@ -132,6 +153,16 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
           ),
           onClick: (item) => handleEditClick(item),
           className: "rbt-btn btn-sm btn-border-gradient",
+        },
+        {
+          label: (
+            <>
+              <i className="feather-trash-2 me-1"></i>
+              {t("common.delete") || "Sil"}
+            </>
+          ),
+          onClick: (item) => handleDeleteClick(item as CourseLessonPartMaterial),
+          className: "rbt-btn btn-sm btn-danger",
         },
       ],
     },

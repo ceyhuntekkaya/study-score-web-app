@@ -13,6 +13,7 @@ import {
   Pencil,
   Presentation,
   ListCheck,
+  Trash2,
 } from "lucide-react";
 import { useTranslation } from "@/i18n";
 
@@ -21,8 +22,10 @@ interface CourseLessonsAccordionProps {
   courseId?: string;
   onAddLesson?: (parentId: string | undefined, level: string) => void;
   onEditLesson?: (lesson: CourseLessonDetailDTO) => void;
+  onDeleteLesson?: (lesson: CourseLessonDetailDTO) => void;
   onAddPart?: (lessonId: string) => void;
   onEditPart?: (part: CourseLessonPartDetailDTO) => void;
+  onDeletePart?: (part: CourseLessonPartDetailDTO) => void;
   onShowMaterials?: (partId: string) => void;
   onRefresh?: () => void;
 }
@@ -38,8 +41,10 @@ export default function CourseLessonsAccordion({
   courseId,
   onAddLesson,
   onEditLesson,
+  onDeleteLesson,
   onAddPart,
   onEditPart,
+  onDeletePart,
   onShowMaterials,
   onRefresh,
 }: CourseLessonsAccordionProps) {
@@ -291,8 +296,36 @@ export default function CourseLessonsAccordion({
               >
                 <Pencil size={16} />
               </button>
-
-
+              {onDeletePart && (
+                <button
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    padding: "0.375rem",
+                    color: "#ef4444",
+                    backgroundColor: "transparent",
+                    border: "none",
+                    borderRadius: "0.25rem",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                  title={t('common.delete')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeletePart(lesson);
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "#dc2626";
+                    e.currentTarget.style.backgroundColor = "#fee2e2";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "#ef4444";
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
               <button
                 style={{
                   display: "inline-flex",
@@ -533,6 +566,36 @@ export default function CourseLessonsAccordion({
               >
                 <Pencil size={16} />
               </button>
+              {onDeleteLesson && (
+                <button
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    padding: "0.375rem",
+                    color: "#ef4444",
+                    backgroundColor: "transparent",
+                    border: "none",
+                    borderRadius: "0.25rem",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                  title={t('common.delete')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteLesson(lesson);
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "#dc2626";
+                    e.currentTarget.style.backgroundColor = "#fee2e2";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "#ef4444";
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
             </div>
           </td>
         </tr>

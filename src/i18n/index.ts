@@ -75,14 +75,17 @@ const translations: Record<Language, Translations> = {
     'admin.lesson.selectUnit': 'Select Unit...',
     'admin.lesson.selectTopic': 'Select Topic...',
     'admin.lesson.selectLesson': 'Select Lesson...',
-    
+    'admin.lesson.confirmDeleteLesson': 'Are you sure you want to delete this lesson? This will also delete all its parts and materials.',
+    'admin.lesson.addFirstUnit': 'Add First Unit',
+
     // Admin - Part Management
     'admin.part.edit': 'Edit Part',
     'admin.part.add': 'Add New Part',
     'admin.part.name': 'Part Name',
     'admin.part.orderNumber': 'Order Number',
     'admin.part.selectPart': 'Select Part...',
-    
+    'admin.part.confirmDeletePart': 'Are you sure you want to delete this part? All materials in this part will also be deleted.',
+
     // Admin - Material Management
     'admin.material.title': 'Materials',
     'admin.material.name': 'Material Name',
@@ -93,7 +96,8 @@ const translations: Record<Language, Translations> = {
     'admin.material.uploadedFileId': 'Uploaded File ID',
     'admin.material.selectMediaType': 'Select Media Type',
     'admin.material.preview': 'Preview',
-    
+    'admin.material.confirmDeleteMaterial': 'Are you sure you want to delete this material?',
+
     // Admin - Entity Management
     'admin.entity.edit': 'Edit',
     'admin.entity.add': 'Add New',
@@ -459,14 +463,17 @@ const translations: Record<Language, Translations> = {
     'admin.lesson.selectUnit': 'Unit Seçiniz...',
     'admin.lesson.selectTopic': 'Topic Seçiniz...',
     'admin.lesson.selectLesson': 'Lesson Seçiniz...',
-    
+    'admin.lesson.confirmDeleteLesson': 'Bu dersi silmek istediğinizden emin misiniz? Tüm part ve materyaller de silinecektir.',
+    'admin.lesson.addFirstUnit': 'İlk UNIT Ekle',
+
     // Admin - Part Management
     'admin.part.edit': 'Part Düzenle',
     'admin.part.add': 'Yeni Part Ekle',
     'admin.part.name': 'Part Adı',
     'admin.part.orderNumber': 'Sıra Numarası',
     'admin.part.selectPart': 'Part Seçiniz...',
-    
+    'admin.part.confirmDeletePart': 'Bu partı silmek istediğinizden emin misiniz? Bu parttaki tüm materyaller de silinecektir.',
+
     // Admin - Material Management
     'admin.material.title': 'Materyaller',
     'admin.material.name': 'Materyal Adı',
@@ -477,7 +484,8 @@ const translations: Record<Language, Translations> = {
     'admin.material.uploadedFileId': 'Yüklenen Dosya ID',
     'admin.material.selectMediaType': 'Medya tipi seçiniz',
     'admin.material.preview': 'Ön İzleme',
-    
+    'admin.material.confirmDeleteMaterial': 'Bu materyali silmek istediğinizden emin misiniz?',
+
     // Admin - Entity Management
     'admin.entity.edit': 'Düzenle',
     'admin.entity.add': 'Yeni Ekle',
