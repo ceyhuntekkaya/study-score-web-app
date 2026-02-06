@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 import ScoringConfigForm from "./ScoringConfigForm";
+import TemplateOptionalDetails from "./TemplateOptionalDetails";
 import { TemplateFormProps } from "./types";
 
 export default function TrueFalseTemplateForm({
@@ -115,11 +116,13 @@ export default function TrueFalseTemplateForm({
         />
       </div>
 
-      <ScoringConfigForm
-        scoringConfig={localData.scoringConfig}
-        onChange={(config) => updateData({ ...localData, scoringConfig: config })}
-        defaultStrategy="BINARY"
-      />
+      <TemplateOptionalDetails>
+        <ScoringConfigForm
+          scoringConfig={localData.scoringConfig}
+          onChange={(config) => updateData({ ...localData, scoringConfig: config })}
+          defaultStrategy="BINARY"
+        />
+      </TemplateOptionalDetails>
     </div>
   );
 }

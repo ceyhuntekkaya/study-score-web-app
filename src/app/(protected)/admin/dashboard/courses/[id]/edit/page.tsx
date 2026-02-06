@@ -5,8 +5,8 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslation } from '@/i18n';
 import { useGetCourseWithAllDetails } from '@/generated/api/course-rest-controller/course-rest-controller';
-import { useDeleteActivity5 } from '@/generated/api/course-lesson-rest-controller/course-lesson-rest-controller';
-import { useDeleteActivity3 } from '@/generated/api/course-lesson-part-rest-controller/course-lesson-part-rest-controller';
+import { useDeleteActivity4 } from '@/generated/api/course-lesson-rest-controller/course-lesson-rest-controller';
+import { useDeleteActivity2 } from '@/generated/api/course-lesson-part-rest-controller/course-lesson-part-rest-controller';
 import CourseForm from '@/components/admin/CourseForm';
 import CourseLessonsAccordion from '@/components/admin/CourseLessonsAccordion';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -46,10 +46,10 @@ export default function EditCoursePage() {
   const { data: courseDetails, isLoading, refetch } = useGetCourseWithAllDetails(courseId, {
     query: { enabled: !!courseId },
   });
-  const deleteLessonMutation = useDeleteActivity5({
+  const deleteLessonMutation = useDeleteActivity4({
     mutation: { onSuccess: () => refetch() },
   });
-  const deletePartMutation = useDeleteActivity3({
+  const deletePartMutation = useDeleteActivity2({
     mutation: { onSuccess: () => refetch() },
   });
 

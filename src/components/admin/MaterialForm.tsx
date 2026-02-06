@@ -10,7 +10,8 @@ import {
   useCreateCoursePartMaterial,
   useUpdateCoursePartMaterial,
 } from "@/generated/api/course-lesson-part-material-rest-controller/course-lesson-part-material-rest-controller";
-import { useUploadFile } from "@/generated/api/file-rest-controller/file-rest-controller";
+import { useMutation } from "@tanstack/react-query";
+import { customInstance } from "@/lib/api-client";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
@@ -51,8 +52,28 @@ export default function MaterialForm({
   // Mutations
   const createMaterial = useCreateCoursePartMaterial();
   const updateMaterial = useUpdateCoursePartMaterial();
-  const uploadFileMutation = useUploadFile();
-  
+  const uploadMutation = useMutation({
+    mutationFn: ({
+      file,
+      objectType,
+      fileProp,
+    }: {
+      file: File;
+      objectType: string;
+      fileProp: string;
+    }) => {
+      const formData = new FormData();
+      formData.append("files", file);
+      formData.append("objectType", objectType);
+      formData.append("fileProp", fileProp);
+      return customInstance<string[]>({
+        url: "/files/upload",
+        method: "POST",
+        data: formData,
+      });
+    },
+  });
+
   // File upload ref
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -136,15 +157,17 @@ export default function MaterialForm({
 
     setUploadingFile(true);
     try {
-      const result = await uploadFileMutation.mutateAsync({
-        data: { file },
+      const paths = await uploadMutation.mutateAsync({
+        file,
+        objectType: "CourseLessonPartMaterial",
+        fileProp: "file",
       });
-      
-      if (result?.id) {
+
+      if (paths?.length) {
         const newFormData = {
           ...formData,
-          uploadedFileId: result.id,
-          uploadedFileName: result.fileOriginalName || result.fileName,
+          content: paths[0],
+          uploadedFileName: file.name,
         };
         setFormData(newFormData);
         if (onFormDataChange) {
@@ -152,12 +175,12 @@ export default function MaterialForm({
         }
       }
     } catch (error) {
-      console.error('File upload error:', error);
-      alert('Dosya yüklenirken bir hata oluştu.');
+      console.error("File upload error:", error);
+      alert("Dosya yüklenirken bir hata oluştu.");
     } finally {
       setUploadingFile(false);
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     }
   };

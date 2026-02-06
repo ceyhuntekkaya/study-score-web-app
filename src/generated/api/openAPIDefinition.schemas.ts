@@ -345,59 +345,6 @@ export interface UserAssignment {
   branch?: Branch;
 }
 
-export type UploadedFileStatus =
-  (typeof UploadedFileStatus)[keyof typeof UploadedFileStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UploadedFileStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type UploadedFileDocumentType =
-  (typeof UploadedFileDocumentType)[keyof typeof UploadedFileDocumentType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UploadedFileDocumentType = {
-  IMAGE: "IMAGE",
-  VIDEO: "VIDEO",
-  AUDIO: "AUDIO",
-  DOCUMENT: "DOCUMENT",
-  PDF: "PDF",
-  TEXT: "TEXT",
-  LINK: "LINK",
-  OTHER: "OTHER",
-} as const;
-
-export interface UploadedFile {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: UploadedFileStatus;
-  createdBy?: User;
-  deletedBy?: User;
-  path?: string;
-  fileOriginalName?: string;
-  fileName?: string;
-  documentType?: UploadedFileDocumentType;
-  fileSize?: number;
-  updatedAt?: string;
-  version?: number;
-}
-
 export type QuestionCreateRequestQuestionType =
   (typeof QuestionCreateRequestQuestionType)[keyof typeof QuestionCreateRequestQuestionType];
 
@@ -595,59 +542,6 @@ export interface ExamUpdateRequest {
    */
   accessCode?: string;
   requireProctoring?: boolean;
-}
-
-export type UploadedFileDtoStatus =
-  (typeof UploadedFileDtoStatus)[keyof typeof UploadedFileDtoStatus];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UploadedFileDtoStatus = {
-  ACTIVE: "ACTIVE",
-  PASSIVE: "PASSIVE",
-  DELETED: "DELETED",
-  WAITING: "WAITING",
-  CONFIRMED: "CONFIRMED",
-  REJECTED: "REJECTED",
-  CANCELLED: "CANCELLED",
-  COMPLETED: "COMPLETED",
-  IN_PROGRESS: "IN_PROGRESS",
-  NOT_STARTED: "NOT_STARTED",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
-  WORKING: "WORKING",
-  NEW: "NEW",
-  FINISHED: "FINISHED",
-} as const;
-
-export type UploadedFileDtoDocumentType =
-  (typeof UploadedFileDtoDocumentType)[keyof typeof UploadedFileDtoDocumentType];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UploadedFileDtoDocumentType = {
-  IMAGE: "IMAGE",
-  VIDEO: "VIDEO",
-  AUDIO: "AUDIO",
-  DOCUMENT: "DOCUMENT",
-  PDF: "PDF",
-  TEXT: "TEXT",
-  LINK: "LINK",
-  OTHER: "OTHER",
-} as const;
-
-export interface UploadedFileDto {
-  id?: string;
-  createdAt?: string;
-  deletedAt?: string;
-  status?: UploadedFileDtoStatus;
-  createdById?: string;
-  deletedById?: string;
-  path?: string;
-  fileOriginalName?: string;
-  fileName?: string;
-  documentType?: UploadedFileDtoDocumentType;
-  fileSize?: number;
-  updatedAt?: string;
-  version?: number;
 }
 
 export type CurriculumDtoStatus =
@@ -1078,6 +972,59 @@ export interface CourseLessonPartMaterialDetailDTO {
   userProgress?: UserProgressCourseLessonPartMaterial;
 }
 
+export type UploadedFileStatus =
+  (typeof UploadedFileStatus)[keyof typeof UploadedFileStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UploadedFileStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export type UploadedFileDocumentType =
+  (typeof UploadedFileDocumentType)[keyof typeof UploadedFileDocumentType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UploadedFileDocumentType = {
+  IMAGE: "IMAGE",
+  VIDEO: "VIDEO",
+  AUDIO: "AUDIO",
+  DOCUMENT: "DOCUMENT",
+  PDF: "PDF",
+  TEXT: "TEXT",
+  LINK: "LINK",
+  OTHER: "OTHER",
+} as const;
+
+export interface UploadedFile {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: UploadedFileStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  path?: string;
+  fileOriginalName?: string;
+  fileName?: string;
+  documentType?: UploadedFileDocumentType;
+  fileSize?: number;
+  updatedAt?: string;
+  version?: number;
+}
+
 export type UserProgressCourseLessonPartMaterialStatus =
   (typeof UserProgressCourseLessonPartMaterialStatus)[keyof typeof UserProgressCourseLessonPartMaterialStatus];
 
@@ -1459,8 +1406,8 @@ export interface AuthenticationRequest {
 }
 
 export interface PageCurriculumDto {
-  totalPages?: number;
   totalElements?: number;
+  totalPages?: number;
   first?: boolean;
   last?: boolean;
   size?: number;
@@ -1510,20 +1457,6 @@ export type UpdateExam200 = { [key: string]: unknown };
 
 export type DeleteExam200 = { [key: string]: unknown };
 
-export type RenameFileParams = {
-  /**
-   * @minLength 1
-   */
-  newName: string;
-};
-
-export type MoveFileParams = {
-  /**
-   * @minLength 1
-   */
-  newPath: string;
-};
-
 export type RevertToVersionParams = {
   /**
    */
@@ -1541,6 +1474,12 @@ export type MoveContentParams = {
 export type UpdatePartProgress200 = { [key: string]: unknown };
 
 export type UpdateMaterialProgress200 = { [key: string]: unknown };
+
+export type UploadFileParams = {
+  files: Blob[];
+  objectType: string;
+  fileProp: string;
+};
 
 export type CreateQuestion200 = { [key: string]: unknown };
 
@@ -1586,64 +1525,6 @@ export type AddQuestionGroupsToExam200 = { [key: string]: unknown };
 
 export type RemoveQuestionGroupsFromExam200 = { [key: string]: unknown };
 
-export type CopyFileParams = {
-  /**
-   * @minLength 1
-   */
-  targetPath: string;
-};
-
-export type GetFileValidationErrorsBody = {
-  file: Blob;
-};
-
-export type ValidateFileTypeParams = {
-  allowedTypes: ValidateFileTypeAllowedTypesItem[];
-};
-
-export type ValidateFileTypeAllowedTypesItem =
-  (typeof ValidateFileTypeAllowedTypesItem)[keyof typeof ValidateFileTypeAllowedTypesItem];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ValidateFileTypeAllowedTypesItem = {
-  IMAGE: "IMAGE",
-  VIDEO: "VIDEO",
-  AUDIO: "AUDIO",
-  DOCUMENT: "DOCUMENT",
-  PDF: "PDF",
-  TEXT: "TEXT",
-  LINK: "LINK",
-  OTHER: "OTHER",
-} as const;
-
-export type ValidateFileTypeBody = {
-  file: Blob;
-};
-
-export type ValidateFileSizeParams = {
-  maxSize: number;
-};
-
-export type ValidateFileSizeBody = {
-  file: Blob;
-};
-
-export type UploadFileParams = {
-  customPath?: string;
-};
-
-export type UploadFileBody = {
-  file: Blob;
-};
-
-export type UploadFileWithMetadataParams = {
-  customPath?: string;
-};
-
-export type UploadFileWithMetadataBody = {
-  file: Blob;
-};
-
 export type DuplicateCurriculumParams = {
   /**
    * @minLength 1
@@ -1681,37 +1562,6 @@ export type GetExamWithUserDataParams = {
 };
 
 export type GetExamWithUserData200 = { [key: string]: unknown };
-
-export type GetFileTypeStatistics200 = { [key: string]: number };
-
-export type GetRecentFilesParams = {
-  limit?: number;
-};
-
-export type GetLargestFilesParams = {
-  limit?: number;
-};
-
-export type DownloadFileByPathParams = {
-  /**
-   * @minLength 1
-   */
-  filePath: string;
-};
-
-export type GetFileByPathParams = {
-  /**
-   * @minLength 1
-   */
-  filePath: string;
-};
-
-export type DeleteFileByPathParams = {
-  /**
-   * @minLength 1
-   */
-  filePath: string;
-};
 
 export type GetExamByCode200 = { [key: string]: unknown };
 

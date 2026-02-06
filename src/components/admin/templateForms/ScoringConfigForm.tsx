@@ -6,25 +6,44 @@ import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 
+export const DEFAULT_SCORING_CONFIG = {
+  strategy: "BINARY",
+  allowPartialCredit: false,
+  penaltyPerWrong: 0.0,
+  roundScore: false,
+  decimalPlaces: 2,
+} as const;
+
+export type DefaultScoringConfig = Partial<{
+  strategy: string;
+  allowPartialCredit: boolean;
+  penaltyPerWrong: number;
+  roundScore: boolean;
+  decimalPlaces: number;
+}>;
+
 interface ScoringConfigFormProps {
   scoringConfig: any;
   onChange: (config: any) => void;
+  /** @deprecated Prefer defaultConfig for full defaults */
   defaultStrategy?: string;
+  /** Optional default values; merged when scoringConfig is missing or partial */
+  defaultConfig?: DefaultScoringConfig;
 }
 
 export default function ScoringConfigForm({
   scoringConfig,
   onChange,
   defaultStrategy = "BINARY",
+  defaultConfig,
 }: ScoringConfigFormProps) {
   const { t } = useTranslation();
-  const config = scoringConfig || {
-    strategy: defaultStrategy,
-    allowPartialCredit: false,
-    penaltyPerWrong: 0.0,
-    roundScore: false,
-    decimalPlaces: 2,
-  };
+  const baseDefaults = defaultConfig
+    ? { ...DEFAULT_SCORING_CONFIG, ...defaultConfig }
+    : { ...DEFAULT_SCORING_CONFIG, strategy: defaultStrategy };
+  const config = scoringConfig
+    ? { ...baseDefaults, ...scoringConfig }
+    : { ...baseDefaults };
 
   const updateConfig = (field: string, value: any) => {
     onChange({ ...config, [field]: value });
@@ -41,7 +60,7 @@ export default function ScoringConfigForm({
             </Label>
             <Select
               id="scoringStrategy"
-              value={config.strategy || defaultStrategy}
+              value={config.strategy ?? baseDefaults.strategy}
               onChange={(e) => updateConfig("strategy", e.target.value)}
             >
               <option value="BINARY">BINARY</option>
@@ -62,7 +81,7 @@ export default function ScoringConfigForm({
               type="number"
               min="0"
               max="5"
-              value={config.decimalPlaces || 2}
+              value={config.decimalPlaces ?? baseDefaults.decimalPlaces ?? 2}
               onChange={(e) => updateConfig("decimalPlaces", parseInt(e.target.value))}
             />
           </div>
@@ -71,7 +90,7 @@ export default function ScoringConfigForm({
           <div className="form-group">
             <Checkbox
               id="allowPartialCredit"
-              checked={config.allowPartialCredit || false}
+              checked={config.allowPartialCredit ?? baseDefaults.allowPartialCredit ?? false}
               onChange={(e) => updateConfig("allowPartialCredit", e.target.checked)}
               label={t("admin.exam.allowPartialCredit") || "Allow Partial Credit"}
             />
@@ -81,7 +100,7 @@ export default function ScoringConfigForm({
           <div className="form-group">
             <Checkbox
               id="roundScore"
-              checked={config.roundScore || false}
+              checked={config.roundScore ?? baseDefaults.roundScore ?? false}
               onChange={(e) => updateConfig("roundScore", e.target.checked)}
               label={t("admin.exam.roundScore") || "Round Score"}
             />
@@ -98,7 +117,7 @@ export default function ScoringConfigForm({
               min="0"
               max="1"
               step="0.01"
-              value={config.penaltyPerWrong || 0.0}
+              value={config.penaltyPerWrong ?? baseDefaults.penaltyPerWrong ?? 0}
               onChange={(e) => updateConfig("penaltyPerWrong", parseFloat(e.target.value))}
             />
           </div>

@@ -9,30 +9,36 @@ export const AXIOS_INSTANCE = Axios.create({
   },
 });
 
-// Request interceptor - token ekleme
+// Request interceptor - token ekleme + FormData için Content-Type düzeltmesi
 AXIOS_INSTANCE.interceptors.request.use(
   (config) => {
+    // FormData gönderiliyorsa Content-Type'ı set etme; tarayıcı multipart/form-data; boundary=... ekler.
+    // Aksi halde varsayılan application/json gider ve sunucu 415 döner.
+    if (config.data instanceof FormData && config.headers) {
+      delete config.headers['Content-Type'];
+    }
+
     // Auth endpoint'lerine token EKLEME (login, register, refresh-token)
     // Bu endpoint'ler token gerektirmez çünkü henüz authenticate olmamışız
     const url = config.url || '';
-    const isAuthEndpoint = 
-      url.includes('/auth/login') || 
+    const isAuthEndpoint =
+      url.includes('/auth/login') ||
       url.includes('/auth/register') ||
       url.includes('/auth/refresh-token') ||
       url.endsWith('/auth/login') ||
       url.endsWith('/auth/register') ||
       url.endsWith('/auth/refresh-token');
-    
+
     // Sadece auth endpoint'leri DEĞİLSE token ekle
     if (!isAuthEndpoint) {
       const accessToken = tokenStorage.getAccessToken();
-      
+
       if (accessToken && config.headers) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }
     }
     // Auth endpoint'lerine token EKLENMEZ - bu kasıtlı!
-    
+
     return config;
   },
   (error) => {

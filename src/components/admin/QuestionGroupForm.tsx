@@ -5,6 +5,8 @@ import { useTranslation } from "@/i18n";
 import {
   QuestionGroupCreateRequest,
   QuestionGroupCreateRequestCategory,
+  HeaderRequest,
+  HeaderRequestMediaType,
 } from "@/generated/api/openAPIDefinition.schemas";
 import {
   useCreateQuestionGroup,
@@ -15,6 +17,8 @@ import { useGetAllActiveExams } from "@/generated/api/exam-controller/exam-contr
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
+import HeaderEditor from "./HeaderEditor";
+import type { HeaderItem } from "./HeaderEditor";
 
 interface QuestionGroupFormProps {
   groupId?: string;
@@ -44,7 +48,7 @@ export default function QuestionGroupForm({
   const group = initialData || groupData;
   const exams = Array.isArray(examsData) ? examsData : examsData ? [examsData] : [];
 
-  const [formData, setFormData] = useState<QuestionGroupCreateRequest>({
+  const [formData, setFormData] = useState<QuestionGroupCreateRequest & { headers?: HeaderRequest[] }>({
     code: "",
     examId: undefined,
     maximumScore: undefined,
@@ -52,6 +56,7 @@ export default function QuestionGroupForm({
     difficultyLevel: undefined,
     courseSection: "",
     usagePart: "",
+    headers: [],
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -59,6 +64,13 @@ export default function QuestionGroupForm({
   useEffect(() => {
     if (isEditMode && group) {
       const g = group as Record<string, unknown>;
+      const rawHeaders = g.headers;
+      const headers: HeaderRequest[] = Array.isArray(rawHeaders)
+        ? rawHeaders.map((h: Record<string, unknown>) => ({
+            mediaType: (h.mediaType as HeaderRequestMediaType) ?? HeaderRequestMediaType.TEXT,
+            content: (h.content as string) ?? "",
+          }))
+        : [];
       setFormData({
         code: (g.code as string) || "",
         examId: (g.examId as string) || undefined,
@@ -71,6 +83,7 @@ export default function QuestionGroupForm({
           g.difficultyLevel != null ? Number(g.difficultyLevel) : undefined,
         courseSection: (g.courseSection as string) || "",
         usagePart: (g.usagePart as string) || "",
+        headers,
       });
     }
   }, [isEditMode, group]);
@@ -141,6 +154,7 @@ export default function QuestionGroupForm({
         ...(formData.difficultyLevel != null ? { difficultyLevel: formData.difficultyLevel } : {}),
         ...(formData.courseSection?.trim() ? { courseSection: formData.courseSection.trim() } : {}),
         ...(formData.usagePart?.trim() ? { usagePart: formData.usagePart.trim() } : {}),
+        ...(formData.headers?.length ? { headers: formData.headers.map(({ mediaType, content }) => ({ mediaType, content })) } : {}),
       };
 
       if (isEditMode && groupId) {
@@ -290,6 +304,16 @@ export default function QuestionGroupForm({
               maxLength={255}
             />
           </div>
+        </div>
+
+        {/* Headers (soru grubu gövdesi) - opsiyonel */}
+        <div className="col-12">
+          <HeaderEditor
+            value={(formData.headers ?? []) as HeaderItem[]}
+            onChange={(headers) => setFormData((prev) => ({ ...prev, headers: headers as HeaderRequest[] }))}
+            includeOrderNumber={false}
+            minItems={0}
+          />
         </div>
 
         {errors.submit && (

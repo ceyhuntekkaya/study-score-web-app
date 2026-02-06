@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 import ScoringConfigForm from "./ScoringConfigForm";
+import TemplateOptionalDetails from "./TemplateOptionalDetails";
 import { TemplateFormProps } from "./types";
 
 export default function MultipleResponseTemplateForm({
@@ -238,11 +239,13 @@ export default function MultipleResponseTemplateForm({
         </div>
       </div>
 
-      <ScoringConfigForm
-        scoringConfig={localData.scoringConfig}
-        onChange={(config) => updateData({ ...localData, scoringConfig: config })}
-        defaultStrategy="PROPORTIONAL"
-      />
+      <TemplateOptionalDetails>
+        <ScoringConfigForm
+          scoringConfig={localData.scoringConfig}
+          onChange={(config) => updateData({ ...localData, scoringConfig: config })}
+          defaultStrategy="PROPORTIONAL"
+        />
+      </TemplateOptionalDetails>
     </div>
   );
 }

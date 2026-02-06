@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 import ScoringConfigForm from "./ScoringConfigForm";
+import TemplateOptionalDetails from "./TemplateOptionalDetails";
 import { TemplateFormProps } from "./types";
 
 export default function ImageResponseTemplateForm({
@@ -161,11 +162,13 @@ export default function ImageResponseTemplateForm({
       />
     </div>
 
-    <ScoringConfigForm
-      scoringConfig={localData.scoringConfig}
-      onChange={(config) => updateData({ ...localData, scoringConfig: config })}
-      defaultStrategy="MANUAL"
-    />
+    <TemplateOptionalDetails>
+      <ScoringConfigForm
+        scoringConfig={localData.scoringConfig}
+        onChange={(config) => updateData({ ...localData, scoringConfig: config })}
+        defaultStrategy="MANUAL"
+      />
+    </TemplateOptionalDetails>
   </div>
   );
 }

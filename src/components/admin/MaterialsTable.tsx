@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n";
 import {
   useGetCourseLessonPartMaterialByCourseLessonId,
-  useDeleteActivity4,
+  useDeleteActivity3,
 } from "@/generated/api/course-lesson-part-material-rest-controller/course-lesson-part-material-rest-controller";
 import { CourseLessonPartMaterial, CourseLessonPartMaterialDetailDTO } from "@/generated/api/openAPIDefinition.schemas";
 import DynamicTable from "@/components/ui/DynamicTable";
@@ -32,7 +32,7 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
       query: { enabled: !!partId },
     }
   );
-  const deleteMaterialMutation = useDeleteActivity4({
+  const deleteMaterialMutation = useDeleteActivity3({
     mutation: { onSuccess: () => refetch() },
   });
 
