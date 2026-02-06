@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslation } from "@/i18n";
 import {
-  useGetQuestionGroupsByExam,
+  useGetQuestionGroupsByExam1,
   useCreateQuestionGroup,
   useDeleteQuestionGroup,
 } from "@/generated/api/question-group-controller/question-group-controller";
@@ -25,7 +25,7 @@ export default function QuestionGroupAccordion({
   const [showAddForm, setShowAddForm] = useState(false);
   const [newGroupCode, setNewGroupCode] = useState("");
 
-  const { data: questionGroups, refetch } = useGetQuestionGroupsByExam(
+  const { data: questionGroups, refetch } = useGetQuestionGroupsByExam1(
     examId,
     {
       query: {

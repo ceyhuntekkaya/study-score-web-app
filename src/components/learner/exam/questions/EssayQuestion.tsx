@@ -2,21 +2,18 @@
 
 import { useState, useEffect } from 'react';
 
-interface Rubric {
-  name: string;
-  description: string;
-  maxScore: number;
-}
-
 interface EssayTemplateData {
   prompt?: string;
   minWords?: number;
   maxWords?: number;
-  requiredTopics?: string[];
+  /** Backend: string (e.g. comma-separated); normalize to array for UI */
+  requiredTopics?: string | string[];
   gradingType: 'MANUAL' | 'AI' | 'HYBRID';
-  rubric?: Rubric[];
+  /** Backend: rubrik is string (evaluation criteria text) */
+  rubrik?: string;
   requireOutline?: boolean;
-  allowedFormats?: Array<'PLAIN_TEXT' | 'HTML' | 'MARKDOWN'>;
+  /** Backend: comma-separated string e.g. "HTML,MARKDOWN,PLAIN_TEXT" */
+  allowedFormats?: string | Array<'PLAIN_TEXT' | 'HTML' | 'MARKDOWN'>;
   scoringConfig?: {
     strategy: string;
     allowPartialCredit: boolean;
@@ -65,13 +62,25 @@ export default function EssayQuestion({
     initialAnswer?.format || 'PLAIN_TEXT'
   );
 
+  const rawTopics = templateData.requiredTopics;
+  const requiredTopics = Array.isArray(rawTopics)
+    ? rawTopics
+    : typeof rawTopics === "string"
+      ? rawTopics.split(",").map((s) => s.trim()).filter(Boolean)
+      : [];
+  type EssayFormat = 'PLAIN_TEXT' | 'HTML' | 'MARKDOWN';
+  const VALID_FORMATS: EssayFormat[] = ['PLAIN_TEXT', 'HTML', 'MARKDOWN'];
+  const rawFormats = templateData.allowedFormats;
+  const allowedFormats: EssayFormat[] = Array.isArray(rawFormats)
+    ? rawFormats.filter((f): f is EssayFormat => VALID_FORMATS.includes(f as EssayFormat))
+    : typeof rawFormats === "string"
+      ? rawFormats.split(",").map((s) => s.trim()).filter((f): f is EssayFormat => VALID_FORMATS.includes(f as EssayFormat))
+      : ['PLAIN_TEXT'];
   const {
     prompt,
     minWords = 100,
     maxWords = 1000,
-    requiredTopics = [],
     requireOutline = false,
-    allowedFormats = ['PLAIN_TEXT'],
   } = templateData;
 
   // Count words
@@ -380,8 +389,8 @@ export default function EssayQuestion({
         </div>
       )}
 
-      {/* Grading Rubric */}
-      {templateData.rubric && templateData.rubric.length > 0 && (
+      {/* Grading Rubrik (backend: string) */}
+      {templateData.rubrik && String(templateData.rubrik).trim() && (
         <div className="grading-rubric mt--20" style={{
           padding: '15px',
           backgroundColor: '#fff9e6',
@@ -392,16 +401,9 @@ export default function EssayQuestion({
             <i className="feather-award me-2"></i>
             Grading Rubric
           </h6>
-          <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', color: '#856404' }}>
-            {templateData.rubric.map((item, index) => (
-              <li key={index} style={{ marginBottom: '8px' }}>
-                <strong>{item.name}</strong> ({item.maxScore} points)
-                <div style={{ fontSize: '11px', color: '#666', marginTop: '2px', fontStyle: 'italic' }}>
-                  {item.description}
-                </div>
-              </li>
-            ))}
-          </ul>
+          <p style={{ margin: 0, fontSize: '12px', color: '#856404', whiteSpace: 'pre-wrap' }}>
+            {String(templateData.rubrik)}
+          </p>
         </div>
       )}
     </div>

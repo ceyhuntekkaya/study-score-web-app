@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 
+/** Backend: correctZones is DropZone[] (array of objects); legacy string[] supported */
 interface DraggableItem {
   id: string;
   text: string;
   mediaUrl?: string | null;
   mediaType?: 'IMAGE' | 'AUDIO' | 'VIDEO' | null;
-  correctZones: string[];
+  correctZones: Array<string | { id: string; label?: string; maxItems?: number; feedback?: string | null; position?: string | null }>;
   scorePerCorrectZone?: number;
 }
 

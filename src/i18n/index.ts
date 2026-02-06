@@ -125,6 +125,9 @@ const translations: Record<Language, Translations> = {
     'admin.entity.addExam': 'Add New Exam',
     'admin.entity.backToStudentsList': 'Back to Students List',
     'admin.entity.backToExamsList': 'Back to Exams List',
+    'admin.entity.backToQuestionGroupsList': 'Back to Question Groups List',
+    'admin.entity.backToQuestionsList': 'Back to Questions List',
+    'admin.entity.addQuestionGroup': 'Add Question Group',
     
     // Exam Management
     'admin.exam.name': 'Exam Name',
@@ -179,6 +182,8 @@ const translations: Record<Language, Translations> = {
     'admin.exam.questionName': 'Question Name',
     'admin.exam.questionNamePlaceholder': 'Enter question name',
     'admin.exam.questionType': 'Question Type',
+    'admin.exam.selectQuestionGroupToViewQuestions': 'Select a question group to view questions.',
+    'admin.exam.standaloneQuestions': 'Standalone questions (no group)',
     'admin.exam.selectQuestionType': 'Select Question Type',
     'admin.exam.maximumScore': 'Maximum Score',
     'admin.exam.questionText': 'Question Text',
@@ -221,7 +226,12 @@ const translations: Record<Language, Translations> = {
     'admin.exam.templateDataJson': 'Enter template data as JSON',
     'admin.exam.templateDataJsonHint': 'Enter valid JSON for template data',
     'admin.exam.editExam': 'Edit Exam',
+    'admin.exam.courseSection': 'Course Section',
+    'admin.exam.usagePart': 'Usage Part',
+    'admin.exam.selectExam': 'Select Exam',
     'admin.exam.editQuestionGroup': 'Edit Question Group',
+    'admin.exam.questionGroupProperties': 'Question group properties',
+    'admin.exam.questionsInGroupDescription': 'Manage questions in this group below.',
     'admin.exam.editQuestion': 'Edit Question',
     'admin.exam.resultsReleaseType': 'Results Release Type',
     'admin.exam.immediate': 'Immediate',
@@ -372,6 +382,8 @@ const translations: Record<Language, Translations> = {
     'menu.institutions': 'Institutions',
     'menu.courses': 'Courses',
     'menu.students': 'Students',
+    'menu.questionGroups': 'Question Groups',
+    'menu.questions': 'Questions',
     
     // Header Menu Items
     'menu.myDashboard': 'My Dashboard',
@@ -513,6 +525,9 @@ const translations: Record<Language, Translations> = {
     'admin.entity.addExam': 'Yeni Sınav Ekle',
     'admin.entity.backToStudentsList': 'Öğrenciler Listesine Dön',
     'admin.entity.backToExamsList': 'Sınavlar Listesine Dön',
+    'admin.entity.backToQuestionGroupsList': 'Soru Grupları Listesine Dön',
+    'admin.entity.backToQuestionsList': 'Sorulara Dön',
+    'admin.entity.addQuestionGroup': 'Soru Grubu Ekle',
     
     // Exam Management
     'admin.exam.name': 'Sınav Adı',
@@ -567,6 +582,8 @@ const translations: Record<Language, Translations> = {
     'admin.exam.questionName': 'Soru Adı',
     'admin.exam.questionNamePlaceholder': 'Soru adını girin',
     'admin.exam.questionType': 'Soru Tipi',
+    'admin.exam.selectQuestionGroupToViewQuestions': 'Soru listesini görmek için bir soru grubu seçin.',
+    'admin.exam.standaloneQuestions': 'Bağımsız sorular (grubu yok)',
     'admin.exam.selectQuestionType': 'Soru Tipi Seçin',
     'admin.exam.maximumScore': 'Maksimum Puan',
     'admin.exam.questionText': 'Soru Metni',
@@ -609,7 +626,12 @@ const translations: Record<Language, Translations> = {
     'admin.exam.templateDataJson': 'Şablon verisini JSON olarak girin',
     'admin.exam.templateDataJsonHint': 'Şablon verisi için geçerli JSON girin',
     'admin.exam.editExam': 'Sınav Düzenle',
+    'admin.exam.courseSection': 'Kurs Bölümü',
+    'admin.exam.usagePart': 'Kullanım Bölümü',
+    'admin.exam.selectExam': 'Sınav Seçin',
     'admin.exam.editQuestionGroup': 'Soru Grubu Düzenle',
+    'admin.exam.questionGroupProperties': 'Soru grubu özellikleri',
+    'admin.exam.questionsInGroupDescription': 'Bu gruba ait soruları aşağıda yönetebilirsiniz.',
     'admin.exam.editQuestion': 'Soru Düzenle',
     'admin.exam.resultsReleaseType': 'Sonuç Yayınlama Tipi',
     'admin.exam.immediate': 'Anında',
@@ -760,6 +782,8 @@ const translations: Record<Language, Translations> = {
     'menu.institutions': 'Kurumlar',
     'menu.courses': 'Kurslar',
     'menu.students': 'Öğrenciler',
+    'menu.questionGroups': 'Soru Grupları',
+    'menu.questions': 'Sorular',
     
     // Header Menu Items
     'menu.myDashboard': 'Kontrol Panelim',

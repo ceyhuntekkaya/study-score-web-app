@@ -18,7 +18,8 @@ import SimpleHtmlEditor from "../ui/SimpleHtmlEditor";
 import QuestionTemplateForm from "./QuestionTemplateForm";
 
 interface QuestionFormProps {
-  questionGroupId: string;
+  /** Opsiyonel. Verilmezse standalone soru (gruba bağlı değil). */
+  questionGroupId?: string;
   questionId?: string;
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -44,10 +45,11 @@ export default function QuestionForm({
     }
   );
 
-  // Form state
-  const [formData, setFormData] = useState<QuestionCreateRequest>({
+  // Form state: questionText is stored in templateData on the API but we keep it in state for the form
+  type FormState = QuestionCreateRequest & { questionText: string };
+  const [formData, setFormData] = useState<FormState>({
     name: "",
-    questionGroupId: questionGroupId,
+    questionGroupId: questionGroupId ?? undefined,
     questionType: QuestionCreateRequestQuestionType.MULTIPLE_CHOICE,
     maximumScore: 1,
     subject: "",
@@ -79,7 +81,7 @@ export default function QuestionForm({
       
       setFormData({
         name: q.name || "",
-        questionGroupId: q.questionGroupId || questionGroupId,
+        questionGroupId: q.questionGroupId ?? questionGroupId,
         questionType: q.questionType || QuestionCreateRequestQuestionType.MULTIPLE_CHOICE,
         maximumScore: q.maximumScore || 1,
         subject: q.subject || "",
@@ -138,14 +140,23 @@ export default function QuestionForm({
     }
 
     try {
+      const { questionText, ...rest } = formData;
+      const payload: QuestionCreateRequest = {
+        ...rest,
+        ...(rest.questionGroupId ? { questionGroupId: rest.questionGroupId } : {}),
+        templateData:
+          typeof rest.templateData === "object" && rest.templateData !== null
+            ? { ...(rest.templateData as object), questionText }
+            : { questionText },
+      };
       if (isEditMode && questionId) {
         await updateQuestion.mutateAsync({
           questionId,
-          data: formData,
+          data: payload,
         });
       } else {
         await createQuestion.mutateAsync({
-          data: formData,
+          data: payload,
         });
       }
 

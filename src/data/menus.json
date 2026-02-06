@@ -251,6 +251,16 @@
               "href": "/admin/dashboard/exams"
             },
             {
+              "icon": "feather-layers",
+              "labelKey": "menu.questionGroups",
+              "href": "/admin/dashboard/question-groups"
+            },
+            {
+              "icon": "feather-help-circle",
+              "labelKey": "menu.questions",
+              "href": "/admin/dashboard/questions"
+            },
+            {
               "icon": "feather-users",
               "labelKey": "menu.students",
               "href": "/admin/dashboard/students"

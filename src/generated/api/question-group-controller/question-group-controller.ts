@@ -24,8 +24,10 @@ import type {
   CreateQuestionGroup200,
   DeleteQuestionGroup200,
   GetQuestionGroup200,
-  GetQuestionGroupsByExam200,
+  GetQuestionGroupsByExam1200,
   HardDeleteQuestionGroup200,
+  ListQuestionGroups200,
+  ListQuestionGroupsParams,
   QuestionGroupCreateRequest,
   ReorderQuestionGroup200,
   ReorderQuestionGroupParams,
@@ -354,6 +356,165 @@ export const useDeleteQuestionGroup = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export const listQuestionGroups = (
+  params?: ListQuestionGroupsParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<ListQuestionGroups200>(
+    { url: `/exams/question-groups`, method: "GET", params, signal },
+    options,
+  );
+};
+
+export const getListQuestionGroupsQueryKey = (
+  params?: ListQuestionGroupsParams,
+) => {
+  return [`/exams/question-groups`, ...(params ? [params] : [])] as const;
+};
+
+export const getListQuestionGroupsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listQuestionGroups>>,
+  TError = unknown,
+>(
+  params?: ListQuestionGroupsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listQuestionGroups>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getListQuestionGroupsQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listQuestionGroups>>
+  > = ({ signal }) => listQuestionGroups(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listQuestionGroups>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListQuestionGroupsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listQuestionGroups>>
+>;
+export type ListQuestionGroupsQueryError = unknown;
+
+export function useListQuestionGroups<
+  TData = Awaited<ReturnType<typeof listQuestionGroups>>,
+  TError = unknown,
+>(
+  params: undefined | ListQuestionGroupsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listQuestionGroups>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listQuestionGroups>>,
+          TError,
+          Awaited<ReturnType<typeof listQuestionGroups>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListQuestionGroups<
+  TData = Awaited<ReturnType<typeof listQuestionGroups>>,
+  TError = unknown,
+>(
+  params?: ListQuestionGroupsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listQuestionGroups>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listQuestionGroups>>,
+          TError,
+          Awaited<ReturnType<typeof listQuestionGroups>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListQuestionGroups<
+  TData = Awaited<ReturnType<typeof listQuestionGroups>>,
+  TError = unknown,
+>(
+  params?: ListQuestionGroupsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listQuestionGroups>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useListQuestionGroups<
+  TData = Awaited<ReturnType<typeof listQuestionGroups>>,
+  TError = unknown,
+>(
+  params?: ListQuestionGroupsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listQuestionGroups>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getListQuestionGroupsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 export const createQuestionGroup = (
   questionGroupCreateRequest: QuestionGroupCreateRequest,
   options?: SecondParameter<typeof customInstance>,
@@ -516,30 +677,30 @@ export const useReorderQuestionGroup = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
-export const getQuestionGroupsByExam = (
+export const getQuestionGroupsByExam1 = (
   examId: string,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
-  return customInstance<GetQuestionGroupsByExam200>(
+  return customInstance<GetQuestionGroupsByExam1200>(
     { url: `/exams/question-groups/exam/${examId}`, method: "GET", signal },
     options,
   );
 };
 
-export const getGetQuestionGroupsByExamQueryKey = (examId?: string) => {
+export const getGetQuestionGroupsByExam1QueryKey = (examId?: string) => {
   return [`/exams/question-groups/exam/${examId}`] as const;
 };
 
-export const getGetQuestionGroupsByExamQueryOptions = <
-  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+export const getGetQuestionGroupsByExam1QueryOptions = <
+  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
   TError = unknown,
 >(
   examId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+        Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
         TError,
         TData
       >
@@ -550,11 +711,11 @@ export const getGetQuestionGroupsByExamQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetQuestionGroupsByExamQueryKey(examId);
+    queryOptions?.queryKey ?? getGetQuestionGroupsByExam1QueryKey(examId);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getQuestionGroupsByExam>>
-  > = ({ signal }) => getQuestionGroupsByExam(examId, requestOptions, signal);
+    Awaited<ReturnType<typeof getQuestionGroupsByExam1>>
+  > = ({ signal }) => getQuestionGroupsByExam1(examId, requestOptions, signal);
 
   return {
     queryKey,
@@ -562,35 +723,35 @@ export const getGetQuestionGroupsByExamQueryOptions = <
     enabled: !!examId,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+    Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetQuestionGroupsByExamQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getQuestionGroupsByExam>>
+export type GetQuestionGroupsByExam1QueryResult = NonNullable<
+  Awaited<ReturnType<typeof getQuestionGroupsByExam1>>
 >;
-export type GetQuestionGroupsByExamQueryError = unknown;
+export type GetQuestionGroupsByExam1QueryError = unknown;
 
-export function useGetQuestionGroupsByExam<
-  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+export function useGetQuestionGroupsByExam1<
+  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
   TError = unknown,
 >(
   examId: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+        Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+          Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
           TError,
-          Awaited<ReturnType<typeof getQuestionGroupsByExam>>
+          Awaited<ReturnType<typeof getQuestionGroupsByExam1>>
         >,
         "initialData"
       >;
@@ -600,24 +761,24 @@ export function useGetQuestionGroupsByExam<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetQuestionGroupsByExam<
-  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+export function useGetQuestionGroupsByExam1<
+  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
   TError = unknown,
 >(
   examId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+        Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+          Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
           TError,
-          Awaited<ReturnType<typeof getQuestionGroupsByExam>>
+          Awaited<ReturnType<typeof getQuestionGroupsByExam1>>
         >,
         "initialData"
       >;
@@ -627,15 +788,15 @@ export function useGetQuestionGroupsByExam<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetQuestionGroupsByExam<
-  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+export function useGetQuestionGroupsByExam1<
+  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
   TError = unknown,
 >(
   examId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+        Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
         TError,
         TData
       >
@@ -647,15 +808,15 @@ export function useGetQuestionGroupsByExam<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetQuestionGroupsByExam<
-  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+export function useGetQuestionGroupsByExam1<
+  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
   TError = unknown,
 >(
   examId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+        Awaited<ReturnType<typeof getQuestionGroupsByExam1>>,
         TError,
         TData
       >
@@ -666,7 +827,7 @@ export function useGetQuestionGroupsByExam<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetQuestionGroupsByExamQueryOptions(examId, options);
+  const queryOptions = getGetQuestionGroupsByExam1QueryOptions(examId, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,

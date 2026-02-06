@@ -2,18 +2,14 @@
 
 import { useState, useRef } from 'react';
 
-interface Criterion {
-  name: string;
-  description: string;
-  maxScore: number;
-}
-
 interface ImageResponseTemplateData {
   prompt?: string;
   maxFileSize?: number;
-  allowedFormats?: string[];
-  gradingType: 'MANUAL';
-  criteria?: Criterion[];
+  /** Backend: comma-separated string e.g. "JPG, PNG, PDF" */
+  allowedFormats?: string | string[];
+  gradingType: 'MANUAL' | 'AI' | 'HYBRID';
+  /** Backend: criteria is string (evaluation criteria text) */
+  criteria?: string;
   allowMultipleImages?: boolean;
   maxImages?: number;
   requiredResolution?: string | null;
@@ -76,10 +72,15 @@ export default function ImageResponseQuestion({
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const rawFormats = templateData.allowedFormats;
+  const allowedFormats = Array.isArray(rawFormats)
+    ? rawFormats
+    : typeof rawFormats === "string"
+      ? rawFormats.split(",").map((s) => s.trim()).filter(Boolean)
+      : ['JPG', 'PNG', 'PDF'];
   const {
     prompt,
     maxFileSize = 5242880, // 5MB default
-    allowedFormats = ['JPG', 'PNG', 'PDF'],
     allowMultipleImages = false,
     maxImages = 1,
   } = templateData;
@@ -392,8 +393,8 @@ export default function ImageResponseQuestion({
         </div>
       )}
 
-      {/* Grading Criteria (if available) */}
-      {templateData.criteria && templateData.criteria.length > 0 && (
+      {/* Grading Criteria (backend: string) */}
+      {templateData.criteria && String(templateData.criteria).trim() && (
         <div className="grading-criteria mt--20" style={{
           padding: '15px',
           backgroundColor: '#fff9e6',
@@ -404,13 +405,9 @@ export default function ImageResponseQuestion({
             <i className="feather-award me-2"></i>
             Grading Criteria
           </h6>
-          <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', color: '#856404' }}>
-            {templateData.criteria.map((criterion, index) => (
-              <li key={index} style={{ marginBottom: '5px' }}>
-                <strong>{criterion.name}</strong> ({criterion.maxScore} points): {criterion.description}
-              </li>
-            ))}
-          </ul>
+          <p style={{ margin: 0, fontSize: '12px', color: '#856404', whiteSpace: 'pre-wrap' }}>
+            {String(templateData.criteria)}
+          </p>
         </div>
       )}
     </div>

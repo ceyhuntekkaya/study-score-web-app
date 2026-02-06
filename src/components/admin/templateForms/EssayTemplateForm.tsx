@@ -26,66 +26,20 @@ export default function EssayTemplateForm({
     onChange(newData);
   };
 
-  const rubric = localData.rubric || [];
-  const requiredTopics = localData.requiredTopics || [];
+  // Backend: rubrik and allowedFormats are strings; requiredTopics is string (optional)
+  const rubrik = typeof localData.rubrik === "string" ? localData.rubrik : (localData.rubric ? (Array.isArray(localData.rubric) ? "" : String(localData.rubric)) : "");
+  const allowedFormatsStr = typeof localData.allowedFormats === "string"
+    ? localData.allowedFormats
+    : Array.isArray(localData.allowedFormats)
+      ? (localData.allowedFormats as string[]).join(",")
+      : "HTML,MARKDOWN,PLAIN_TEXT";
+  const requiredTopicsStr = typeof localData.requiredTopics === "string"
+    ? localData.requiredTopics
+    : Array.isArray(localData.requiredTopics)
+      ? (localData.requiredTopics as string[]).join(", ")
+      : "";
 
-const addRubricItem = () => {
-  const newItem = {
-    name: "",
-    description: "",
-    maxScore: 0,
-    rubricLevel: "",
-  };
-  updateData({
-    ...localData,
-    prompt: localData.prompt || "",
-    minWords: localData.minWords ?? 100,
-    maxWords: localData.maxWords ?? 1000,
-    requiredTopics,
-    gradingType: localData.gradingType || "MANUAL",
-    rubric: [...rubric, newItem],
-    requireOutline: localData.requireOutline ?? false,
-    allowedFormats: localData.allowedFormats || ["HTML", "MARKDOWN", "PLAIN_TEXT"],
-    scoringConfig: localData.scoringConfig || {
-      strategy: "MANUAL",
-      allowPartialCredit: false,
-      penaltyPerWrong: 0.0,
-      roundScore: false,
-      decimalPlaces: 2,
-    },
-  });
-};
-
-const updateRubricItem = (index: number, field: string, value: any) => {
-  const updated = [...rubric];
-  updated[index] = { ...updated[index], [field]: value };
-  updateData({ ...localData, rubric: updated });
-};
-
-const removeRubricItem = (index: number) => {
-  const updated = rubric.filter((_: any, i: number) => i !== index);
-  updateData({ ...localData, rubric: updated });
-};
-
-const addRequiredTopic = () => {
-  updateData({
-    ...localData,
-    requiredTopics: [...requiredTopics, ""],
-  });
-};
-
-const updateRequiredTopic = (index: number, value: string) => {
-  const updated = [...requiredTopics];
-  updated[index] = value;
-  updateData({ ...localData, requiredTopics: updated });
-};
-
-const removeRequiredTopic = (index: number) => {
-  const updated = requiredTopics.filter((_: any, i: number) => i !== index);
-  updateData({ ...localData, requiredTopics: updated });
-};
-
-return (
+  return (
   <div className="rbt-card rbt-card-body" style={{ backgroundColor: '#f9fafb' }}>
     <div className="form-group mb--20">
       <Label htmlFor="prompt">{t("admin.exam.prompt") || "Prompt"}</Label>
@@ -151,124 +105,37 @@ return (
       </div>
     </div>
 
-    <div className="d-flex justify-content-between align-items-center mb--20">
-      <label className="mb--0">{t("admin.exam.requiredTopics") || "Required Topics"}</label>
-      <button
-        type="button"
-        className="rbt-btn btn-sm btn-border-gradient"
-        onClick={addRequiredTopic}
-      >
-        <i className="feather-plus me-1"></i>
-        {t("admin.exam.addTopic") || "Add Topic"}
-      </button>
+    <div className="form-group mb--20">
+      <Label htmlFor="requiredTopics">
+        {t("admin.exam.requiredTopics") || "Required Topics (optional, comma-separated)"}
+      </Label>
+      <Input
+        id="requiredTopics"
+        value={requiredTopicsStr}
+        onChange={(e) =>
+          updateData({ ...localData, requiredTopics: e.target.value })
+        }
+        placeholder="Topic 1, Topic 2"
+      />
     </div>
 
-    {requiredTopics.map((topic: string, index: number) => (
-      <div key={index} className="d-flex gap-2 mb--10">
-        <Input
-          value={topic}
-          onChange={(e) => updateRequiredTopic(index, e.target.value)}
-          placeholder={t("admin.exam.topic") || "Topic"}
-        />
-        <button
-          type="button"
-          className="rbt-btn btn-sm btn-border"
-          onClick={() => removeRequiredTopic(index)}
-        >
-          <i className="feather-x"></i>
-        </button>
-      </div>
-    ))}
-
-    <div className="d-flex justify-content-between align-items-center mt--20 mb--20">
-      <label className="mb--0">{t("admin.exam.rubric") || "Rubric"}</label>
-      <button
-        type="button"
-        className="rbt-btn btn-sm btn-border-gradient"
-        onClick={addRubricItem}
-      >
-        <i className="feather-plus me-1"></i>
-        {t("admin.exam.addRubricItem") || "Add Rubric Item"}
-      </button>
+    <div className="form-group mb--20">
+      <Label htmlFor="rubrik">
+        {t("admin.exam.rubric") || "Rubrik (evaluation criteria, text)"}
+      </Label>
+      <Textarea
+        id="rubrik"
+        value={rubrik}
+        onChange={(e) =>
+          updateData({ ...localData, rubrik: e.target.value })
+        }
+        rows={4}
+        className="form-control"
+        placeholder="İçerik 40%, Dil 30%, Organizasyon 30%"
+      />
     </div>
 
-    {rubric.map((item: any, index: number) => (
-      <div key={index} className="rbt-card rbt-card-body mb--10" style={{ backgroundColor: '#ffffff' }}>
-        <div className="row g-3">
-          <div className="col-md-4">
-            <div className="form-group">
-              <Label htmlFor={`rubric-name-${index}`}>
-                {t("admin.exam.name") || "Name"}
-              </Label>
-              <Input
-                id={`rubric-name-${index}`}
-                value={item.name || ""}
-                onChange={(e) => updateRubricItem(index, "name", e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="form-group">
-              <Label htmlFor={`rubric-maxScore-${index}`}>
-                {t("admin.exam.maxScore") || "Max Score"}
-              </Label>
-              <Input
-                id={`rubric-maxScore-${index}`}
-                type="number"
-                min="0"
-                value={item.maxScore || 0}
-                onChange={(e) =>
-                  updateRubricItem(index, "maxScore", parseFloat(e.target.value))
-                }
-              />
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="form-group">
-              <Label htmlFor={`rubric-level-${index}`}>
-                {t("admin.exam.rubricLevel") || "Level"}
-              </Label>
-              <Select
-                id={`rubric-level-${index}`}
-                value={item.rubricLevel || ""}
-                onChange={(e) => updateRubricItem(index, "rubricLevel", e.target.value)}
-              >
-                <option value="">None</option>
-                <option value="BASIC">BASIC</option>
-                <option value="INTERMEDIATE">INTERMEDIATE</option>
-                <option value="ADVANCED">ADVANCED</option>
-              </Select>
-            </div>
-          </div>
-          <div className="col-12">
-            <div className="form-group">
-              <Label htmlFor={`rubric-desc-${index}`}>
-                {t("admin.exam.description") || "Description"}
-              </Label>
-              <Textarea
-                id={`rubric-desc-${index}`}
-                value={item.description || ""}
-                onChange={(e) => updateRubricItem(index, "description", e.target.value)}
-                rows={2}
-                className="form-control"
-              />
-            </div>
-          </div>
-          <div className="col-12">
-            <button
-              type="button"
-              className="rbt-btn btn-sm btn-border"
-              onClick={() => removeRubricItem(index)}
-            >
-              <i className="feather-trash-2 me-1"></i>
-              {t("common.delete")}
-            </button>
-          </div>
-        </div>
-      </div>
-    ))}
-
-    <div className="row g-3 mt--20">
+    <div className="row g-3 mb--20">
       <div className="col-md-6">
         <div className="form-group">
           <Checkbox
@@ -284,21 +151,16 @@ return (
       <div className="col-md-6">
         <div className="form-group">
           <Label htmlFor="allowedFormats">
-            {t("admin.exam.allowedFormats") || "Allowed Formats"}
+            {t("admin.exam.allowedFormats") || "Allowed Formats (comma-separated)"}
           </Label>
-          <Select
+          <Input
             id="allowedFormats"
-            multiple
-            value={localData.allowedFormats || ["HTML", "MARKDOWN", "PLAIN_TEXT"]}
-            onChange={(e) => {
-              const selected = Array.from(e.target.selectedOptions, (option) => option.value);
-              updateData({ ...localData, allowedFormats: selected });
-            }}
-          >
-            <option value="HTML">HTML</option>
-            <option value="MARKDOWN">MARKDOWN</option>
-            <option value="PLAIN_TEXT">PLAIN_TEXT</option>
-          </Select>
+            value={allowedFormatsStr}
+            onChange={(e) =>
+              updateData({ ...localData, allowedFormats: e.target.value })
+            }
+            placeholder="HTML,MARKDOWN,PLAIN_TEXT"
+          />
         </div>
       </div>
     </div>

@@ -47,3 +47,30 @@ docker buildx build \
   --platform linux/amd64,linux/arm64 \
   -t ctekkaya/study-score-app:4.0 \
   --push .
+
+
+du -sh *
+
+
+
+
+
+
+
+
+tar -czvf project.tar.gz project
+scp root@185.224.1.26:/root/project.tar.gz .
+
+
+
+tar -czvf qwen-chat-server.tar.gz qwen-chat-server
+scp root@185.224.1.26:/root/qwen-chat-server.tar.gz .
+
+
+
+tar -czvf server-project.tar.gz server-project
+scp root@185.224.1.26:/root/server-project.tar.gz .
+
+
+tar -czvf studyscore-ai.tar.gz studyscore-ai
+scp root@185.224.1.26:/root/studyscore-ai.tar.gz .

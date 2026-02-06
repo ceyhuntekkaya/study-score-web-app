@@ -21,9 +21,12 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AddQuestionGroupsToExam200,
   CreateExam200,
   DeleteExam200,
+  ExamAddQuestionGroupsRequest,
   ExamCreateRequest,
+  ExamRemoveQuestionGroupsRequest,
   ExamUpdateRequest,
   GetAllActiveExams200,
   GetExam200,
@@ -31,7 +34,10 @@ import type {
   GetExamWithUserData200,
   GetExamWithUserDataParams,
   GetExamsByCategory200,
+  GetQuestionGroupsByExam200,
   HardDeleteExam200,
+  RemoveQuestionGroupFromExam200,
+  RemoveQuestionGroupsFromExam200,
   StartExam200,
   StartExamParams,
   UpdateExam200,
@@ -643,6 +649,340 @@ export const useStartExam = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export const getQuestionGroupsByExam = (
+  examId: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<GetQuestionGroupsByExam200>(
+    { url: `/exam/${examId}/question-groups`, method: "GET", signal },
+    options,
+  );
+};
+
+export const getGetQuestionGroupsByExamQueryKey = (examId?: string) => {
+  return [`/exam/${examId}/question-groups`] as const;
+};
+
+export const getGetQuestionGroupsByExamQueryOptions = <
+  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+  TError = unknown,
+>(
+  examId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetQuestionGroupsByExamQueryKey(examId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getQuestionGroupsByExam>>
+  > = ({ signal }) => getQuestionGroupsByExam(examId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!examId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetQuestionGroupsByExamQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getQuestionGroupsByExam>>
+>;
+export type GetQuestionGroupsByExamQueryError = unknown;
+
+export function useGetQuestionGroupsByExam<
+  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+  TError = unknown,
+>(
+  examId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+          TError,
+          Awaited<ReturnType<typeof getQuestionGroupsByExam>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetQuestionGroupsByExam<
+  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+  TError = unknown,
+>(
+  examId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+          TError,
+          Awaited<ReturnType<typeof getQuestionGroupsByExam>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetQuestionGroupsByExam<
+  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+  TError = unknown,
+>(
+  examId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetQuestionGroupsByExam<
+  TData = Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+  TError = unknown,
+>(
+  examId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getQuestionGroupsByExam>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetQuestionGroupsByExamQueryOptions(examId, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const addQuestionGroupsToExam = (
+  examId: string,
+  examAddQuestionGroupsRequest: ExamAddQuestionGroupsRequest,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<AddQuestionGroupsToExam200>(
+    {
+      url: `/exam/${examId}/question-groups`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: examAddQuestionGroupsRequest,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getAddQuestionGroupsToExamMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof addQuestionGroupsToExam>>,
+    TError,
+    { examId: string; data: ExamAddQuestionGroupsRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof addQuestionGroupsToExam>>,
+  TError,
+  { examId: string; data: ExamAddQuestionGroupsRequest },
+  TContext
+> => {
+  const mutationKey = ["addQuestionGroupsToExam"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof addQuestionGroupsToExam>>,
+    { examId: string; data: ExamAddQuestionGroupsRequest }
+  > = (props) => {
+    const { examId, data } = props ?? {};
+
+    return addQuestionGroupsToExam(examId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AddQuestionGroupsToExamMutationResult = NonNullable<
+  Awaited<ReturnType<typeof addQuestionGroupsToExam>>
+>;
+export type AddQuestionGroupsToExamMutationBody = ExamAddQuestionGroupsRequest;
+export type AddQuestionGroupsToExamMutationError = unknown;
+
+export const useAddQuestionGroupsToExam = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof addQuestionGroupsToExam>>,
+      TError,
+      { examId: string; data: ExamAddQuestionGroupsRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof addQuestionGroupsToExam>>,
+  TError,
+  { examId: string; data: ExamAddQuestionGroupsRequest },
+  TContext
+> => {
+  const mutationOptions = getAddQuestionGroupsToExamMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export const removeQuestionGroupsFromExam = (
+  examId: string,
+  examRemoveQuestionGroupsRequest: ExamRemoveQuestionGroupsRequest,
+  options?: SecondParameter<typeof customInstance>,
+) => {
+  return customInstance<RemoveQuestionGroupsFromExam200>(
+    {
+      url: `/exam/${examId}/question-groups`,
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      data: examRemoveQuestionGroupsRequest,
+    },
+    options,
+  );
+};
+
+export const getRemoveQuestionGroupsFromExamMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof removeQuestionGroupsFromExam>>,
+    TError,
+    { examId: string; data: ExamRemoveQuestionGroupsRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof removeQuestionGroupsFromExam>>,
+  TError,
+  { examId: string; data: ExamRemoveQuestionGroupsRequest },
+  TContext
+> => {
+  const mutationKey = ["removeQuestionGroupsFromExam"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof removeQuestionGroupsFromExam>>,
+    { examId: string; data: ExamRemoveQuestionGroupsRequest }
+  > = (props) => {
+    const { examId, data } = props ?? {};
+
+    return removeQuestionGroupsFromExam(examId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RemoveQuestionGroupsFromExamMutationResult = NonNullable<
+  Awaited<ReturnType<typeof removeQuestionGroupsFromExam>>
+>;
+export type RemoveQuestionGroupsFromExamMutationBody =
+  ExamRemoveQuestionGroupsRequest;
+export type RemoveQuestionGroupsFromExamMutationError = unknown;
+
+export const useRemoveQuestionGroupsFromExam = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof removeQuestionGroupsFromExam>>,
+      TError,
+      { examId: string; data: ExamRemoveQuestionGroupsRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof removeQuestionGroupsFromExam>>,
+  TError,
+  { examId: string; data: ExamRemoveQuestionGroupsRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getRemoveQuestionGroupsFromExamMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
 export const getExamWithUserData = (
   examId: string,
   params?: GetExamWithUserDataParams,
@@ -1125,6 +1465,89 @@ export function useGetExamsByCategory<
   return query;
 }
 
+export const removeQuestionGroupFromExam = (
+  examId: string,
+  questionGroupId: string,
+  options?: SecondParameter<typeof customInstance>,
+) => {
+  return customInstance<RemoveQuestionGroupFromExam200>(
+    {
+      url: `/exam/${examId}/question-groups/${questionGroupId}`,
+      method: "DELETE",
+    },
+    options,
+  );
+};
+
+export const getRemoveQuestionGroupFromExamMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof removeQuestionGroupFromExam>>,
+    TError,
+    { examId: string; questionGroupId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof removeQuestionGroupFromExam>>,
+  TError,
+  { examId: string; questionGroupId: string },
+  TContext
+> => {
+  const mutationKey = ["removeQuestionGroupFromExam"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof removeQuestionGroupFromExam>>,
+    { examId: string; questionGroupId: string }
+  > = (props) => {
+    const { examId, questionGroupId } = props ?? {};
+
+    return removeQuestionGroupFromExam(examId, questionGroupId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RemoveQuestionGroupFromExamMutationResult = NonNullable<
+  Awaited<ReturnType<typeof removeQuestionGroupFromExam>>
+>;
+
+export type RemoveQuestionGroupFromExamMutationError = unknown;
+
+export const useRemoveQuestionGroupFromExam = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof removeQuestionGroupFromExam>>,
+      TError,
+      { examId: string; questionGroupId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof removeQuestionGroupFromExam>>,
+  TError,
+  { examId: string; questionGroupId: string },
+  TContext
+> => {
+  const mutationOptions =
+    getRemoveQuestionGroupFromExamMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
 export const hardDeleteExam = (
   examId: string,
   options?: SecondParameter<typeof customInstance>,

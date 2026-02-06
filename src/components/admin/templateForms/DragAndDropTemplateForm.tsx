@@ -30,13 +30,27 @@ export default function DragAndDropTemplateForm({
 const draggableItems = options.draggableItems || [];
 const dropZones = options.dropZones || [];
 
+  // Backend: correctZones is DropZone[] (array of objects), not string[]
+  const normalizeCorrectZones = (zones: any[], dropZonesList: any[]) => {
+    if (!Array.isArray(zones)) return [];
+    return zones.map((z) => {
+      if (typeof z === "object" && z !== null && "id" in z)
+        return { id: z.id, label: z.label ?? "", maxItems: z.maxItems ?? 1, feedback: z.feedback ?? null, position: z.position ?? null };
+      const id = String(z);
+      const found = dropZonesList.find((d) => d.id === id);
+      return found
+        ? { id: found.id, label: found.label ?? "", maxItems: found.maxItems ?? 1, feedback: found.feedback ?? null, position: found.position ?? null }
+        : { id, label: "", maxItems: 1, feedback: null, position: null };
+    });
+  };
+
 const addDraggableItem = () => {
   const newItem = {
     id: `item_${Date.now()}`,
     text: "",
-    mediaUrl: "",
-    mediaType: "",
-    correctZones: [],
+    mediaUrl: null,
+    mediaType: null,
+    correctZones: [] as Array<{ id: string; label: string; maxItems: number; feedback: string | null; position: string | null }>,
   };
   updateData({
     ...localData,
@@ -85,7 +99,8 @@ const addDropZone = () => {
     id: `zone_${Date.now()}`,
     label: "",
     maxItems: 1,
-    feedback: "",
+    feedback: null as string | null,
+    position: null as string | null,
   };
   updateData({
     ...localData,
@@ -220,18 +235,39 @@ return (
                 </div>
                 <div className="col-12">
                   <div className="form-group">
-                    <Label htmlFor={`drag-zones-${index}`}>
-                      {t("admin.exam.correctZones") || "Correct Zones (comma-separated zone IDs)"}
-                    </Label>
-                    <Input
-                      id={`drag-zones-${index}`}
-                      value={Array.isArray(item.correctZones) ? item.correctZones.join(", ") : item.correctZones || ""}
-                      onChange={(e) => {
-                        const zones = e.target.value.split(",").map((z: string) => z.trim()).filter((z: string) => z);
-                        updateDraggableItem(index, "correctZones", zones);
-                      }}
-                      placeholder="zone_1, zone_2"
-                    />
+                    <Label>{t("admin.exam.correctZones") || "Correct drop zones for this item"}</Label>
+                    <div className="d-flex flex-wrap gap-2 mt--10">
+                      {dropZones.map((zone: any, zIndex: number) => {
+                        const correctZonesList = Array.isArray(item.correctZones)
+                          ? item.correctZones.some((cz: any) => (typeof cz === "object" ? cz.id : cz) === zone.id)
+                          : false;
+                        const isChecked = !!correctZonesList;
+                        const toggleZone = () => {
+                          const current = Array.isArray(item.correctZones)
+                            ? normalizeCorrectZones(item.correctZones, dropZones)
+                            : [];
+                          const zoneObj = { id: zone.id, label: zone.label ?? "", maxItems: zone.maxItems ?? 1, feedback: zone.feedback ?? null, position: zone.position ?? null };
+                          if (current.some((c) => c.id === zone.id)) {
+                            updateDraggableItem(index, "correctZones", current.filter((c) => c.id !== zone.id));
+                          } else {
+                            updateDraggableItem(index, "correctZones", [...current, zoneObj]);
+                          }
+                        };
+                        return (
+                          <label key={zone.id || zIndex} className="d-flex align-items-center gap-1 me-2">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={toggleZone}
+                            />
+                            <span>{zone.label || zone.id || `Zone ${zIndex + 1}`}</span>
+                          </label>
+                        );
+                      })}
+                      {dropZones.length === 0 && (
+                        <span className="text-muted">{t("admin.exam.addZoneFirst") || "Add drop zones below first."}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

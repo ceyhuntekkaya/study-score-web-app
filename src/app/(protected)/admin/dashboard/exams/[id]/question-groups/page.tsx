@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslation } from '@/i18n';
-import { useGetQuestionGroupsByExam } from '@/generated/api/question-group-controller/question-group-controller';
+import { useGetQuestionGroupsByExam1 } from '@/generated/api/question-group-controller/question-group-controller';
 import { useGetQuestionsByGroup } from '@/generated/api/question-controller/question-controller';
 import DataTable, { Column } from '@/components/admin/DataTable';
 import QuestionGroupForm from '@/components/admin/QuestionGroupForm';
@@ -41,7 +41,7 @@ export default function QuestionGroupsPage() {
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
-  const { data: questionGroups, isLoading, refetch } = useGetQuestionGroupsByExam(
+  const { data: questionGroups, isLoading, refetch } = useGetQuestionGroupsByExam1(
     examId,
     {
       query: {
@@ -186,9 +186,9 @@ export default function QuestionGroupsPage() {
         {showGroupForm && (
           <div className="rbt-shadow-box mb--30">
             <QuestionGroupForm
-              examId={examId}
-              questionGroupId={editingGroupId || undefined}
-              onSuccess={handleFormSuccess}
+              groupId={editingGroupId || undefined}
+              initialData={examId ? { examId } : undefined}
+              onSuccess={() => handleFormSuccess()}
               onCancel={handleFormCancel}
             />
           </div>

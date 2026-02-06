@@ -26,46 +26,14 @@ export default function ImageResponseTemplateForm({
     onChange(newData);
   };
 
-  const criteria = localData.criteria || [];
+  // Backend: criteria is string (evaluation criteria text), not array
+  const criteriaStr = typeof localData.criteria === "string"
+    ? localData.criteria
+    : Array.isArray(localData.criteria)
+      ? (localData.criteria as any[]).map((c) => (typeof c === "object" && c?.description != null ? c.description : String(c))).join("\n")
+      : "";
 
-const addCriterion = () => {
-  const newCriterion = {
-    name: "",
-    description: "",
-    maxScore: 0,
-  };
-  updateData({
-    ...localData,
-    prompt: localData.prompt || "",
-    maxFileSize: localData.maxFileSize ?? 5242880,
-    allowedFormats: localData.allowedFormats || "",
-    gradingType: localData.gradingType || "MANUAL",
-    criteria: [...criteria, newCriterion],
-    allowMultipleImages: localData.allowMultipleImages ?? false,
-    maxImages: localData.maxImages ?? 1,
-    requiredResolution: localData.requiredResolution || "",
-    scoringConfig: localData.scoringConfig || {
-      strategy: "MANUAL",
-      allowPartialCredit: false,
-      penaltyPerWrong: 0.0,
-      roundScore: false,
-      decimalPlaces: 2,
-    },
-  });
-};
-
-const updateCriterion = (index: number, field: string, value: any) => {
-  const updated = [...criteria];
-  updated[index] = { ...updated[index], [field]: value };
-  updateData({ ...localData, criteria: updated });
-};
-
-const removeCriterion = (index: number) => {
-  const updated = criteria.filter((_: any, i: number) => i !== index);
-  updateData({ ...localData, criteria: updated });
-};
-
-return (
+  return (
   <div className="rbt-card rbt-card-body" style={{ backgroundColor: '#f9fafb' }}>
     <div className="form-group mb--20">
       <Label htmlFor="prompt">
@@ -177,74 +145,21 @@ return (
       </div>
     </div>
 
-    <div className="d-flex justify-content-between align-items-center mb--20">
-      <label className="mb--0">{t("admin.exam.criteria") || "Grading Criteria"}</label>
-      <button
-        type="button"
-        className="rbt-btn btn-sm btn-border-gradient"
-        onClick={addCriterion}
-      >
-        <i className="feather-plus me-1"></i>
-        {t("admin.exam.addCriterion") || "Add Criterion"}
-      </button>
+    <div className="form-group mb--20">
+      <Label htmlFor="criteria">
+        {t("admin.exam.criteria") || "Grading Criteria (text)"}
+      </Label>
+      <Textarea
+        id="criteria"
+        value={criteriaStr}
+        onChange={(e) =>
+          updateData({ ...localData, criteria: e.target.value })
+        }
+        rows={4}
+        className="form-control"
+        placeholder="Yaratıcılık, Netlik, Konuyla uyum (serbest metin)"
+      />
     </div>
-
-    {criteria.map((item: any, index: number) => (
-      <div key={index} className="rbt-card rbt-card-body mb--10" style={{ backgroundColor: '#ffffff' }}>
-        <div className="row g-3">
-          <div className="col-md-4">
-            <div className="form-group">
-              <Label htmlFor={`criterion-name-${index}`}>
-                {t("admin.exam.name") || "Name"}
-              </Label>
-              <Input
-                id={`criterion-name-${index}`}
-                value={item.name || ""}
-                onChange={(e) => updateCriterion(index, "name", e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="form-group">
-              <Label htmlFor={`criterion-maxScore-${index}`}>
-                {t("admin.exam.maxScore") || "Max Score"}
-              </Label>
-              <Input
-                id={`criterion-maxScore-${index}`}
-                type="number"
-                min="0"
-                value={item.maxScore || 0}
-                onChange={(e) =>
-                  updateCriterion(index, "maxScore", parseFloat(e.target.value))
-                }
-              />
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="form-group">
-              <Label htmlFor={`criterion-desc-${index}`}>
-                {t("admin.exam.description") || "Description"}
-              </Label>
-              <Input
-                id={`criterion-desc-${index}`}
-                value={item.description || ""}
-                onChange={(e) => updateCriterion(index, "description", e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="col-12">
-            <button
-              type="button"
-              className="rbt-btn btn-sm btn-border"
-              onClick={() => removeCriterion(index)}
-            >
-              <i className="feather-trash-2 me-1"></i>
-              {t("common.delete")}
-            </button>
-          </div>
-        </div>
-      </div>
-    ))}
 
     <ScoringConfigForm
       scoringConfig={localData.scoringConfig}

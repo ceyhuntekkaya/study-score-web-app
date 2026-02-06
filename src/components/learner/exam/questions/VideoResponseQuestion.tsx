@@ -2,18 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-interface Criterion {
-  name: string;
-  description: string;
-  maxScore: number;
-}
-
 interface VideoResponseTemplateData {
   prompt?: string;
   maxRecordingDuration?: number;
   minRecordingDuration?: number;
-  gradingType: 'MANUAL';
-  criteria?: Criterion[];
+  gradingType: 'MANUAL' | 'AI' | 'HYBRID';
+  /** Backend: criteria is string (evaluation criteria text) */
+  criteria?: string;
   allowRetake?: boolean;
   maxRetakes?: number;
   requiredQuality?: string;
@@ -583,8 +578,8 @@ export default function VideoResponseQuestion({
         )}
       </div>
 
-      {/* Grading Criteria */}
-      {templateData.criteria && templateData.criteria.length > 0 && (
+      {/* Grading Criteria (backend: string) */}
+      {templateData.criteria && String(templateData.criteria).trim() && (
         <div className="grading-criteria mt--20" style={{
           padding: '15px',
           backgroundColor: '#fff9e6',
@@ -595,13 +590,9 @@ export default function VideoResponseQuestion({
             <i className="feather-award me-2"></i>
             Grading Criteria
           </h6>
-          <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', color: '#856404' }}>
-            {templateData.criteria.map((criterion, index) => (
-              <li key={index} style={{ marginBottom: '5px' }}>
-                <strong>{criterion.name}</strong> ({criterion.maxScore} points): {criterion.description}
-              </li>
-            ))}
-          </ul>
+          <p style={{ margin: 0, fontSize: '12px', color: '#856404', whiteSpace: 'pre-wrap' }}>
+            {String(templateData.criteria)}
+          </p>
         </div>
       )}
     </div>

@@ -26,9 +26,8 @@ import type {
   DeleteQuestion200,
   GetQuestion200,
   GetQuestionsByGroup200,
+  GetStandaloneQuestions200,
   HardDeleteQuestion200,
-  LockAllQuestionsInGroup200,
-  LockQuestionTemplate200,
   QuestionCreateRequest,
   ReorderQuestion200,
   ReorderQuestionParams,
@@ -418,165 +417,6 @@ export const useCreateQuestion = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
-export const lockQuestionTemplate = (
-  questionId: string,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal,
-) => {
-  return customInstance<LockQuestionTemplate200>(
-    { url: `/exams/questions/${questionId}/lock`, method: "POST", signal },
-    options,
-  );
-};
-
-export const getLockQuestionTemplateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof lockQuestionTemplate>>,
-    TError,
-    { questionId: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof lockQuestionTemplate>>,
-  TError,
-  { questionId: string },
-  TContext
-> => {
-  const mutationKey = ["lockQuestionTemplate"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof lockQuestionTemplate>>,
-    { questionId: string }
-  > = (props) => {
-    const { questionId } = props ?? {};
-
-    return lockQuestionTemplate(questionId, requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type LockQuestionTemplateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof lockQuestionTemplate>>
->;
-
-export type LockQuestionTemplateMutationError = unknown;
-
-export const useLockQuestionTemplate = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof lockQuestionTemplate>>,
-      TError,
-      { questionId: string },
-      TContext
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof lockQuestionTemplate>>,
-  TError,
-  { questionId: string },
-  TContext
-> => {
-  const mutationOptions = getLockQuestionTemplateMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-export const lockAllQuestionsInGroup = (
-  groupId: string,
-  options?: SecondParameter<typeof customInstance>,
-  signal?: AbortSignal,
-) => {
-  return customInstance<LockAllQuestionsInGroup200>(
-    {
-      url: `/exams/questions/group/${groupId}/lock-all`,
-      method: "POST",
-      signal,
-    },
-    options,
-  );
-};
-
-export const getLockAllQuestionsInGroupMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof lockAllQuestionsInGroup>>,
-    TError,
-    { groupId: string },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof lockAllQuestionsInGroup>>,
-  TError,
-  { groupId: string },
-  TContext
-> => {
-  const mutationKey = ["lockAllQuestionsInGroup"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof lockAllQuestionsInGroup>>,
-    { groupId: string }
-  > = (props) => {
-    const { groupId } = props ?? {};
-
-    return lockAllQuestionsInGroup(groupId, requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type LockAllQuestionsInGroupMutationResult = NonNullable<
-  Awaited<ReturnType<typeof lockAllQuestionsInGroup>>
->;
-
-export type LockAllQuestionsInGroupMutationError = unknown;
-
-export const useLockAllQuestionsInGroup = <
-  TError = unknown,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof lockAllQuestionsInGroup>>,
-      TError,
-      { groupId: string },
-      TContext
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof lockAllQuestionsInGroup>>,
-  TError,
-  { groupId: string },
-  TContext
-> => {
-  const mutationOptions = getLockAllQuestionsInGroupMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
 export const reorderQuestion = (
   questionId: string,
   params: ReorderQuestionParams,
@@ -653,6 +493,155 @@ export const useReorderQuestion = <TError = unknown, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+export const getStandaloneQuestions = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<GetStandaloneQuestions200>(
+    { url: `/exams/questions/standalone`, method: "GET", signal },
+    options,
+  );
+};
+
+export const getGetStandaloneQuestionsQueryKey = () => {
+  return [`/exams/questions/standalone`] as const;
+};
+
+export const getGetStandaloneQuestionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getStandaloneQuestions>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof getStandaloneQuestions>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetStandaloneQuestionsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getStandaloneQuestions>>
+  > = ({ signal }) => getStandaloneQuestions(requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getStandaloneQuestions>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetStandaloneQuestionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getStandaloneQuestions>>
+>;
+export type GetStandaloneQuestionsQueryError = unknown;
+
+export function useGetStandaloneQuestions<
+  TData = Awaited<ReturnType<typeof getStandaloneQuestions>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getStandaloneQuestions>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getStandaloneQuestions>>,
+          TError,
+          Awaited<ReturnType<typeof getStandaloneQuestions>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetStandaloneQuestions<
+  TData = Awaited<ReturnType<typeof getStandaloneQuestions>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getStandaloneQuestions>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getStandaloneQuestions>>,
+          TError,
+          Awaited<ReturnType<typeof getStandaloneQuestions>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetStandaloneQuestions<
+  TData = Awaited<ReturnType<typeof getStandaloneQuestions>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getStandaloneQuestions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetStandaloneQuestions<
+  TData = Awaited<ReturnType<typeof getStandaloneQuestions>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getStandaloneQuestions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetStandaloneQuestionsQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 export const getQuestionsByGroup = (
   groupId: string,
   options?: SecondParameter<typeof customInstance>,

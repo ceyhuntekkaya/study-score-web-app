@@ -418,13 +418,25 @@ export const QuestionCreateRequestQuestionType = {
   IMAGE_RESPONSE: "IMAGE_RESPONSE",
 } as const;
 
+export type QuestionCreateRequestCategory =
+  (typeof QuestionCreateRequestCategory)[keyof typeof QuestionCreateRequestCategory];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionCreateRequestCategory = {
+  IELTS: "IELTS",
+  TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
+} as const;
+
 export interface QuestionCreateRequest {
   /**
    * @minLength 3
    * @maxLength 255
    */
   name: string;
-  questionGroupId: string;
+  questionGroupId?: string;
   questionType: QuestionCreateRequestQuestionType;
   /**
    * @minimum 0.1
@@ -438,12 +450,40 @@ export interface QuestionCreateRequest {
   subject?: string;
   /** @pattern ^(EASY|MEDIUM|HARD)$ */
   difficulty?: string;
+  category?: QuestionCreateRequestCategory;
   /**
-   * @minLength 10
-   * @maxLength 10000
+   * @minLength 0
+   * @maxLength 255
    */
-  questionText: string;
+  courseSection?: string;
+  curriculumContentIds?: string[];
+  headers?: QuestionHeaderRequest[];
   templateData: unknown;
+}
+
+export type QuestionHeaderRequestMediaType =
+  (typeof QuestionHeaderRequestMediaType)[keyof typeof QuestionHeaderRequestMediaType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionHeaderRequestMediaType = {
+  IMAGE: "IMAGE",
+  VIDEO: "VIDEO",
+  AUDIO: "AUDIO",
+  DOCUMENT: "DOCUMENT",
+  PDF: "PDF",
+  TEXT: "TEXT",
+  LINK: "LINK",
+  OTHER: "OTHER",
+} as const;
+
+export interface QuestionHeaderRequest {
+  orderNumber: number;
+  mediaType?: QuestionHeaderRequestMediaType;
+  /**
+   * @minLength 0
+   * @maxLength 50000
+   */
+  content?: string;
 }
 
 export type HeaderRequestMediaType =
@@ -470,14 +510,39 @@ export interface HeaderRequest {
   content?: string;
 }
 
+export type QuestionGroupCreateRequestCategory =
+  (typeof QuestionGroupCreateRequestCategory)[keyof typeof QuestionGroupCreateRequestCategory];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionGroupCreateRequestCategory = {
+  IELTS: "IELTS",
+  TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
+} as const;
+
 export interface QuestionGroupCreateRequest {
   /**
    * @minLength 1
    * @pattern ^[A-Z0-9_-]+$
    */
   code: string;
-  examId: string;
+  examId?: string;
   maximumScore?: number;
+  category?: QuestionGroupCreateRequestCategory;
+  difficultyLevel?: number;
+  /**
+   * @minLength 0
+   * @maxLength 255
+   */
+  courseSection?: string;
+  /**
+   * @minLength 0
+   * @maxLength 255
+   */
+  usagePart?: string;
+  curriculumContentIds?: string[];
   headers?: HeaderRequest[];
 }
 
@@ -1135,6 +1200,11 @@ export interface ExamCreateRequest {
   requireProctoring?: boolean;
 }
 
+export interface ExamAddQuestionGroupsRequest {
+  questionGroupId?: string;
+  questionGroupIds?: string[];
+}
+
 export type CurriculumFilterDtoCategory =
   (typeof CurriculumFilterDtoCategory)[keyof typeof CurriculumFilterDtoCategory];
 
@@ -1389,8 +1459,8 @@ export interface AuthenticationRequest {
 }
 
 export interface PageCurriculumDto {
-  totalElements?: number;
   totalPages?: number;
+  totalElements?: number;
   first?: boolean;
   last?: boolean;
   size?: number;
@@ -1415,6 +1485,11 @@ export interface SortObject {
   empty?: boolean;
   sorted?: boolean;
   unsorted?: boolean;
+}
+
+export interface ExamRemoveQuestionGroupsRequest {
+  /** @minItems 1 */
+  questionGroupIds: string[];
 }
 
 export type GetQuestion200 = { [key: string]: unknown };
@@ -1469,9 +1544,29 @@ export type UpdateMaterialProgress200 = { [key: string]: unknown };
 
 export type CreateQuestion200 = { [key: string]: unknown };
 
-export type LockQuestionTemplate200 = { [key: string]: unknown };
+export type ListQuestionGroupsParams = {
+  page?: number;
+  size?: number;
+  category?: ListQuestionGroupsCategory;
+  code?: string;
+  courseSection?: string;
+  usagePart?: string;
+  difficultyLevel?: number;
+};
 
-export type LockAllQuestionsInGroup200 = { [key: string]: unknown };
+export type ListQuestionGroupsCategory =
+  (typeof ListQuestionGroupsCategory)[keyof typeof ListQuestionGroupsCategory];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ListQuestionGroupsCategory = {
+  IELTS: "IELTS",
+  TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
+} as const;
+
+export type ListQuestionGroups200 = { [key: string]: unknown };
 
 export type CreateQuestionGroup200 = { [key: string]: unknown };
 
@@ -1484,6 +1579,12 @@ export type StartExamParams = {
 };
 
 export type StartExam200 = { [key: string]: unknown };
+
+export type GetQuestionGroupsByExam200 = { [key: string]: unknown };
+
+export type AddQuestionGroupsToExam200 = { [key: string]: unknown };
+
+export type RemoveQuestionGroupsFromExam200 = { [key: string]: unknown };
 
 export type CopyFileParams = {
   /**
@@ -1557,6 +1658,7 @@ export type ReorderQuestionParams = {
 export type ReorderQuestion200 = { [key: string]: unknown };
 
 export type ReorderQuestionGroupParams = {
+  examId: string;
   orderNumber: number;
 };
 
@@ -1566,11 +1668,13 @@ export type GetCourseProgress200 = { [key: string]: unknown };
 
 export type GetDashboard200 = { [key: string]: unknown };
 
+export type GetStandaloneQuestions200 = { [key: string]: unknown };
+
 export type GetQuestionsByGroup200 = { [key: string]: unknown };
 
 export type CountQuestionsInGroup200 = { [key: string]: unknown };
 
-export type GetQuestionGroupsByExam200 = { [key: string]: unknown };
+export type GetQuestionGroupsByExam1200 = { [key: string]: unknown };
 
 export type GetExamWithUserDataParams = {
   userId?: string;
@@ -1783,5 +1887,7 @@ export const GetContentsByCurriculumAndLevelLevel = {
 export type HardDeleteQuestion200 = { [key: string]: unknown };
 
 export type HardDeleteQuestionGroup200 = { [key: string]: unknown };
+
+export type RemoveQuestionGroupFromExam200 = { [key: string]: unknown };
 
 export type HardDeleteExam200 = { [key: string]: unknown };
