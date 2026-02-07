@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslation } from '@/i18n';
 import ExamForm from '@/components/admin/ExamForm';
-import QuestionGroupAccordion from '@/components/admin/QuestionGroupAccordion';
+import ExamPartsManager from '@/components/admin/ExamPartsManager';
 
 export default function AddExamPage() {
   const { t } = useTranslation();
@@ -68,10 +68,7 @@ export default function AddExamPage() {
               </div>
             </div>
 
-            <QuestionGroupAccordion
-              key={refreshKey}
-              examId={examId}
-            />
+            <ExamPartsManager key={refreshKey} examId={examId} />
           </div>
         )}
       </div>

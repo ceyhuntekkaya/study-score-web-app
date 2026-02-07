@@ -6,21 +6,19 @@ import { useGetAllActiveExams } from '@/generated/api/exam-controller/exam-contr
 import DataTable, { Column } from '@/components/admin/DataTable';
 import { useTranslation } from '@/i18n';
 
-// Exam type - API'den dönen veri yapısına göre
+// Exam type - API referansına göre (Exam, ExamPart, ExamItem yapısı)
 type Exam = {
   id?: string;
   name?: string;
   code?: string;
-  examType?: string;
+  category?: string;
   examLevel?: string;
-  timeLimitMinutes?: number;
-  passingScorePercentage?: number;
-  maxAttempts?: number;
+  examType?: string;
+  configuration?: Record<string, unknown>;
+  examParts?: Array<{ id: string; name: string; orderNumber?: number }>;
   status?: string;
   createdAt?: string;
-  availableFrom?: string;
-  availableUntil?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export default function ExamsPage() {
@@ -43,39 +41,38 @@ export default function ExamsPage() {
       sortable: true,
     },
     {
+      key: 'category',
+      label: t('admin.exam.category') || 'Kategori',
+      sortable: true,
+    },
+    {
       key: 'examType',
-      label: 'Sınav Tipi',
+      label: t('admin.exam.examType') || 'Sınav Tipi',
       sortable: true,
     },
     {
       key: 'examLevel',
-      label: 'Seviye',
+      label: t('admin.exam.examLevel') || 'Seviye',
       sortable: true,
     },
     {
-      key: 'timeLimitMinutes',
-      label: 'Süre (Dakika)',
-      sortable: true,
-      render: (value) => {
-        return value ? `${value} dk` : '-';
+      key: 'examParts',
+      label: t('admin.exam.parts') || 'Bölümler',
+      sortable: false,
+      render: (_value, row) => {
+        const parts = row.examParts;
+        if (!parts?.length) return '0';
+        return String(parts.length);
       },
     },
     {
-      key: 'passingScorePercentage',
-      label: 'Geçme Notu (%)',
-      sortable: true,
-      render: (value) => {
-        return value ? `%${value}` : '-';
-      },
-    },
-    {
-      key: 'maxAttempts',
-      label: 'Maksimum Deneme',
+      key: 'status',
+      label: t('common.status') || 'Durum',
       sortable: true,
     },
     {
       key: 'createdAt',
-      label: 'Oluşturulma Tarihi',
+      label: t('common.createdAt') || 'Oluşturulma Tarihi',
       sortable: true,
       render: (value) => {
         if (!value) return '-';

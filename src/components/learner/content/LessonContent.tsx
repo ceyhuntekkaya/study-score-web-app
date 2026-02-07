@@ -361,8 +361,11 @@ export default function LessonContent() {
               <span className="btn-text">Previous</span>
             </button>
 
-              <TtsService text="Matching Headings questions require you to match each paragraph in a passage to the most suitable heading from a given list. Each heading represents the main idea of the paragraph, not the details." />
+{
+  //    <TtsService text="Matching Headings questions require you to match each paragraph in a passage to the most suitable heading from a given list. Each heading represents the main idea of the paragraph, not the details." />
 
+}
+           
             <button
               className="rbt-btn icon-hover btn-md bg-primary-opacity"
               disabled={!nextPart}

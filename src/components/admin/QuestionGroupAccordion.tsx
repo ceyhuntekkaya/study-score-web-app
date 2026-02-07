@@ -1,41 +1,49 @@
 "use client";
 
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "@/i18n";
 import {
-  useGetQuestionGroupsByExam1,
-  useCreateQuestionGroup,
-  useDeleteQuestionGroup,
-} from "@/generated/api/question-group-controller/question-group-controller";
-import {
-  QuestionGroupCreateRequest,
-} from "@/generated/api/openAPIDefinition.schemas";
-import { Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+  useGetExamItems,
+  useRemoveItemFromExam,
+  getGetExamItemsQueryKey,
+} from "@/generated/api/exam-controller/exam-controller";
+import { useCreateQuestionGroup } from "@/generated/api/question-group-controller/question-group-controller";
 import QuestionList from "./QuestionList";
 
 interface QuestionGroupAccordionProps {
   examId: string;
 }
 
+// Derive question groups from exam items (itemType === QUESTION_GROUP)
+function useQuestionGroupsInExam(examId: string) {
+  const { data: items, refetch } = useGetExamItems(examId, {
+    query: { enabled: !!examId },
+  });
+  const itemList = Array.isArray(items) ? items : items ? [items] : [];
+  const groups = itemList
+    .filter((item: { itemType?: string }) => item.itemType === "QUESTION_GROUP")
+    .map((item: { id?: string; questionGroup?: { id?: string; code?: string }; score?: number }) => ({
+      id: item.questionGroup?.id ?? item.id,
+      code: item.questionGroup?.code ?? "-",
+      maximumScore: item.score,
+      examItemId: item.id,
+    }));
+  return { groups, refetch };
+}
+
 export default function QuestionGroupAccordion({
   examId,
 }: QuestionGroupAccordionProps) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
   const [showAddForm, setShowAddForm] = useState(false);
   const [newGroupCode, setNewGroupCode] = useState("");
 
-  const { data: questionGroups, refetch } = useGetQuestionGroupsByExam1(
-    examId,
-    {
-      query: {
-        enabled: !!examId,
-      },
-    }
-  );
-
+  const { groups, refetch } = useQuestionGroupsInExam(examId);
   const createGroup = useCreateQuestionGroup();
-  const deleteGroup = useDeleteQuestionGroup();
+  const removeItemFromExam = useRemoveItemFromExam();
 
   // Remove the problematic useEffect - onRefresh is not needed here
   // The parent component can refetch if needed using the key prop
@@ -50,6 +58,11 @@ export default function QuestionGroupAccordion({
       }
       return newSet;
     });
+  };
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: getGetExamItemsQueryKey(examId) });
+    refetch();
   };
 
   const handleAddGroup = async () => {
@@ -68,26 +81,25 @@ export default function QuestionGroupAccordion({
       });
       setNewGroupCode("");
       setShowAddForm(false);
-      refetch();
+      invalidate();
     } catch (error) {
       console.error("Error creating question group:", error);
     }
   };
 
-  const handleDeleteGroup = async (groupId: string) => {
+  const handleDeleteGroup = async (groupId: string, examItemId?: string) => {
     if (!confirm(t("admin.exam.confirmDeleteGroup"))) {
       return;
     }
-
     try {
-      await deleteGroup.mutateAsync({ groupId });
-      refetch();
+      if (examItemId) {
+        await removeItemFromExam.mutateAsync({ examId, examItemId });
+      }
+      invalidate();
     } catch (error) {
-      console.error("Error deleting question group:", error);
+      console.error("Error removing group from exam:", error);
     }
   };
-
-  const groups = (questionGroups as any) || [];
 
   return (
     <div className="rbt-shadow-box">
@@ -167,8 +179,8 @@ export default function QuestionGroupAccordion({
         </div>
       ) : (
         <div className="rbt-course-list">
-          {groups.map((group: any) => {
-            const groupId = group.id || group.questionGroupId;
+          {groups.map((group: { id?: string; code?: string; maximumScore?: number; examItemId?: string }, index: number) => {
+            const groupId = group.id!;
             const isOpen = openGroups.has(groupId);
 
             return (
@@ -191,9 +203,9 @@ export default function QuestionGroupAccordion({
                     ></i>
                     <div>
                       <h6 className="mb--5" style={{ fontWeight: 600 }}>
-                        {group.code || t("admin.exam.group")} #{groups.indexOf(group) + 1}
+                        {group.code || t("admin.exam.group")} #{index + 1}
                       </h6>
-                      {group.maximumScore && (
+                      {group.maximumScore != null && group.maximumScore > 0 && (
                         <span className="text-muted" style={{ fontSize: '14px' }}>
                           {t("admin.exam.maxScore")}: {group.maximumScore}
                         </span>
@@ -206,7 +218,7 @@ export default function QuestionGroupAccordion({
                       className="rbt-course-icon rbt-course-del"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeleteGroup(groupId);
+                        handleDeleteGroup(groupId, group.examItemId);
                       }}
                       title={t("common.delete")}
                     ></button>

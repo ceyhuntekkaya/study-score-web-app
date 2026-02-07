@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from '@/i18n';
-import { useGetQuestionGroupsByExam1 } from '@/generated/api/question-group-controller/question-group-controller';
+import { useGetExamItems, getGetExamItemsQueryKey } from '@/generated/api/exam-controller/exam-controller';
 import { useGetQuestionsByGroup } from '@/generated/api/question-controller/question-controller';
 import DataTable, { Column } from '@/components/admin/DataTable';
 import QuestionGroupForm from '@/components/admin/QuestionGroupForm';
@@ -29,8 +30,26 @@ type Question = {
   [key: string]: any;
 };
 
+// ExamItem with itemType QUESTION_GROUP has questionGroup: { id, code }; we show these as "groups in this exam"
+function useQuestionGroupsInExam(examId: string) {
+  const { data: items, isLoading, refetch } = useGetExamItems(examId, {
+    query: { enabled: !!examId },
+  });
+  const itemList = Array.isArray(items) ? items : items ? [items] : [];
+  const groups = itemList
+    .filter((item: { itemType?: string }) => item.itemType === 'QUESTION_GROUP')
+    .map((item: { id?: string; questionGroup?: { id?: string; code?: string }; score?: number }) => ({
+      id: item.questionGroup?.id ?? item.id,
+      code: item.questionGroup?.code ?? '-',
+      maximumScore: item.score,
+      examItemId: item.id,
+    }));
+  return { groups, isLoading, refetch };
+}
+
 export default function QuestionGroupsPage() {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const params = useParams();
   const examId = params?.id as string;
   
@@ -41,16 +60,12 @@ export default function QuestionGroupsPage() {
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
-  const { data: questionGroups, isLoading, refetch } = useGetQuestionGroupsByExam1(
-    examId,
-    {
-      query: {
-        enabled: !!examId,
-      },
-    }
-  );
+  const { groups, isLoading, refetch } = useQuestionGroupsInExam(examId);
 
-  const groups = (questionGroups as any) || [];
+  const refetchGroups = () => {
+    queryClient.invalidateQueries({ queryKey: getGetExamItemsQueryKey(examId) });
+    refetch();
+  };
 
   const toggleGroup = (groupId: string) => {
     setExpandedGroups((prev) => {
@@ -92,7 +107,7 @@ export default function QuestionGroupsPage() {
     setEditingGroupId(null);
     setEditingQuestionId(null);
     setSelectedGroupId(null);
-    refetch();
+    refetchGroups();
   };
 
   const handleFormCancel = () => {

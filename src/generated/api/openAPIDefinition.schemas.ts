@@ -298,12 +298,12 @@ export interface User {
   roleSet?: UserRoleSetItem[];
   authoritySet?: UserAuthoritySetItem[];
   enabled?: boolean;
-  accountNonExpired?: boolean;
-  credentialsNonExpired?: boolean;
   authorities?: GrantedAuthority[];
   institutionalLearner?: boolean;
   individualLearner?: boolean;
+  accountNonExpired?: boolean;
   accountNonLocked?: boolean;
+  credentialsNonExpired?: boolean;
   learner?: boolean;
   manager?: boolean;
   tutor?: boolean;
@@ -926,6 +926,15 @@ export const CourseLessonPartMaterialMediaType = {
   OTHER: "OTHER",
 } as const;
 
+export type CourseLessonPartMaterialBlockType =
+  (typeof CourseLessonPartMaterialBlockType)[keyof typeof CourseLessonPartMaterialBlockType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CourseLessonPartMaterialBlockType = {
+  MATERIAL: "MATERIAL",
+  QUIZ: "QUIZ",
+} as const;
+
 export interface CourseLessonPartMaterial {
   id?: string;
   createdAt?: string;
@@ -936,11 +945,13 @@ export interface CourseLessonPartMaterial {
   courseLessonPart?: CourseLessonPart;
   content?: string;
   mediaType?: CourseLessonPartMaterialMediaType;
+  blockType?: CourseLessonPartMaterialBlockType;
   orderNumber?: number;
   duration?: number;
   uploadedFile?: UploadedFile;
   updatedAt?: string;
   version?: number;
+  quizItems?: CourseLessonPartQuizItem[];
 }
 
 export type CourseLessonPartMaterialDetailDTOMediaType =
@@ -958,18 +969,419 @@ export const CourseLessonPartMaterialDetailDTOMediaType = {
   OTHER: "OTHER",
 } as const;
 
+export type CourseLessonPartMaterialDetailDTOBlockType =
+  (typeof CourseLessonPartMaterialDetailDTOBlockType)[keyof typeof CourseLessonPartMaterialDetailDTOBlockType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CourseLessonPartMaterialDetailDTOBlockType = {
+  MATERIAL: "MATERIAL",
+  QUIZ: "QUIZ",
+} as const;
+
 export interface CourseLessonPartMaterialDetailDTO {
   id?: string;
   name?: string;
   description?: string;
   content?: string;
   mediaType?: CourseLessonPartMaterialDetailDTOMediaType;
+  blockType?: CourseLessonPartMaterialDetailDTOBlockType;
   orderNumber?: number;
   duration?: number;
   uploadedFileId?: string;
   uploadedFileName?: string;
   courseLessonPartId?: string;
   userProgress?: UserProgressCourseLessonPartMaterial;
+  quizItems?: CourseLessonPartQuizItemDetailDTO[];
+}
+
+export type CourseLessonPartQuizItemStatus =
+  (typeof CourseLessonPartQuizItemStatus)[keyof typeof CourseLessonPartQuizItemStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CourseLessonPartQuizItemStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export interface CourseLessonPartQuizItem {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: CourseLessonPartQuizItemStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  courseLessonPartMaterial?: CourseLessonPartMaterial;
+  question?: Question;
+  questionGroup?: QuestionGroup;
+  orderNumber?: number;
+}
+
+export interface CourseLessonPartQuizItemDetailDTO {
+  id?: string;
+  questionId?: string;
+  questionGroupId?: string;
+  orderNumber?: number;
+}
+
+export type ExamStatus = (typeof ExamStatus)[keyof typeof ExamStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExamStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export type ExamCategory = (typeof ExamCategory)[keyof typeof ExamCategory];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExamCategory = {
+  IELTS: "IELTS",
+  TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
+} as const;
+
+export type ExamExamType = (typeof ExamExamType)[keyof typeof ExamExamType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExamExamType = {
+  CERTIFICATE: "CERTIFICATE",
+  COURSE_EXAM: "COURSE_EXAM",
+  LEVEL_DETERMINATION: "LEVEL_DETERMINATION",
+  PRACTICE: "PRACTICE",
+  DEGREE: "DEGREE",
+} as const;
+
+export interface Exam {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: ExamStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  name?: string;
+  code?: string;
+  category?: ExamCategory;
+  examParts?: ExamPart[];
+  examLevel?: string;
+  examType?: ExamExamType;
+  configuration?: ExamConfiguration;
+}
+
+export type ExamConfigurationResultsReleaseType =
+  (typeof ExamConfigurationResultsReleaseType)[keyof typeof ExamConfigurationResultsReleaseType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExamConfigurationResultsReleaseType = {
+  IMMEDIATE: "IMMEDIATE",
+  AFTER_DUE_DATE: "AFTER_DUE_DATE",
+  MANUAL: "MANUAL",
+} as const;
+
+export interface ExamConfiguration {
+  timeLimitMinutes?: number;
+  passingScorePercentage?: number;
+  maxAttempts?: number;
+  shuffleQuestions?: boolean;
+  shuffleAnswers?: boolean;
+  allowBackward?: boolean;
+  showQuestionsOneAtTime?: boolean;
+  requireCompleteAttempt?: boolean;
+  resultsReleaseType?: ExamConfigurationResultsReleaseType;
+  availableFrom?: string;
+  availableUntil?: string;
+  accessCode?: string;
+  requireProctoring?: boolean;
+}
+
+export type ExamItemStatus =
+  (typeof ExamItemStatus)[keyof typeof ExamItemStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExamItemStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export type ExamItemItemType =
+  (typeof ExamItemItemType)[keyof typeof ExamItemItemType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExamItemItemType = {
+  QUESTION_GROUP: "QUESTION_GROUP",
+  QUESTION: "QUESTION",
+} as const;
+
+export interface ExamItem {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: ExamItemStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  exam?: Exam;
+  examPart?: ExamPart;
+  itemType?: ExamItemItemType;
+  questionGroup?: QuestionGroup;
+  question?: Question;
+  orderNumber?: number;
+  score?: number;
+}
+
+export type ExamPartStatus =
+  (typeof ExamPartStatus)[keyof typeof ExamPartStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExamPartStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export interface ExamPart {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: ExamPartStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  exam?: Exam;
+  name?: string;
+  orderNumber?: number;
+  examItems?: ExamItem[];
+}
+
+export type QuestionStatus =
+  (typeof QuestionStatus)[keyof typeof QuestionStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export type QuestionQuestionType =
+  (typeof QuestionQuestionType)[keyof typeof QuestionQuestionType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionQuestionType = {
+  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
+  TRUE_FALSE: "TRUE_FALSE",
+  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
+  SHORT_ANSWER: "SHORT_ANSWER",
+  MATCHING: "MATCHING",
+  ESSAY: "ESSAY",
+  ORDERING: "ORDERING",
+  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
+  HOT_SPOT: "HOT_SPOT",
+  DRAG_AND_DROP: "DRAG_AND_DROP",
+  AUDIO_RESPONSE: "AUDIO_RESPONSE",
+  VIDEO_RESPONSE: "VIDEO_RESPONSE",
+  IMAGE_RESPONSE: "IMAGE_RESPONSE",
+} as const;
+
+export type QuestionCategory =
+  (typeof QuestionCategory)[keyof typeof QuestionCategory];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionCategory = {
+  IELTS: "IELTS",
+  TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
+} as const;
+
+export interface Question {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: QuestionStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  name?: string;
+  questionGroup?: QuestionGroup;
+  questionType?: QuestionQuestionType;
+  orderNumber?: number;
+  maximumScore?: number;
+  subject?: string;
+  difficulty?: string;
+  category?: QuestionCategory;
+  courseSection?: string;
+  curriculumContents?: CurriculumContent[];
+  headers?: QuestionGroupHeader[];
+  examItems?: ExamItem[];
+  templateData?: string;
+  version?: number;
+}
+
+export type QuestionGroupStatus =
+  (typeof QuestionGroupStatus)[keyof typeof QuestionGroupStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionGroupStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export type QuestionGroupCategory =
+  (typeof QuestionGroupCategory)[keyof typeof QuestionGroupCategory];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionGroupCategory = {
+  IELTS: "IELTS",
+  TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
+} as const;
+
+export interface QuestionGroup {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: QuestionGroupStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  code?: string;
+  category?: QuestionGroupCategory;
+  maximumScore?: number;
+  difficultyLevel?: number;
+  courseSection?: string;
+  usagePart?: string;
+  curriculumContents?: CurriculumContent[];
+  questions?: Question[];
+  headers?: QuestionGroupHeader[];
+  examItems?: ExamItem[];
+}
+
+export type QuestionGroupHeaderStatus =
+  (typeof QuestionGroupHeaderStatus)[keyof typeof QuestionGroupHeaderStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionGroupHeaderStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export type QuestionGroupHeaderMediaType =
+  (typeof QuestionGroupHeaderMediaType)[keyof typeof QuestionGroupHeaderMediaType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionGroupHeaderMediaType = {
+  IMAGE: "IMAGE",
+  VIDEO: "VIDEO",
+  AUDIO: "AUDIO",
+  DOCUMENT: "DOCUMENT",
+  PDF: "PDF",
+  TEXT: "TEXT",
+  LINK: "LINK",
+  OTHER: "OTHER",
+} as const;
+
+export interface QuestionGroupHeader {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: QuestionGroupHeaderStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  questionGroup?: QuestionGroup;
+  question?: Question;
+  orderNumber?: number;
+  mediaType?: QuestionGroupHeaderMediaType;
+  content?: string;
 }
 
 export type UploadedFileStatus =
@@ -1147,9 +1559,27 @@ export interface ExamCreateRequest {
   requireProctoring?: boolean;
 }
 
-export interface ExamAddQuestionGroupsRequest {
+export interface ExamPartCreateRequest {
+  name?: string;
+  orderNumber?: number;
+}
+
+export type ExamAddItemRequestItemType =
+  (typeof ExamAddItemRequestItemType)[keyof typeof ExamAddItemRequestItemType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ExamAddItemRequestItemType = {
+  QUESTION_GROUP: "QUESTION_GROUP",
+  QUESTION: "QUESTION",
+} as const;
+
+export interface ExamAddItemRequest {
+  itemType?: ExamAddItemRequestItemType;
   questionGroupId?: string;
-  questionGroupIds?: string[];
+  questionId?: string;
+  examPartId?: string;
+  orderNumber?: number;
+  score?: number;
 }
 
 export type CurriculumFilterDtoCategory =
@@ -1254,6 +1684,12 @@ export interface CourseLessonPartDetailDTO {
   courseLessonId?: string;
   curriculumContentIds?: string[];
   materials?: CourseLessonPartMaterialDetailDTO[];
+}
+
+export interface CourseLessonPartQuizItemAddRequest {
+  questionId?: string;
+  questionGroupId?: string;
+  orderNumber?: number;
 }
 
 export interface AuthenticationResponse {
@@ -1434,11 +1870,6 @@ export interface SortObject {
   unsorted?: boolean;
 }
 
-export interface ExamRemoveQuestionGroupsRequest {
-  /** @minItems 1 */
-  questionGroupIds: string[];
-}
-
 export type GetQuestion200 = { [key: string]: unknown };
 
 export type UpdateQuestion200 = { [key: string]: unknown };
@@ -1523,11 +1954,13 @@ export type StartExamParams = {
 
 export type StartExam200 = { [key: string]: unknown };
 
-export type GetQuestionGroupsByExam200 = { [key: string]: unknown };
+export type GetExamParts200 = { [key: string]: unknown };
 
-export type AddQuestionGroupsToExam200 = { [key: string]: unknown };
+export type CreateExamPart200 = { [key: string]: unknown };
 
-export type RemoveQuestionGroupsFromExam200 = { [key: string]: unknown };
+export type GetExamItems200 = { [key: string]: unknown };
+
+export type AddItemToExam200 = { [key: string]: unknown };
 
 export type DuplicateCurriculumParams = {
   /**
@@ -1542,13 +1975,6 @@ export type ReorderQuestionParams = {
 
 export type ReorderQuestion200 = { [key: string]: unknown };
 
-export type ReorderQuestionGroupParams = {
-  examId: string;
-  orderNumber: number;
-};
-
-export type ReorderQuestionGroup200 = { [key: string]: unknown };
-
 export type GetCourseProgress200 = { [key: string]: unknown };
 
 export type GetDashboard200 = { [key: string]: unknown };
@@ -1558,8 +1984,6 @@ export type GetStandaloneQuestions200 = { [key: string]: unknown };
 export type GetQuestionsByGroup200 = { [key: string]: unknown };
 
 export type CountQuestionsInGroup200 = { [key: string]: unknown };
-
-export type GetQuestionGroupsByExam1200 = { [key: string]: unknown };
 
 export type GetExamWithUserDataParams = {
   userId?: string;
@@ -1742,6 +2166,8 @@ export type HardDeleteQuestion200 = { [key: string]: unknown };
 
 export type HardDeleteQuestionGroup200 = { [key: string]: unknown };
 
-export type RemoveQuestionGroupFromExam200 = { [key: string]: unknown };
+export type DeleteExamPart200 = { [key: string]: unknown };
+
+export type RemoveItemFromExam200 = { [key: string]: unknown };
 
 export type HardDeleteExam200 = { [key: string]: unknown };

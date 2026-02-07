@@ -283,10 +283,12 @@ function QuestionGroupQuestionsPanel({
   const { t } = useTranslation();
   const [showForm, setShowForm] = useState(false);
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
-  const [selectedStandaloneId, setSelectedStandaloneId] = useState<string>('');
+  const [showStandaloneTable, setShowStandaloneTable] = useState(false);
 
   const updateQuestion = useUpdateQuestion();
-  const { data: standaloneData, isLoading: standaloneLoading, refetch: refetchStandalone } = useGetStandaloneQuestions();
+  const { data: standaloneData, isLoading: standaloneLoading, refetch: refetchStandalone } = useGetStandaloneQuestions({
+    query: { enabled: showStandaloneTable },
+  });
   const standaloneList = normalizeQuestions(standaloneData);
 
   const handleAdd = () => {
@@ -310,14 +312,12 @@ function QuestionGroupQuestionsPanel({
     setEditingQuestionId(null);
   };
 
-  const handleAddSelectedToGroup = async () => {
-    if (!selectedStandaloneId) return;
+  const handleAddQuestionToGroup = async (questionId: string) => {
     try {
-      const full = await getQuestion(selectedStandaloneId);
+      const full = await getQuestion(questionId);
       const q = full as Record<string, unknown>;
       const payload = questionToCreateRequest(q, groupId);
-      await updateQuestion.mutateAsync({ questionId: selectedStandaloneId, data: payload });
-      setSelectedStandaloneId('');
+      await updateQuestion.mutateAsync({ questionId, data: payload });
       onRefetch();
       refetchStandalone();
     } catch (err) {
@@ -357,32 +357,74 @@ function QuestionGroupQuestionsPanel({
             <i className="feather-plus me-1" />
             {t('admin.exam.addQuestion')}
           </button>
-          <div className="d-flex align-items-center gap-1">
-            <select
-              className="form-select form-select-sm"
-              style={{ minWidth: 180 }}
-              value={selectedStandaloneId}
-              onChange={(e) => setSelectedStandaloneId(e.target.value)}
-              disabled={standaloneLoading}
-            >
-              <option value="">{t('admin.exam.selectQuestion') ?? 'Soru seçin'}</option>
-              {standaloneList.map((q) => (
-                <option key={q.id ?? ''} value={q.id ?? ''}>
-                  {q.name ?? q.id ?? '—'}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              className="rbt-btn btn-sm btn-border-gradient"
-              onClick={handleAddSelectedToGroup}
-              disabled={!selectedStandaloneId || updateQuestion.isPending}
-            >
-              {updateQuestion.isPending ? t('common.loading') : t('admin.exam.addSelectedQuestion') ?? 'Seçileni ekle'}
-            </button>
-          </div>
+          <button
+            type="button"
+            className="rbt-btn btn-sm btn-border-gradient"
+            onClick={() => setShowStandaloneTable((v) => !v)}
+          >
+            <i className="feather-list me-1" />
+            {t('admin.exam.selectQuestion') ?? 'Soru seç'}
+          </button>
         </div>
       </div>
+
+      {/* Standalone sorular tablosu - gruba eklemek için */}
+      {showStandaloneTable && (
+        <div className="mb--30 p-3 bg-light rounded">
+          <h6 className="rbt-title-style-3 mb-3">
+            {t('admin.exam.standaloneQuestions') ?? 'Bağımsız sorular (gruba eklemek için listeden ekle)'}
+          </h6>
+          {standaloneLoading ? (
+            <p className="text-muted mb-0">{t('common.loading')}</p>
+          ) : standaloneList.length === 0 ? (
+            <p className="text-muted mb-0">{t('admin.exam.noStandaloneQuestions') ?? 'Bağımsız soru yok.'}</p>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th>{t('admin.lesson.orderNumber') ?? 'Sıra'}</th>
+                    <th>{t('admin.exam.questionName') ?? 'Soru adı'}</th>
+                    <th>{t('admin.exam.questionType') ?? 'Tip'}</th>
+                    <th>{t('admin.exam.maxScore') ?? 'Puan'}</th>
+                    <th>{t('admin.exam.difficulty') ?? 'Zorluk'}</th>
+                    <th className="text-end">{t('common.actions') ?? 'İşlemler'}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {standaloneList.map((q) => {
+                    const qId = q.id ?? '';
+                    return (
+                      <tr key={qId}>
+                        <td>{q.orderNumber ?? '—'}</td>
+                        <td>{q.name ?? '—'}</td>
+                        <td>
+                          <span className="badge bg-secondary">{q.questionType ?? '—'}</span>
+                        </td>
+                        <td>{q.maximumScore ?? '—'}</td>
+                        <td>
+                          {q.difficulty && <span className="badge bg-info">{q.difficulty}</span>}
+                        </td>
+                        <td className="text-end">
+                          <button
+                            type="button"
+                            className="rbt-btn btn-sm btn-border-gradient"
+                            onClick={() => handleAddQuestionToGroup(qId)}
+                            disabled={updateQuestion.isPending}
+                          >
+                            <i className="feather-plus me-1" />
+                            {t('admin.exam.addToGroup') ?? 'Gruba ekle'}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       {showForm && (
         <div className="mb--30 p-3 bg-light rounded">

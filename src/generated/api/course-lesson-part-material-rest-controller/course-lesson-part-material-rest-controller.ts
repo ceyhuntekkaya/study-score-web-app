@@ -23,6 +23,8 @@ import type {
 import type {
   CourseLessonPartMaterial,
   CourseLessonPartMaterialDetailDTO,
+  CourseLessonPartQuizItem,
+  CourseLessonPartQuizItemAddRequest,
 } from "../openAPIDefinition.schemas";
 
 import { customInstance } from "../../../lib/api-client";
@@ -359,6 +361,89 @@ export const useDeleteActivity3 = <TError = unknown, TContext = unknown>(
   TContext
 > => {
   const mutationOptions = getDeleteActivity3MutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export const addQuizItem = (
+  materialId: string,
+  courseLessonPartQuizItemAddRequest: CourseLessonPartQuizItemAddRequest,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<CourseLessonPartQuizItem>(
+    {
+      url: `/course-part-material/${materialId}/quiz-items`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: courseLessonPartQuizItemAddRequest,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getAddQuizItemMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof addQuizItem>>,
+    TError,
+    { materialId: string; data: CourseLessonPartQuizItemAddRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof addQuizItem>>,
+  TError,
+  { materialId: string; data: CourseLessonPartQuizItemAddRequest },
+  TContext
+> => {
+  const mutationKey = ["addQuizItem"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof addQuizItem>>,
+    { materialId: string; data: CourseLessonPartQuizItemAddRequest }
+  > = (props) => {
+    const { materialId, data } = props ?? {};
+
+    return addQuizItem(materialId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AddQuizItemMutationResult = NonNullable<
+  Awaited<ReturnType<typeof addQuizItem>>
+>;
+export type AddQuizItemMutationBody = CourseLessonPartQuizItemAddRequest;
+export type AddQuizItemMutationError = unknown;
+
+export const useAddQuizItem = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof addQuizItem>>,
+      TError,
+      { materialId: string; data: CourseLessonPartQuizItemAddRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof addQuizItem>>,
+  TError,
+  { materialId: string; data: CourseLessonPartQuizItemAddRequest },
+  TContext
+> => {
+  const mutationOptions = getAddQuizItemMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
@@ -782,3 +867,79 @@ export function useGetCourseLessonPartMaterialByCourseLessonId<
 
   return query;
 }
+
+export const removeQuizItem = (
+  quizItemId: string,
+  options?: SecondParameter<typeof customInstance>,
+) => {
+  return customInstance<void>(
+    { url: `/course-part-material/quiz-item/${quizItemId}`, method: "DELETE" },
+    options,
+  );
+};
+
+export const getRemoveQuizItemMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof removeQuizItem>>,
+    TError,
+    { quizItemId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof removeQuizItem>>,
+  TError,
+  { quizItemId: string },
+  TContext
+> => {
+  const mutationKey = ["removeQuizItem"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof removeQuizItem>>,
+    { quizItemId: string }
+  > = (props) => {
+    const { quizItemId } = props ?? {};
+
+    return removeQuizItem(quizItemId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RemoveQuizItemMutationResult = NonNullable<
+  Awaited<ReturnType<typeof removeQuizItem>>
+>;
+
+export type RemoveQuizItemMutationError = unknown;
+
+export const useRemoveQuizItem = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof removeQuizItem>>,
+      TError,
+      { quizItemId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof removeQuizItem>>,
+  TError,
+  { quizItemId: string },
+  TContext
+> => {
+  const mutationOptions = getRemoveQuizItemMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
