@@ -1,15 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "@/i18n";
 import { Input } from "@/components/ui/Input";
-import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
-import { Checkbox } from "@/components/ui/Checkbox";
 import ScoringConfigForm from "./ScoringConfigForm";
 import TemplateOptionalDetails from "./TemplateOptionalDetails";
-import { TemplateFormProps } from "./types";
+import { TemplateFormProps, OrderingTemplateData, OrderingItemTemplate } from "./types";
+
+/** Returns Set of item texts that appear more than once (trimmed, non-empty). */
+function getDuplicateItemTexts(items: { text?: string }[]): Set<string> {
+  const seen = new Map<string, number>();
+  for (const item of items) {
+    const t = (item.text ?? "").trim();
+    if (t) seen.set(t, (seen.get(t) ?? 0) + 1);
+  }
+  const duplicates = new Set<string>();
+  seen.forEach((count, text) => {
+    if (count > 1) duplicates.add(text);
+  });
+  return duplicates;
+}
 
 export default function OrderingTemplateForm({
   templateData,
@@ -19,34 +31,46 @@ export default function OrderingTemplateForm({
   const [localData, setLocalData] = useState<any>(templateData || {});
 
   useEffect(() => {
-    setLocalData(templateData || {});
+    setLocalData(normalizePayload(templateData || {}));
   }, [templateData]);
 
+  /** Strip item ids so saved payload matches OrderingItemTemplate (single source of truth). */
+  const normalizePayload = (data: any): OrderingTemplateData => ({
+    ...data,
+    options: {
+      ...data?.options,
+      items: (data?.options?.items ?? []).map((item: any) => ({
+        text: item.text ?? "",
+        correctPosition: item.correctPosition ?? 0,
+      })),
+    },
+  });
+
   const updateData = (newData: any) => {
-    setLocalData(newData);
-    onChange(newData);
+    const normalized = normalizePayload(newData);
+    setLocalData(normalized);
+    onChange(normalized);
   };
 
   const options = localData.options || {};
-const items = options.items || [];
+  const items = options.items || [];
 
-const addItem = () => {
-  const newItem = {
-    id: `item_${Date.now()}`,
+  const duplicateTexts = useMemo(() => getDuplicateItemTexts(items), [items]);
+  const isItemTextDuplicate = (text: string) =>
+    duplicateTexts.has((text ?? "").trim()) && (text ?? "").trim() !== "";
+
+  const addItem = () => {
+  const newItem: OrderingItemTemplate = {
     text: "",
     correctPosition: items.length + 1,
-    mediaUrl: "",
-    mediaType: "",
   };
   updateData({
     ...localData,
     options: {
       ...options,
       items: [...items, newItem],
-      orderingType: options.orderingType || "SEQUENTIAL",
     },
-    shuffleItems: localData.shuffleItems ?? true,
-    showFeedback: localData.showFeedback ?? false,
+    orderingType: localData.orderingType || "SEQUENTIAL",
     scoringConfig: localData.scoringConfig || {
       strategy: "POSITION_BASED",
       allowPartialCredit: true,
@@ -88,11 +112,11 @@ return (
       </Label>
       <Select
         id="orderingType"
-        value={options.orderingType || "SEQUENTIAL"}
+        value={localData.orderingType || "SEQUENTIAL"}
         onChange={(e) =>
           updateData({
             ...localData,
-            options: { ...options, orderingType: e.target.value },
+            orderingType: e.target.value,
           })
         }
       >
@@ -114,6 +138,13 @@ return (
       </button>
     </div>
 
+    {duplicateTexts.size > 0 && (
+      <div className="alert alert-warning mb--20" role="alert">
+        <i className="feather-alert-triangle me-2" />
+        {t("admin.exam.orderingDuplicateItemText") || "Aynı metne sahip birden fazla madde var. Sıralama için her madde metni benzersiz olmalıdır."}
+      </div>
+    )}
+
     {items.length === 0 ? (
       <p className="text-muted text-center py--20">
         {t("admin.exam.noItems") || "No items added"}
@@ -133,6 +164,7 @@ return (
                       id={`item-text-${index}`}
                       value={item.text || ""}
                       onChange={(e) => updateItem(index, "text", e.target.value)}
+                      error={isItemTextDuplicate(item.text ?? "")}
                     />
                   </div>
                 </div>
@@ -154,18 +186,6 @@ return (
                 </div>
                 <div className="col-md-3">
                   <div className="form-group">
-                    <Label htmlFor={`item-media-${index}`}>
-                      {t("admin.exam.mediaUrl") || "Media URL"}
-                    </Label>
-                    <Input
-                      id={`item-media-${index}`}
-                      value={item.mediaUrl || ""}
-                      onChange={(e) => updateItem(index, "mediaUrl", e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-3">
-                  <div className="form-group">
                     <button
                       type="button"
                       className="rbt-btn btn-sm btn-border"
@@ -182,33 +202,6 @@ return (
         ))}
       </div>
     )}
-
-    <div className="row g-3 mt--20">
-      <div className="col-md-6">
-        <div className="form-group">
-          <Checkbox
-            id="shuffleItems"
-            checked={localData.shuffleItems ?? true}
-            onChange={(e) =>
-              updateData({ ...localData, shuffleItems: e.target.checked })
-            }
-            label={t("admin.exam.shuffleItems") || "Shuffle Items"}
-          />
-        </div>
-      </div>
-      <div className="col-md-6">
-        <div className="form-group">
-          <Checkbox
-            id="showFeedback"
-            checked={localData.showFeedback ?? false}
-            onChange={(e) =>
-              updateData({ ...localData, showFeedback: e.target.checked })
-            }
-            label={t("admin.exam.showFeedback") || "Show Feedback"}
-          />
-        </div>
-      </div>
-    </div>
 
     <TemplateOptionalDetails>
       <ScoringConfigForm

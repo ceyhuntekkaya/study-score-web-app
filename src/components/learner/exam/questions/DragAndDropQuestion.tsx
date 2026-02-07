@@ -1,33 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
-/** Backend: correctZones is DropZone[] (array of objects); legacy string[] supported */
-interface DraggableItem {
+/** Item inside a drop zone (template: correct placement). */
+interface DragAndDropItem {
   id: string;
   text: string;
-  mediaUrl?: string | null;
-  mediaType?: 'IMAGE' | 'AUDIO' | 'VIDEO' | null;
-  correctZones: Array<string | { id: string; label?: string; maxItems?: number; feedback?: string | null; position?: string | null }>;
-  scorePerCorrectZone?: number;
 }
 
 interface DropZone {
   id: string;
   label: string;
-  maxItems?: number;
-  feedback?: string;
-  position?: string; // JSON string for custom positioning
+  items: DragAndDropItem[];
 }
 
 interface DragAndDropTemplateData {
   options: {
-    draggableItems: DraggableItem[];
     dropZones: DropZone[];
   };
   layout?: 'VERTICAL' | 'HORIZONTAL' | 'GRID' | 'CUSTOM';
   shuffleItems?: boolean;
-  showFeedback?: boolean;
   scoringConfig?: {
     strategy: string;
     allowPartialCredit: boolean;
@@ -62,24 +54,16 @@ export default function DragAndDropQuestion({
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
   const [dragOverZoneId, setDragOverZoneId] = useState<string | null>(null);
 
-  const {
-    draggableItems = [],
-    dropZones = [],
-  } = templateData.options || {};
-
+  const { dropZones = [] } = templateData.options || {};
   const { layout = 'VERTICAL', shuffleItems = false } = templateData;
 
-  // Shuffle items if needed
-  const [shuffledItems, setShuffledItems] = useState(draggableItems);
+  // All items from all zones (single flat list for the pool)
+  const allItems = useMemo(
+    () => dropZones.flatMap((z) => (z.items || []).map((it) => ({ ...it }))),
+    [dropZones]
+  );
 
-  useEffect(() => {
-    if (shuffleItems) {
-      setShuffledItems(shuffleArray([...draggableItems]));
-    } else {
-      setShuffledItems(draggableItems);
-    }
-  }, [shuffleItems, draggableItems]);
-
+  const itemsKey = allItems.map((i) => i.id).join(',');
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -89,21 +73,25 @@ export default function DragAndDropQuestion({
     return shuffled;
   };
 
-  // Get items in a zone
-  const getItemsInZone = (zoneId: string): DraggableItem[] => {
+  const [shuffledItems, setShuffledItems] = useState<DragAndDropItem[]>(allItems);
+
+  useEffect(() => {
+    if (shuffleItems) {
+      setShuffledItems(shuffleArray([...allItems]));
+    } else {
+      setShuffledItems([...allItems]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shuffleItems, itemsKey]);
+
+  // Get items in a zone (by current placement)
+  const getItemsInZone = (zoneId: string): DragAndDropItem[] => {
     return shuffledItems.filter((item) => placements[item.id] === zoneId);
   };
 
-  // Get unplaced items (items not in any zone)
-  const getUnplacedItems = (): DraggableItem[] => {
+  // Get unplaced items
+  const getUnplacedItems = (): DragAndDropItem[] => {
     return shuffledItems.filter((item) => !placements[item.id]);
-  };
-
-  // Check if zone is full
-  const isZoneFull = (zoneId: string): boolean => {
-    const zone = dropZones.find((z) => z.id === zoneId);
-    if (!zone || !zone.maxItems) return false;
-    return getItemsInZone(zoneId).length >= zone.maxItems;
   };
 
   // Handle drag start
@@ -114,16 +102,13 @@ export default function DragAndDropQuestion({
   // Handle drag over
   const handleDragOver = (e: React.DragEvent, zoneId: string) => {
     e.preventDefault();
-    if (!isZoneFull(zoneId)) {
-      setDragOverZoneId(zoneId);
-    }
+    setDragOverZoneId(zoneId);
   };
 
   // Handle drop
   const handleDrop = (e: React.DragEvent, zoneId: string) => {
     e.preventDefault();
-    
-    if (!draggedItemId || isZoneFull(zoneId)) {
+    if (!draggedItemId) {
       setDraggedItemId(null);
       setDragOverZoneId(null);
       return;
@@ -154,7 +139,7 @@ export default function DragAndDropQuestion({
   };
 
   // Render draggable item
-  const renderDraggableItem = (item: DraggableItem, isInZone: boolean = false) => {
+  const renderDraggableItem = (item: DragAndDropItem, isInZone: boolean = false) => {
     const isDragging = draggedItemId === item.id;
     const isPlaced = !!placements[item.id];
 
@@ -184,25 +169,8 @@ export default function DragAndDropQuestion({
               <i className="feather-move"></i>
             </div>
           )}
-          <div>
-            {item.mediaUrl && item.mediaType === 'IMAGE' && (
-              <img
-                src={item.mediaUrl.startsWith('http') ? item.mediaUrl : `/assets/${item.mediaUrl}`}
-                alt={item.text}
-                style={{
-                  maxWidth: '60px',
-                  maxHeight: '60px',
-                  borderRadius: '6px',
-                  marginBottom: '5px',
-                }}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-            )}
-            <div style={{ fontSize: '14px', fontWeight: '500', color: '#333' }}>
-              {item.text}
-            </div>
+          <div style={{ fontSize: '14px', fontWeight: '500', color: '#333' }}>
+            {item.text}
           </div>
         </div>
         {isInZone && (
@@ -230,7 +198,6 @@ export default function DragAndDropQuestion({
   // Render drop zone
   const renderDropZone = (zone: DropZone) => {
     const itemsInZone = getItemsInZone(zone.id);
-    const isFull = isZoneFull(zone.id);
     const isDragOver = dragOverZoneId === zone.id;
 
     return (
@@ -242,9 +209,9 @@ export default function DragAndDropQuestion({
         onDragLeave={() => setDragOverZoneId(null)}
         style={{
           padding: '20px',
-          border: `3px dashed ${isDragOver ? '#4d79ff' : isFull ? '#ffc107' : '#e0e0e0'}`,
+          border: `3px dashed ${isDragOver ? '#4d79ff' : '#e0e0e0'}`,
           borderRadius: '12px',
-          backgroundColor: isDragOver ? '#f0f4ff' : isFull ? '#fff9e6' : '#f9f9f9',
+          backgroundColor: isDragOver ? '#f0f4ff' : '#f9f9f9',
           minHeight: '150px',
           transition: 'all 0.2s ease',
         }}
@@ -254,21 +221,9 @@ export default function DragAndDropQuestion({
             {zone.label}
           </h6>
           <div style={{ fontSize: '12px', color: '#666' }}>
-            {itemsInZone.length} {zone.maxItems ? `/ ${zone.maxItems}` : ''} items
-            {isFull && (
-              <span style={{ color: '#ff6b00', marginLeft: '5px' }}>
-                <i className="feather-alert-circle me-1"></i>
-                Full
-              </span>
-            )}
+            {itemsInZone.length} items
           </div>
         </div>
-
-        {zone.feedback && (
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px', fontStyle: 'italic' }}>
-            {zone.feedback}
-          </div>
-        )}
 
         <div className="zone-items">
           {itemsInZone.length > 0 ? (
@@ -374,7 +329,7 @@ export default function DragAndDropQuestion({
         color: '#4d79ff',
       }}>
         <i className="feather-check-circle me-2"></i>
-        Placed: {Object.keys(placements).length} of {draggableItems.length} items
+        Placed: {Object.keys(placements).length} of {allItems.length} items
       </div>
     </div>
   );

@@ -52,40 +52,44 @@ export default function FillInTheBlanksQuestion({
     initialAnswer?.answers || {}
   );
 
-  const { textWithBlanks, options, trimWhitespace = true } = templateData;
+  const { textWithBlanks = '', options, trimWhitespace = true } = templateData ?? {};
   const blanks = options?.blanks || [];
 
   // Parse textWithBlanks and extract blank positions
   const parseText = () => {
-    const blankPattern = /\{\{([A-Z0-9_]+)\}\}/g;
+    const text = typeof textWithBlanks === 'string' ? textWithBlanks : '';
+    if (!text) return [];
+
+    /* Support [BLANK_1] and legacy {{BLANK_1}} */
+    const blankPattern = /\[([A-Z0-9_]+)\]|\{\{([A-Z0-9_]+)\}\}/g;
     const parts: Array<{ type: 'text' | 'blank'; content: string; blankId?: string }> = [];
     let lastIndex = 0;
     let match;
 
-    while ((match = blankPattern.exec(textWithBlanks)) !== null) {
+    while ((match = blankPattern.exec(text)) !== null) {
       // Add text before blank
       if (match.index > lastIndex) {
         parts.push({
           type: 'text',
-          content: textWithBlanks.substring(lastIndex, match.index),
+          content: text.substring(lastIndex, match.index),
         });
       }
 
-      // Add blank
+      // Add blank (match[1] for [ID], match[2] for {{ID}})
       parts.push({
         type: 'blank',
         content: match[0],
-        blankId: match[1],
+        blankId: match[1] || match[2],
       });
 
       lastIndex = match.index + match[0].length;
     }
 
     // Add remaining text
-    if (lastIndex < textWithBlanks.length) {
+    if (lastIndex < text.length) {
       parts.push({
         type: 'text',
-        content: textWithBlanks.substring(lastIndex),
+        content: text.substring(lastIndex),
       });
     }
 

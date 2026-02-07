@@ -19,7 +19,22 @@ export default function TrueFalseTemplateForm({
   const [localData, setLocalData] = useState<any>(templateData || {});
 
   useEffect(() => {
-    setLocalData(templateData || {});
+    const raw = templateData || {};
+    const data = raw as Record<string, unknown>;
+    // Backend uses flat fields; support legacy optionList shape when loading
+    if (data.optionList && typeof data.optionList === "object") {
+      const ol = data.optionList as Record<string, unknown>;
+      setLocalData({
+        ...data,
+        questionText: ol.questionText ?? data.questionText ?? "",
+        correctAnswer: ol.correctAnswer === false ? "false" : ol.correctAnswer === true ? "true" : (data.correctAnswer ?? ol.correctAnswer ?? "true"),
+        trueLabel: ol.trueLabel ?? data.trueLabel ?? "True",
+        falseLabel: ol.falseLabel ?? data.falseLabel ?? "False",
+        notGivenLabel: ol.notGivenLabel ?? data.notGivenLabel ?? "Not Given",
+      });
+    } else {
+      setLocalData(raw);
+    }
   }, [templateData]);
 
   const updateData = (newData: any) => {
@@ -27,7 +42,11 @@ export default function TrueFalseTemplateForm({
     onChange(newData);
   };
 
-  const optionList = localData.optionList || {};
+  const questionText = localData.questionText ?? "";
+  const correctAnswer = localData.correctAnswer ?? "true";
+  const trueLabel = localData.trueLabel ?? "True";
+  const falseLabel = localData.falseLabel ?? "False";
+  const notGivenLabel = localData.notGivenLabel ?? "Not Given";
 
   return (
     <div className="rbt-card rbt-card-body" style={{ backgroundColor: '#f9fafb' }}>
@@ -35,12 +54,9 @@ export default function TrueFalseTemplateForm({
         <Label htmlFor="questionText">{t("admin.exam.questionText") || "Question Text"}</Label>
         <Textarea
           id="questionText"
-          value={optionList.questionText || ""}
+          value={questionText}
           onChange={(e) =>
-            updateData({
-              ...localData,
-              optionList: { ...optionList, questionText: e.target.value },
-            })
+            updateData({ ...localData, questionText: e.target.value })
           }
           rows={3}
           className="form-control"
@@ -51,11 +67,11 @@ export default function TrueFalseTemplateForm({
         <Label htmlFor="correctAnswer">{t("admin.exam.correctAnswer")}</Label>
         <Select
           id="correctAnswer"
-          value={optionList.correctAnswer === false ? "false" : "true"}
+          value={correctAnswer}
           onChange={(e) =>
             updateData({
               ...localData,
-              optionList: { ...optionList, correctAnswer: e.target.value === "true" },
+              correctAnswer: e.target.value as "true" | "false" | "notGiven",
               showFeedback: localData.showFeedback ?? false,
               scoringConfig: localData.scoringConfig || {
                 strategy: "BINARY",
@@ -69,36 +85,43 @@ export default function TrueFalseTemplateForm({
         >
           <option value="true">{t("admin.exam.true") || "True"}</option>
           <option value="false">{t("admin.exam.false") || "False"}</option>
+          <option value="notGiven">{t("admin.exam.notGiven") || "Not Given"}</option>
         </Select>
       </div>
 
       <div className="row g-3 mb--20">
-        <div className="col-md-6">
+        <div className="col-md-4">
           <div className="form-group">
             <Label htmlFor="trueLabel">{t("admin.exam.trueLabel") || "True Label"}</Label>
             <Input
               id="trueLabel"
-              value={optionList.trueLabel || "True"}
+              value={trueLabel}
               onChange={(e) =>
-                updateData({
-                  ...localData,
-                  optionList: { ...optionList, trueLabel: e.target.value },
-                })
+                updateData({ ...localData, trueLabel: e.target.value })
               }
             />
           </div>
         </div>
-        <div className="col-md-6">
+        <div className="col-md-4">
           <div className="form-group">
             <Label htmlFor="falseLabel">{t("admin.exam.falseLabel") || "False Label"}</Label>
             <Input
               id="falseLabel"
-              value={optionList.falseLabel || "False"}
+              value={falseLabel}
               onChange={(e) =>
-                updateData({
-                  ...localData,
-                  optionList: { ...optionList, falseLabel: e.target.value },
-                })
+                updateData({ ...localData, falseLabel: e.target.value })
+              }
+            />
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="form-group">
+            <Label htmlFor="notGivenLabel">{t("admin.exam.notGivenLabel") || "Not Given Label"}</Label>
+            <Input
+              id="notGivenLabel"
+              value={notGivenLabel}
+              onChange={(e) =>
+                updateData({ ...localData, notGivenLabel: e.target.value })
               }
             />
           </div>

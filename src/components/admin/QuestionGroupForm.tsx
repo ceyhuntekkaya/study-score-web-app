@@ -13,7 +13,6 @@ import {
   useUpdateQuestionGroup,
   useGetQuestionGroup,
 } from "@/generated/api/question-group-controller/question-group-controller";
-import { useGetAllActiveExams } from "@/generated/api/exam-controller/exam-controller";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
@@ -43,10 +42,8 @@ export default function QuestionGroupForm({
       enabled: isEditMode && !!groupId,
     },
   });
-  const { data: examsData } = useGetAllActiveExams();
 
   const group = initialData || groupData;
-  const exams = Array.isArray(examsData) ? examsData : examsData ? [examsData] : [];
 
   const [formData, setFormData] = useState<QuestionGroupCreateRequest & { headers?: HeaderRequest[] }>({
     code: "",
@@ -88,15 +85,6 @@ export default function QuestionGroupForm({
     }
   }, [isEditMode, group]);
 
-  useEffect(() => {
-    if (!isEditMode && initialData?.examId) {
-      setFormData((prev) => ({
-        ...prev,
-        examId: initialData.examId as string,
-      }));
-    }
-  }, [isEditMode, initialData?.examId]);
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -115,10 +103,6 @@ export default function QuestionGroupForm({
       processedValue =
         value === "" ? undefined : isNaN(numValue as number) ? undefined : numValue;
     }
-    if (name === "examId") {
-      processedValue = value === "" ? undefined : value;
-    }
-
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : processedValue,
@@ -149,7 +133,7 @@ export default function QuestionGroupForm({
       const payload: QuestionGroupCreateRequest = {
         code: formData.code,
         category: formData.category,
-        ...(formData.examId ? { examId: formData.examId } : {}),
+        ...(isEditMode && formData.examId != null ? { examId: formData.examId } : {}),
         ...(formData.maximumScore != null ? { maximumScore: formData.maximumScore } : {}),
         ...(formData.difficultyLevel != null ? { difficultyLevel: formData.difficultyLevel } : {}),
         ...(formData.courseSection?.trim() ? { courseSection: formData.courseSection.trim() } : {}),
@@ -223,26 +207,6 @@ export default function QuestionGroupForm({
               <option value={QuestionGroupCreateRequestCategory.SAT_ENGLISH}>SAT English</option>
               <option value={QuestionGroupCreateRequestCategory.SAT_MATH}>SAT Math</option>
               <option value={QuestionGroupCreateRequestCategory.GENERAL_ENGLISH}>General English</option>
-            </Select>
-          </div>
-        </div>
-
-        {/* Exam */}
-        <div className="col-md-6">
-          <div className="form-group">
-            <Label htmlFor="examId">{t("admin.exam.selectExam")}</Label>
-            <Select
-              id="examId"
-              name="examId"
-              value={formData.examId ?? ""}
-              onChange={handleChange}
-            >
-              <option value="">— {t("admin.exam.selectExam")} —</option>
-              {exams.map((exam: Record<string, unknown>) => (
-                <option key={String(exam.id)} value={String(exam.id)}>
-                  {String(exam.name ?? exam.code ?? exam.id)}
-                </option>
-              ))}
             </Select>
           </div>
         </div>

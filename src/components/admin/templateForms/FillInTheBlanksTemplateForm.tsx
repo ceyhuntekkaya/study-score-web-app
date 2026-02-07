@@ -1,12 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "@/i18n";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { TemplateFormProps } from "./types";
+
+/** Match both [BLANK_1] and legacy {{BLANK_1}} so we normalize everything to [BLANK_1] */
+const BLANK_PLACEHOLDER_REGEX = /\{\{[^}]+\}\}|\[[^\]]+\]/g;
+
+/**
+ * Parse text for [...] placeholders, normalize to [BLANK_1], [BLANK_2], ...
+ * and return normalized text + count. IDs are assigned by the system in order of appearance.
+ */
+function normalizeTextWithBlanks(text: string): { normalizedText: string; count: number } {
+  if (!text || typeof text !== "string") return { normalizedText: "", count: 0 };
+  let count = 0;
+  const normalizedText = text.replace(BLANK_PLACEHOLDER_REGEX, () => {
+    count += 1;
+    return `[BLANK_${count}]`;
+  });
+  return { normalizedText, count };
+}
 
 export default function FillInTheBlanksTemplateForm({
   templateData,
@@ -16,38 +33,92 @@ export default function FillInTheBlanksTemplateForm({
   const [localData, setLocalData] = useState<any>(templateData || {});
 
   useEffect(() => {
-    setLocalData(templateData || {});
-  }, [templateData]);
+    const data = templateData || {};
+    const text = data.textWithBlanks ?? "";
+    const { normalizedText, count } = normalizeTextWithBlanks(text);
+    if (count > 0 && normalizedText !== text) {
+      const existingBlanks = data.options?.blanks || [];
+      const newBlanks = Array.from({ length: count }, (_, i) => {
+        const blankId = `BLANK_${i + 1}`;
+        const existing = existingBlanks[i];
+        return {
+          blankId,
+          acceptableAnswers: existing?.blankId === blankId ? (existing.acceptableAnswers ?? "") : "",
+        };
+      });
+      const synced = {
+        ...data,
+        textWithBlanks: normalizedText,
+        options: { ...(data.options || {}), blanks: newBlanks },
+      };
+      setLocalData(synced);
+      onChange(synced);
+    } else if (count > 0) {
+      const existingBlanks = data.options?.blanks || [];
+      const expectedIds = Array.from({ length: count }, (_, i) => `BLANK_${i + 1}`);
+      const needsSync =
+        existingBlanks.length !== count ||
+        existingBlanks.some((b: any, i: number) => b?.blankId !== expectedIds[i]);
+      if (needsSync) {
+        const newBlanks = Array.from({ length: count }, (_, i) => {
+          const blankId = expectedIds[i];
+          const existing = existingBlanks[i];
+          return {
+            blankId,
+            acceptableAnswers: existing?.blankId === blankId ? (existing.acceptableAnswers ?? "") : "",
+          };
+        });
+        const synced = {
+          ...data,
+          options: { ...(data.options || {}), blanks: newBlanks },
+        };
+        setLocalData(synced);
+        onChange(synced);
+      } else {
+        setLocalData(data);
+      }
+    } else {
+      setLocalData(data);
+    }
+  }, [templateData, onChange]);
 
-  const updateData = (newData: any) => {
-    setLocalData(newData);
-    onChange(newData);
-  };
+  const updateData = useCallback(
+    (newData: any) => {
+      setLocalData(newData);
+      onChange(newData);
+    },
+    [onChange]
+  );
 
   const options = localData.options || {};
   const blanks = options.blanks || [];
 
-  const addBlank = () => {
-    const blankId = `BLANK_${blanks.length + 1}`;
-    const newBlank = {
-      blankId,
-      acceptableAnswers: "",
-    };
+  const handleTextWithBlanksChange = (newText: string) => {
+    const { normalizedText, count } = normalizeTextWithBlanks(newText);
+    const existingBlanks = options.blanks || [];
+    const newBlanks = Array.from({ length: count }, (_, i) => {
+      const blankId = `BLANK_${i + 1}`;
+      const existing = existingBlanks[i];
+      return {
+        blankId,
+        acceptableAnswers: existing?.blankId === blankId ? (existing.acceptableAnswers ?? "") : "",
+      };
+    });
     updateData({
       ...localData,
-      textWithBlanks: localData.textWithBlanks || "",
+      textWithBlanks: normalizedText,
       options: {
         ...options,
-        blanks: [...blanks, newBlank],
+        blanks: newBlanks,
       },
-      caseSensitive: localData.caseSensitive ?? false,
-      exactMatch: localData.exactMatch ?? false,
     });
   };
 
-  const updateBlank = (index: number, field: string, value: any) => {
+  const updateBlankAnswers = (index: number, value: string) => {
     const updated = [...blanks];
-    updated[index] = { ...updated[index], [field]: value };
+    if (updated[index]) {
+      updated[index] = { ...updated[index], acceptableAnswers: value };
+    }
     updateData({
       ...localData,
       options: {
@@ -57,16 +128,8 @@ export default function FillInTheBlanksTemplateForm({
     });
   };
 
-  const removeBlank = (index: number) => {
-    const updated = blanks.filter((_: any, i: number) => i !== index);
-    updateData({
-      ...localData,
-      options: {
-        ...options,
-        blanks: updated,
-      },
-    });
-  };
+  const hasNoBlanks = blanks.length === 0;
+  const textWithBlanks = localData.textWithBlanks || "";
 
   return (
     <div className="rbt-card rbt-card-body" style={{ backgroundColor: '#f9fafb' }}>
@@ -74,19 +137,27 @@ export default function FillInTheBlanksTemplateForm({
         <Label htmlFor="textWithBlanks">
           {t("admin.exam.textWithBlanks") || "Text with Blanks"}
           <small className="text-muted d-block">
-            Use {"{{BLANK_1}}"}, {"{{BLANK_2}}"}, etc. for blanks
+            {t("admin.exam.fillBlanksPlaceholderHint") || "Use [BLANK_1], [BLANK_2] etc. for blanks. Blanks are auto-created and IDs are assigned by the system."}
           </small>
         </Label>
         <Textarea
           id="textWithBlanks"
-          value={localData.textWithBlanks || ""}
-          onChange={(e) =>
-            updateData({ ...localData, textWithBlanks: e.target.value })
-          }
-          placeholder="The capital of Turkey is {{BLANK_1}}"
+          value={textWithBlanks}
+          onChange={(e) => handleTextWithBlanksChange(e.target.value)}
+          placeholder="The capital of Turkey is [BLANK_1] and the largest city is [BLANK_2]"
           rows={4}
           className="form-control"
         />
+        {hasNoBlanks && textWithBlanks.trim() !== "" && (
+          <p className="text-danger small mt-1 mb-0">
+            {t("admin.exam.atLeastOneBlankRequired") || "At least one blank is required. Use [BLANK_1] in the text."}
+          </p>
+        )}
+        {hasNoBlanks && textWithBlanks.trim() === "" && (
+          <p className="text-muted small mt-1 mb-0">
+            {t("admin.exam.enterTextWithBlanks") || "Enter text and add at least one blank (e.g. [BLANK_1])."}
+          </p>
+        )}
       </div>
 
       <div className="row g-3 mb--20">
@@ -116,21 +187,16 @@ export default function FillInTheBlanksTemplateForm({
         </div>
       </div>
 
-      <div className="d-flex justify-content-between align-items-center mb--20">
+      <div className="mb--20">
         <label className="mb--0">{t("admin.exam.blanks") || "Blanks"}</label>
-        <button
-          type="button"
-          className="rbt-btn btn-sm btn-border-gradient"
-          onClick={addBlank}
-        >
-          <i className="feather-plus me-1"></i>
-          {t("admin.exam.addBlank") || "Add Blank"}
-        </button>
+        <small className="text-muted d-block">
+          {t("admin.exam.blanksAutoFromText") || "Blanks are created automatically from the text above. IDs cannot be edited."}
+        </small>
       </div>
 
       {blanks.length === 0 ? (
         <p className="text-muted text-center py--20">
-          {t("admin.exam.noBlanks") || "No blanks added"}
+          {t("admin.exam.noBlanks") || "No blanks yet. Add placeholders like [BLANK_1] in the text."}
         </p>
       ) : (
         <div className="row g-3">
@@ -138,43 +204,28 @@ export default function FillInTheBlanksTemplateForm({
             <div key={blank.blankId || blankIndex} className="col-12">
               <div className="rbt-card rbt-card-body" style={{ backgroundColor: '#ffffff' }}>
                 <div className="d-flex justify-content-between align-items-center mb--15">
-                  <label className="mb--0">
-                    {t("admin.exam.blank") || "Blank"} {blank.blankId || blankIndex + 1}
+                  <label className="mb--0 fw-semibold">
+                    {t("admin.exam.blank") || "Blank"} {blank.blankId}
                   </label>
-                  <button
-                    type="button"
-                    className="rbt-btn btn-sm btn-border"
-                    onClick={() => removeBlank(blankIndex)}
-                  >
-                    <i className="feather-trash-2 me-1"></i>
-                    {t("common.delete")}
-                  </button>
-                </div>
-
-                <div className="form-group mb--15">
-                  <Label htmlFor={`blank-id-${blankIndex}`}>
-                    {t("admin.exam.blankId") || "Blank ID"}
-                  </Label>
-                  <Input
-                    id={`blank-id-${blankIndex}`}
-                    value={blank.blankId || ""}
-                    onChange={(e) => updateBlank(blankIndex, "blankId", e.target.value)}
-                    placeholder="BLANK_1"
-                  />
+                  <span className="badge bg-secondary" title={t("admin.exam.systemAssignedId") || "System-assigned ID"}>
+                    {blank.blankId}
+                  </span>
                 </div>
 
                 <div className="form-group">
                   <Label htmlFor={`blank-answers-${blankIndex}`}>
                     {t("admin.exam.acceptableAnswers") || "Acceptable Answers"}
                     <small className="text-muted d-block">
-                      Comma-separated answers (e.g., "answer1, answer2, answer3")
+                      {t("admin.exam.oneAnswerPerLine") || "One answer per line (press Enter for each answer)"}
                     </small>
                   </Label>
-                  <Input
+                  <Textarea
                     id={`blank-answers-${blankIndex}`}
                     value={blank.acceptableAnswers || ""}
-                    onChange={(e) => updateBlank(blankIndex, "acceptableAnswers", e.target.value)}
-                    placeholder="answer1, answer2, answer3"
+                    onChange={(e) => updateBlankAnswers(blankIndex, e.target.value)}
+                    placeholder={'Ankara\nankara\nAnkara '}
+                    rows={4}
+                    className="form-control"
                   />
                 </div>
               </div>

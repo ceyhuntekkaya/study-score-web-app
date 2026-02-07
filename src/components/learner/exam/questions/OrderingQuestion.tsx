@@ -1,30 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { OrderingTemplateData, OrderingItemTemplate } from '@/components/admin/templateForms/types';
 
-interface OrderingItem {
+/** Internal item with stable id for drag/drop and answer; API sends items without id. */
+interface OrderingItemWithId extends OrderingItemTemplate {
   id: string;
-  text: string;
-  correctPosition: number;
-  mediaUrl?: string | null;
-  mediaType?: 'IMAGE' | 'AUDIO' | 'VIDEO' | null;
-  feedback?: string;
-}
-
-interface OrderingTemplateData {
-  options: {
-    items: OrderingItem[];
-    orderingType?: 'SEQUENTIAL' | 'RANKING';
-  };
-  shuffleItems?: boolean;
-  showFeedback?: boolean;
-  scoringConfig?: {
-    strategy: string;
-    allowPartialCredit: boolean;
-    penaltyPerWrong: number;
-    roundScore: boolean;
-    decimalPlaces: number;
-  };
 }
 
 interface OrderingQuestionProps {
@@ -33,6 +14,14 @@ interface OrderingQuestionProps {
   onAnswerChange?: (answerData: { orderedItemIds: string[] }) => void;
   initialAnswer?: { orderedItemIds: string[] } | null;
   questionId?: string;
+}
+
+/** Assign stable id when missing (API doesn't send id). */
+function withStableIds(items: OrderingItemTemplate[]): OrderingItemWithId[] {
+  return items.map((item, index) => ({
+    ...item,
+    id: (item as any).id ?? `_idx_${index}`,
+  }));
 }
 
 /**
@@ -46,35 +35,38 @@ export default function OrderingQuestion({
   initialAnswer,
   questionId = 'ordering',
 }: OrderingQuestionProps) {
-  const [items, setItems] = useState<OrderingItem[]>([]);
+  const [items, setItems] = useState<OrderingItemWithId[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
-  const { items: originalItems = [], shuffleItems = false } = (templateData.options || {}) as any;
+  const rawItems = templateData.options?.items ?? [];
+  const shuffleItems = templateData.shuffleItems ?? false;
+  const originalItems = withStableIds(rawItems);
+
+  // Stable deps to avoid infinite loop when parent passes new object/array refs every render
+  const itemsSignature = JSON.stringify(rawItems);
+  const initialAnswerSignature = JSON.stringify(initialAnswer?.orderedItemIds ?? []);
 
   // Initialize items
   useEffect(() => {
-    let processedItems = [...originalItems];
-    
+    let processedItems: OrderingItemWithId[] = [...originalItems];
+
     if (initialAnswer?.orderedItemIds && initialAnswer.orderedItemIds.length > 0) {
       // Restore from answer
       processedItems = initialAnswer.orderedItemIds
-        .map((id) => (originalItems as any[]).find((item: any) => item.id === id))
-        .filter((item): item is OrderingItem => item !== undefined);
-      
-      // Add any missing items
-      (originalItems as any[]).forEach((item: any) => {
-        if (!processedItems.find((i: any) => i.id === item.id)) {
+        .map((id) => originalItems.find((item) => item.id === id))
+        .filter((item): item is OrderingItemWithId => item !== undefined);
+      originalItems.forEach((item) => {
+        if (!processedItems.find((i) => i.id === item.id)) {
           processedItems.push(item);
         }
       });
     } else if (shuffleItems) {
-      // Shuffle if enabled
       processedItems = shuffleArray([...processedItems]);
     }
-    
+
     setItems(processedItems);
-  }, [originalItems, shuffleItems, initialAnswer]);
+  }, [itemsSignature, shuffleItems, initialAnswerSignature]);
 
   // Shuffle array function
   const shuffleArray = <T,>(array: T[]): T[] => {
@@ -164,33 +156,6 @@ export default function OrderingQuestion({
     }
   };
 
-  // Render media for an item
-  const renderMedia = (item: OrderingItem) => {
-    if (!item.mediaUrl || !item.mediaType) return null;
-
-    switch (item.mediaType) {
-      case 'IMAGE':
-        return (
-          <div className="item-media mb-2" style={{ textAlign: 'center' }}>
-            <img
-              src={item.mediaUrl.startsWith('http') ? item.mediaUrl : `/assets/${item.mediaUrl}`}
-              alt={item.text}
-              style={{
-                maxWidth: '100%',
-                maxHeight: '150px',
-                borderRadius: '6px',
-              }}
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}
-            />
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="ordering-question">
       {/* Question Text */}
@@ -263,11 +228,8 @@ export default function OrderingQuestion({
               </div>
 
               {/* Item Content */}
-              <div className="item-content" style={{ flex: 1 }}>
-                {renderMedia(item)}
-                <div style={{ fontSize: '16px', color: '#333', fontWeight: '500' }}>
-                  {item.text}
-                </div>
+              <div className="item-content" style={{ flex: 1, fontSize: '16px', color: '#333', fontWeight: '500' }}>
+                {item.text}
               </div>
 
               {/* Move Buttons */}

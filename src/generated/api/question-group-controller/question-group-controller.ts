@@ -21,6 +21,7 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AddQuestionToGroup200,
   CreateQuestionGroup200,
   DeleteQuestionGroup200,
   GetQuestionGroup200,
@@ -29,6 +30,7 @@ import type {
   ListQuestionGroups200,
   ListQuestionGroupsParams,
   QuestionGroupCreateRequest,
+  RemoveQuestionFromGroup200,
   ReorderQuestionGroup200,
   ReorderQuestionGroupParams,
   UpdateQuestionGroup200,
@@ -594,6 +596,169 @@ export const useCreateQuestionGroup = <TError = unknown, TContext = unknown>(
   TContext
 > => {
   const mutationOptions = getCreateQuestionGroupMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export const addQuestionToGroup = (
+  groupId: string,
+  questionId: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<AddQuestionToGroup200>(
+    {
+      url: `/exams/question-groups/${groupId}/questions/${questionId}`,
+      method: "POST",
+      signal,
+    },
+    options,
+  );
+};
+
+export const getAddQuestionToGroupMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof addQuestionToGroup>>,
+    TError,
+    { groupId: string; questionId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof addQuestionToGroup>>,
+  TError,
+  { groupId: string; questionId: string },
+  TContext
+> => {
+  const mutationKey = ["addQuestionToGroup"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof addQuestionToGroup>>,
+    { groupId: string; questionId: string }
+  > = (props) => {
+    const { groupId, questionId } = props ?? {};
+
+    return addQuestionToGroup(groupId, questionId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AddQuestionToGroupMutationResult = NonNullable<
+  Awaited<ReturnType<typeof addQuestionToGroup>>
+>;
+
+export type AddQuestionToGroupMutationError = unknown;
+
+export const useAddQuestionToGroup = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof addQuestionToGroup>>,
+      TError,
+      { groupId: string; questionId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof addQuestionToGroup>>,
+  TError,
+  { groupId: string; questionId: string },
+  TContext
+> => {
+  const mutationOptions = getAddQuestionToGroupMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export const removeQuestionFromGroup = (
+  groupId: string,
+  questionId: string,
+  options?: SecondParameter<typeof customInstance>,
+) => {
+  return customInstance<RemoveQuestionFromGroup200>(
+    {
+      url: `/exams/question-groups/${groupId}/questions/${questionId}`,
+      method: "DELETE",
+    },
+    options,
+  );
+};
+
+export const getRemoveQuestionFromGroupMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof removeQuestionFromGroup>>,
+    TError,
+    { groupId: string; questionId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof removeQuestionFromGroup>>,
+  TError,
+  { groupId: string; questionId: string },
+  TContext
+> => {
+  const mutationKey = ["removeQuestionFromGroup"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof removeQuestionFromGroup>>,
+    { groupId: string; questionId: string }
+  > = (props) => {
+    const { groupId, questionId } = props ?? {};
+
+    return removeQuestionFromGroup(groupId, questionId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RemoveQuestionFromGroupMutationResult = NonNullable<
+  Awaited<ReturnType<typeof removeQuestionFromGroup>>
+>;
+
+export type RemoveQuestionFromGroupMutationError = unknown;
+
+export const useRemoveQuestionFromGroup = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof removeQuestionFromGroup>>,
+      TError,
+      { groupId: string; questionId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof removeQuestionFromGroup>>,
+  TError,
+  { groupId: string; questionId: string },
+  TContext
+> => {
+  const mutationOptions = getRemoveQuestionFromGroupMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

@@ -3,32 +3,14 @@
 import { useState, useEffect } from 'react';
 
 interface Pair {
-  leftId: string;
-  rightId: string;
   leftText: string;
   rightText: string;
-  leftMediaUrl?: string | null;
-  rightMediaUrl?: string | null;
-  feedback?: string;
-  scorePercentage?: number;
-}
-
-interface Distractor {
-  id: string;
-  text: string;
-  mediaUrl?: string | null;
-  side: 'LEFT' | 'RIGHT';
 }
 
 interface MatchingTemplateData {
   options: {
     pairs: Pair[];
-    distractors?: Distractor[];
-    matchingType?: 'ONE_TO_ONE' | 'ONE_TO_MANY' | 'MANY_TO_ONE';
   };
-  shuffleLeftItems?: boolean;
-  shuffleRightItems?: boolean;
-  showFeedback?: boolean;
   scoringConfig?: {
     strategy: string;
     allowPartialCredit: boolean;
@@ -61,53 +43,29 @@ export default function MatchingQuestion({
     initialAnswer?.matches || {}
   );
 
-  const { pairs = [], distractors = [], matchingType = 'ONE_TO_ONE', shuffleLeftItems = false, shuffleRightItems = false } = (templateData.options || {}) as any;
+  const pairs: Pair[] = templateData.options?.pairs ?? [];
+  const matchingType = 'ONE_TO_ONE';
 
-  // Get all right items (from pairs + distractors on RIGHT side)
-  const rightItems = [
-    ...(pairs as any[]).map((pair: any) => ({
-      id: pair.rightId,
-      text: pair.rightText,
-      mediaUrl: pair.rightMediaUrl,
-    })),
-    ...(distractors as any[]).filter((d: any) => d.side === 'RIGHT').map((d: any) => ({
-      id: d.id,
-      text: d.text,
-      mediaUrl: d.mediaUrl,
-    })),
-  ];
+  // Build left/right items from pairs with generated ids (index-based)
+  const leftItems = pairs.map((pair, index) => ({
+    id: `left-${index}`,
+    text: pair.leftText,
+    mediaUrl: undefined as string | undefined,
+  }));
 
-  // Get all left items (from pairs + distractors on LEFT side)
-  const leftItems = [
-    ...(pairs as any[]).map((pair: any) => ({
-      id: pair.leftId,
-      text: pair.leftText,
-      mediaUrl: pair.leftMediaUrl,
-    })),
-    ...(distractors as any[]).filter((d: any) => d.side === 'LEFT').map((d: any) => ({
-      id: d.id,
-      text: d.text,
-      mediaUrl: d.mediaUrl,
-    })),
-  ];
+  const rightItems = pairs.map((pair, index) => ({
+    id: `right-${index}`,
+    text: pair.rightText,
+    mediaUrl: undefined as string | undefined,
+  }));
 
-  // Shuffle if needed
   const [shuffledLeftItems, setShuffledLeftItems] = useState(leftItems);
   const [shuffledRightItems, setShuffledRightItems] = useState(rightItems);
 
   useEffect(() => {
-    if (shuffleLeftItems) {
-      setShuffledLeftItems(shuffleArray([...leftItems]));
-    } else {
-      setShuffledLeftItems(leftItems);
-    }
-
-    if (shuffleRightItems) {
-      setShuffledRightItems(shuffleArray([...rightItems]));
-    } else {
-      setShuffledRightItems(rightItems);
-    }
-  }, [shuffleLeftItems, shuffleRightItems]);
+    setShuffledLeftItems(leftItems);
+    setShuffledRightItems(rightItems);
+  }, [templateData.options?.pairs]);
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];

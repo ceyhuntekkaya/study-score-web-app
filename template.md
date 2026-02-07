@@ -325,8 +325,6 @@ interface MultipleResponseTemplateData {
   options: {
     choices: ResponseOption[];
   };
-  minSelections?: number; // Default: 1
-  maxSelections?: number; // Default: 999
   shuffleChoices?: boolean; // Default: true
   showFeedback?: boolean; // Default: false
   scoringConfig?: ScoringConfig;
@@ -345,9 +343,7 @@ interface ResponseOption {
 
 - En az 2 seçenek olmalı
 - En az **2** seçenek `isCorrect: true` olmalı
-- `minSelections >= 1` olmalı
-- `maxSelections <= choices.length` olmalı
-- `minSelections <= maxSelections` olmalı
+
 
 ### Örnek JSON
 
@@ -372,8 +368,7 @@ interface ResponseOption {
       }
     ]
   },
-  "minSelections": 1,
-  "maxSelections": 3,
+
   "shuffleChoices": true,
   "showFeedback": false
 }
@@ -718,7 +713,6 @@ interface DropZone {
 interface HotSpotTemplateData {
   imageUrl: string; // Görsel URL'i (required)
   options: {
-    backgroundImageUrl?: string;
     hotSpots: HotSpotArea[];
     selectionType?: string; // "CLICK", "DRAG_RECTANGLE"
   };
@@ -746,7 +740,6 @@ interface HotSpotArea {
 {
   "imageUrl": "https://example.com/image.jpg",
   "options": {
-    "backgroundImageUrl": "https://example.com/image.jpg",
     "hotSpots": [
       {
         "id": "spot_1",

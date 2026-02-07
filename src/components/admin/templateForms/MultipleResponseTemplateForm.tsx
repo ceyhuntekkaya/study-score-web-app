@@ -4,11 +4,19 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "@/i18n";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { Select } from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
-import ScoringConfigForm from "./ScoringConfigForm";
+import ScoringConfigForm, { DEFAULT_SCORING_CONFIG } from "./ScoringConfigForm";
 import TemplateOptionalDetails from "./TemplateOptionalDetails";
 import { TemplateFormProps } from "./types";
+
+/** Backend ChoiceOption: only id, text, isCorrect. No mediaUrl/mediaType. */
+function toChoiceOption(c: any): { id: string; text: string; isCorrect: boolean } {
+  return {
+    id: c?.id ?? "",
+    text: c?.text ?? "",
+    isCorrect: !!c?.isCorrect,
+  };
+}
 
 export default function MultipleResponseTemplateForm({
   templateData,
@@ -18,47 +26,65 @@ export default function MultipleResponseTemplateForm({
   const [localData, setLocalData] = useState<any>(templateData || {});
 
   useEffect(() => {
-    setLocalData(templateData || {});
+    const data = templateData || {};
+    const rawChoices = data.options?.choices || [];
+    const choices = rawChoices.map((c: any) => toChoiceOption(c));
+    setLocalData({
+      ...data,
+      options: data.options ? { ...data.options, choices } : data.options,
+      scoringConfig: data.scoringConfig ?? { ...DEFAULT_SCORING_CONFIG },
+    });
   }, [templateData]);
 
   const updateData = (newData: any) => {
-    setLocalData(newData);
-    onChange(newData);
+    const choices = (newData.options?.choices || []).map(toChoiceOption);
+    const withDefaults = {
+      ...newData,
+      options: newData.options ? { ...newData.options, choices } : newData.options,
+      scoringConfig: newData.scoringConfig ?? { ...DEFAULT_SCORING_CONFIG },
+    };
+    setLocalData(withDefaults);
+    onChange(withDefaults);
   };
 
   const choices = localData.options?.choices || [];
 
   const addChoice = () => {
-    const newChoice = {
+    const isFirstChoice = choices.length === 0;
+    const newChoice = toChoiceOption({
       id: `choice_${Date.now()}`,
       text: "",
-      isCorrect: false,
-      mediaUrl: "",
-      mediaType: "",
-    };
+      isCorrect: isFirstChoice,
+    });
     updateData({
       ...localData,
       options: {
         ...localData.options,
         choices: [...choices, newChoice],
       },
-      minSelections: localData.minSelections ?? 1,
-      maxSelections: localData.maxSelections ?? 999,
       shuffleChoices: localData.shuffleChoices ?? true,
       showFeedback: localData.showFeedback ?? false,
-      scoringConfig: localData.scoringConfig || {
-        strategy: "PROPORTIONAL",
-        allowPartialCredit: true,
-        penaltyPerWrong: 0.25,
-        roundScore: false,
-        decimalPlaces: 2,
-      },
+      scoringConfig: localData.scoringConfig || { ...DEFAULT_SCORING_CONFIG },
     });
   };
 
   const updateChoice = (index: number, field: string, value: any) => {
-    const updatedChoices = [...choices];
+    const updatedChoices = [...choices].map(toChoiceOption);
     updatedChoices[index] = { ...updatedChoices[index], [field]: value };
+
+    // Multiple response: allow multiple isCorrect. Only enforce at least one correct.
+    if (field === "isCorrect" && value === false) {
+      const wouldHaveNone = updatedChoices.filter((c) => c.isCorrect).length === 0;
+      if (wouldHaveNone && updatedChoices.length > 0) {
+        updatedChoices[0].isCorrect = true;
+      }
+    }
+
+    const hasCorrect = updatedChoices.some((c) => c.isCorrect);
+    if (updatedChoices.length > 0 && !hasCorrect) {
+      updatedChoices[0].isCorrect = true;
+    }
+
     updateData({
       ...localData,
       options: {
@@ -69,7 +95,13 @@ export default function MultipleResponseTemplateForm({
   };
 
   const removeChoice = (index: number) => {
-    const updatedChoices = choices.filter((_: any, i: number) => i !== index);
+    const updatedChoices = choices
+      .filter((_: any, i: number) => i !== index)
+      .map(toChoiceOption);
+    const hasCorrect = updatedChoices.some((c: any) => c.isCorrect);
+    if (updatedChoices.length > 0 && !hasCorrect) {
+      updatedChoices[0].isCorrect = true;
+    }
     updateData({
       ...localData,
       options: {
@@ -81,41 +113,6 @@ export default function MultipleResponseTemplateForm({
 
   return (
     <div className="rbt-card rbt-card-body" style={{ backgroundColor: '#f9fafb' }}>
-      <div className="row g-3 mb--20">
-        <div className="col-md-6">
-          <div className="form-group">
-            <Label htmlFor="minSelections">
-              {t("admin.exam.minSelections") || "Min Selections"}
-            </Label>
-            <Input
-              id="minSelections"
-              type="number"
-              min="1"
-              value={localData.minSelections ?? 1}
-              onChange={(e) =>
-                updateData({ ...localData, minSelections: parseInt(e.target.value) })
-              }
-            />
-          </div>
-        </div>
-        <div className="col-md-6">
-          <div className="form-group">
-            <Label htmlFor="maxSelections">
-              {t("admin.exam.maxSelections") || "Max Selections"}
-            </Label>
-            <Input
-              id="maxSelections"
-              type="number"
-              min="1"
-              value={localData.maxSelections ?? 999}
-              onChange={(e) =>
-                updateData({ ...localData, maxSelections: parseInt(e.target.value) })
-              }
-            />
-          </div>
-        </div>
-      </div>
-
       <div className="d-flex justify-content-between align-items-center mb--20">
         <label className="mb--0">{t("admin.exam.choices")}</label>
         <button
@@ -151,42 +148,8 @@ export default function MultipleResponseTemplateForm({
                       />
                     </div>
                   </div>
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <Label htmlFor={`choice-mediaUrl-${index}`}>
-                        {t("admin.exam.mediaUrl") || "Media URL"}
-                      </Label>
-                      <Input
-                        id={`choice-mediaUrl-${index}`}
-                        value={choice.mediaUrl || ""}
-                        onChange={(e) => updateChoice(index, "mediaUrl", e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="form-group">
-                      <Label htmlFor={`choice-mediaType-${index}`}>
-                        {t("admin.exam.mediaType") || "Media Type"}
-                      </Label>
-                      <Select
-                        id={`choice-mediaType-${index}`}
-                        value={choice.mediaType || ""}
-                        onChange={(e) => updateChoice(index, "mediaType", e.target.value)}
-                      >
-                        <option value="">None</option>
-                        <option value="IMAGE">IMAGE</option>
-                        <option value="VIDEO">VIDEO</option>
-                        <option value="AUDIO">AUDIO</option>
-                        <option value="DOCUMENT">DOCUMENT</option>
-                        <option value="PDF">PDF</option>
-                        <option value="TEXT">TEXT</option>
-                        <option value="LINK">LINK</option>
-                        <option value="OTHER">OTHER</option>
-                      </Select>
-                    </div>
-                  </div>
                   <div className="col-12">
-                    <div className="form-group d-flex align-items-center">
+                    <div className="form-group d-flex gap-3 align-items-center">
                       <Checkbox
                         id={`correct-${index}`}
                         checked={choice.isCorrect || false}
@@ -243,7 +206,7 @@ export default function MultipleResponseTemplateForm({
         <ScoringConfigForm
           scoringConfig={localData.scoringConfig}
           onChange={(config) => updateData({ ...localData, scoringConfig: config })}
-          defaultStrategy="PROPORTIONAL"
+          defaultConfig={DEFAULT_SCORING_CONFIG}
         />
       </TemplateOptionalDetails>
     </div>

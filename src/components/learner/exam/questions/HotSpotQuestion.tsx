@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { getFilePreviewUrl } from '@/lib/fileUtils';
 
 interface HotSpot {
   id: string;
@@ -21,7 +22,6 @@ interface HotSpot {
 interface HotSpotTemplateData {
   imageUrl: string;
   options: {
-    backgroundImageUrl?: string;
     hotSpots: HotSpot[];
     selectionType?: 'CLICK' | 'AREA';
   };
@@ -66,12 +66,14 @@ export default function HotSpotQuestion({
   const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const safeData = templateData ?? {};
   const {
-    imageUrl,
-    options: { hotSpots = [], selectionType = 'CLICK' },
+    imageUrl = '',
+    options: optionsData,
     maxSelections,
     allowMultipleSpots = true,
-  } = templateData;
+  } = safeData;
+  const { hotSpots = [], selectionType = 'CLICK' } = optionsData ?? {};
 
   // Handle image load to get dimensions
   const handleImageLoad = () => {
@@ -315,22 +317,40 @@ export default function HotSpotQuestion({
         }}
         onClick={handleImageClick}
       >
-        <img
-          ref={imageRef}
-          src={imageUrl.startsWith('http') ? imageUrl : `/assets/${imageUrl}`}
-          alt="Hot spot image"
-          onLoad={handleImageLoad}
-          style={{
-            width: '100%',
-            height: 'auto',
-            display: 'block',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          }}
-          onError={(e) => {
-            console.error('Image load error:', imageUrl);
-          }}
-        />
+        {imageUrl ? (
+          <img
+            ref={imageRef}
+            src={imageUrl.startsWith('http') ? imageUrl : getFilePreviewUrl(imageUrl)}
+            alt="Hot spot image"
+            onLoad={handleImageLoad}
+            style={{
+              width: '100%',
+              height: 'auto',
+              display: 'block',
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
+            onError={() => {
+              if (imageUrl) console.error('Image load error:', imageUrl);
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: '100%',
+              minHeight: '200px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '8px',
+              backgroundColor: '#f0f0f0',
+              color: '#888',
+              fontSize: '14px',
+            }}
+          >
+            No image
+          </div>
+        )}
         {renderHotSpotOverlay()}
       </div>
 

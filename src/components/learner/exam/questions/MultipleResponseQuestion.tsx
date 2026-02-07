@@ -15,8 +15,7 @@ interface MultipleResponseTemplateData {
   options: {
     choices: Choice[];
   };
-  minSelections?: number;
-  maxSelections?: number;
+
   shuffleChoices?: boolean;
   showFeedback?: boolean;
   scoringConfig?: {
@@ -52,8 +51,6 @@ export default function MultipleResponseQuestion({
   );
   const [choices, setChoices] = useState<Choice[]>([]);
 
-  const minSelections = templateData.minSelections || 1;
-  const maxSelections = templateData.maxSelections || choices.length;
 
   // Initialize and shuffle choices if needed
   useEffect(() => {
@@ -77,36 +74,19 @@ export default function MultipleResponseQuestion({
     return shuffled;
   };
 
-  // Handle option toggle
+  // Handle option toggle (no min/max limit)
   const handleOptionToggle = (optionId: string) => {
     setSelectedOptionIds((prev) => {
-      let newSelection: string[];
-      
-      if (prev.includes(optionId)) {
-        // Deselect
-        newSelection = prev.filter((id) => id !== optionId);
-      } else {
-        // Select (check max limit)
-        if (prev.length >= maxSelections) {
-          // Already at max, don't add
-          return prev;
-        }
-        newSelection = [...prev, optionId];
-      }
-      
-      // Notify parent
+      const newSelection = prev.includes(optionId)
+        ? prev.filter((id) => id !== optionId)
+        : [...prev, optionId];
       if (onAnswerChange) {
         onAnswerChange({ selectedOptionIds: newSelection });
       }
-      
       return newSelection;
     });
   };
 
-  // Check if selection meets requirements
-  const isValidSelection = () => {
-    return selectedOptionIds.length >= minSelections && selectedOptionIds.length <= maxSelections;
-  };
 
   // Render media for a choice
   const renderMedia = (choice: Choice) => {
@@ -167,57 +147,47 @@ export default function MultipleResponseQuestion({
         </h5>
       </div>
 
-      {/* Selection Counter */}
-      <div className="selection-counter mb--20" style={{ 
-        padding: '10px 15px', 
-        backgroundColor: '#f0f4ff', 
-        borderRadius: '6px',
-        fontSize: '14px',
-        color: '#4d79ff',
-        fontWeight: '500',
-      }}>
-        <i className="feather-check-square me-2"></i>
-        Selected: {selectedOptionIds.length} of {minSelections} to {maxSelections} required
-        {!isValidSelection() && selectedOptionIds.length > 0 && (
-          <span style={{ color: '#ff6b6b', marginLeft: '10px' }}>
-            {selectedOptionIds.length < minSelections 
-              ? `(Minimum ${minSelections} required)`
-              : `(Maximum ${maxSelections} allowed)`
-            }
-          </span>
-        )}
-      </div>
+      {/* Selection counter */}
+      {selectedOptionIds.length > 0 && (
+        <div className="selection-counter mb--20" style={{ 
+          padding: '10px 15px', 
+          backgroundColor: '#f0f4ff', 
+          borderRadius: '6px',
+          fontSize: '14px',
+          color: '#4d79ff',
+          fontWeight: '500',
+        }}>
+          <i className="feather-check-square me-2"></i>
+          Selected: {selectedOptionIds.length} option{selectedOptionIds.length !== 1 ? 's' : ''}
+        </div>
+      )}
 
       {/* Choices */}
       <div className="choices-container">
         {choices.map((choice) => {
           const isSelected = selectedOptionIds.includes(choice.id);
-          const isDisabled = !isSelected && selectedOptionIds.length >= maxSelections;
           
           return (
             <div
               key={choice.id}
-              className={`choice-item mb--15 ${
-                isSelected ? 'selected' : ''
-              } ${isDisabled ? 'disabled' : ''}`}
+              className={`choice-item mb--15 ${isSelected ? 'selected' : ''}`}
               style={{
                 padding: '15px',
-                border: `2px solid ${isSelected ? '#4d79ff' : isDisabled ? '#ccc' : '#e0e0e0'}`,
+                border: `2px solid ${isSelected ? '#4d79ff' : '#e0e0e0'}`,
                 borderRadius: '8px',
-                backgroundColor: isSelected ? '#f0f4ff' : isDisabled ? '#f5f5f5' : '#ffffff',
-                cursor: isDisabled ? 'not-allowed' : 'pointer',
+                backgroundColor: isSelected ? '#f0f4ff' : '#ffffff',
+                cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                opacity: isDisabled ? 0.6 : 1,
               }}
-              onClick={() => !isDisabled && handleOptionToggle(choice.id)}
+              onClick={() => handleOptionToggle(choice.id)}
               onMouseOver={(e) => {
-                if (!isSelected && !isDisabled) {
+                if (!isSelected) {
                   e.currentTarget.style.borderColor = '#4d79ff';
                   e.currentTarget.style.backgroundColor = '#f9f9ff';
                 }
               }}
               onMouseOut={(e) => {
-                if (!isSelected && !isDisabled) {
+                if (!isSelected) {
                   e.currentTarget.style.borderColor = '#e0e0e0';
                   e.currentTarget.style.backgroundColor = '#ffffff';
                 }
@@ -230,12 +200,11 @@ export default function MultipleResponseQuestion({
                     type="checkbox"
                     id={`choice-${questionId}-${choice.id}`}
                     checked={isSelected}
-                    disabled={isDisabled}
                     onChange={() => handleOptionToggle(choice.id)}
                     style={{
                       width: '20px',
                       height: '20px',
-                      cursor: isDisabled ? 'not-allowed' : 'pointer',
+                      cursor: 'pointer',
                     }}
                   />
                 </div>
@@ -249,9 +218,9 @@ export default function MultipleResponseQuestion({
                   <label
                     htmlFor={`choice-${questionId}-${choice.id}`}
                     style={{
-                      cursor: isDisabled ? 'not-allowed' : 'pointer',
+                      cursor: 'pointer',
                       fontSize: '16px',
-                      color: isDisabled ? '#999' : '#333',
+                      color: '#333',
                       margin: 0,
                       display: 'block',
                     }}
@@ -264,39 +233,6 @@ export default function MultipleResponseQuestion({
           );
         })}
       </div>
-
-      {/* Validation Message */}
-      {selectedOptionIds.length > 0 && !isValidSelection() && (
-        <div className="validation-message mt--20" style={{ 
-          padding: '12px', 
-          backgroundColor: '#fff3cd', 
-          borderRadius: '6px', 
-          fontSize: '14px', 
-          color: '#856404',
-          border: '1px solid #ffc107',
-        }}>
-          <i className="feather-alert-circle me-2"></i>
-          {selectedOptionIds.length < minSelections 
-            ? `Please select at least ${minSelections} option${minSelections > 1 ? 's' : ''}.`
-            : `You can select a maximum of ${maxSelections} option${maxSelections > 1 ? 's' : ''}.`
-          }
-        </div>
-      )}
-
-      {/* Success Message */}
-      {isValidSelection() && selectedOptionIds.length > 0 && (
-        <div className="success-message mt--20" style={{ 
-          padding: '12px', 
-          backgroundColor: '#d4edda', 
-          borderRadius: '6px', 
-          fontSize: '14px', 
-          color: '#155724',
-          border: '1px solid #c3e6cb',
-        }}>
-          <i className="feather-check-circle me-2"></i>
-          Selection valid ({selectedOptionIds.length} option{selectedOptionIds.length > 1 ? 's' : ''} selected)
-        </div>
-      )}
     </div>
   );
 }
