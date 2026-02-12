@@ -237,6 +237,7 @@ export default function CourseLessonsAccordion({
               }}
             >
               <button
+                type="button"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -267,6 +268,7 @@ export default function CourseLessonsAccordion({
                 <DiamondPlus size={16} />
               </button>
               <button
+                type="button"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -298,6 +300,7 @@ export default function CourseLessonsAccordion({
               </button>
               {onDeletePart && (
                 <button
+                  type="button"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
@@ -327,6 +330,7 @@ export default function CourseLessonsAccordion({
                 </button>
               )}
               <button
+                type="button"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -491,6 +495,7 @@ export default function CourseLessonsAccordion({
             >
               {getLevelText(lesson.lessonLevel || "") && (
                 <button
+                  type="button"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
@@ -537,6 +542,7 @@ export default function CourseLessonsAccordion({
                 </button>
               )}
               <button
+                type="button"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -568,6 +574,7 @@ export default function CourseLessonsAccordion({
               </button>
               {onDeleteLesson && (
                 <button
+                  type="button"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
@@ -691,6 +698,7 @@ export default function CourseLessonsAccordion({
           <p style={{ color: "#6b7280" }}>{t('admin.lesson.noContent')}</p>
           {onAddLesson && (
             <button
+              type="button"
               onClick={() => {
                 if (onAddLesson) {
                   onAddLesson(undefined, "UNIT");
@@ -836,6 +844,7 @@ export default function CourseLessonsAccordion({
                   }}
                 >
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       if (onAddLesson) {

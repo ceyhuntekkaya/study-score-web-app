@@ -21,6 +21,8 @@ export default function MaterialRenderer({
   const mediaType = material.mediaType;
   const content = material.content || '';
 
+  console.log(material)
+
   // IMAGE
   if (mediaType === 'IMAGE') {
     return (

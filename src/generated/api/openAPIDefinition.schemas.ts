@@ -298,17 +298,17 @@ export interface User {
   roleSet?: UserRoleSetItem[];
   authoritySet?: UserAuthoritySetItem[];
   enabled?: boolean;
-  authorities?: GrantedAuthority[];
-  institutionalLearner?: boolean;
-  individualLearner?: boolean;
-  accountNonExpired?: boolean;
-  accountNonLocked?: boolean;
-  credentialsNonExpired?: boolean;
   learner?: boolean;
   manager?: boolean;
   tutor?: boolean;
   writer?: boolean;
   admin?: boolean;
+  institutionalLearner?: boolean;
+  individualLearner?: boolean;
+  authorities?: GrantedAuthority[];
+  accountNonExpired?: boolean;
+  credentialsNonExpired?: boolean;
+  accountNonLocked?: boolean;
 }
 
 export type UserAssignmentStatus =
@@ -1029,10 +1029,20 @@ export interface CourseLessonPartQuizItem {
   orderNumber?: number;
 }
 
+export type CourseLessonPartQuizItemDetailDTOType =
+  (typeof CourseLessonPartQuizItemDetailDTOType)[keyof typeof CourseLessonPartQuizItemDetailDTOType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CourseLessonPartQuizItemDetailDTOType = {
+  QUESTION: "QUESTION",
+  QUESTION_GROUP: "QUESTION_GROUP",
+} as const;
+
 export interface CourseLessonPartQuizItemDetailDTO {
   id?: string;
-  questionId?: string;
-  questionGroupId?: string;
+  type?: CourseLessonPartQuizItemDetailDTOType;
+  question?: QuestionDetailDTO;
+  questionGroup?: QuestionGroupDetailDTO;
   orderNumber?: number;
 }
 
@@ -1280,6 +1290,50 @@ export interface Question {
   version?: number;
 }
 
+export type QuestionDetailDTOQuestionType =
+  (typeof QuestionDetailDTOQuestionType)[keyof typeof QuestionDetailDTOQuestionType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionDetailDTOQuestionType = {
+  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
+  TRUE_FALSE: "TRUE_FALSE",
+  FILL_IN_THE_BLANKS: "FILL_IN_THE_BLANKS",
+  SHORT_ANSWER: "SHORT_ANSWER",
+  MATCHING: "MATCHING",
+  ESSAY: "ESSAY",
+  ORDERING: "ORDERING",
+  MULTIPLE_RESPONSE: "MULTIPLE_RESPONSE",
+  HOT_SPOT: "HOT_SPOT",
+  DRAG_AND_DROP: "DRAG_AND_DROP",
+  AUDIO_RESPONSE: "AUDIO_RESPONSE",
+  VIDEO_RESPONSE: "VIDEO_RESPONSE",
+  IMAGE_RESPONSE: "IMAGE_RESPONSE",
+} as const;
+
+export type QuestionDetailDTOCategory =
+  (typeof QuestionDetailDTOCategory)[keyof typeof QuestionDetailDTOCategory];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionDetailDTOCategory = {
+  IELTS: "IELTS",
+  TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
+} as const;
+
+export interface QuestionDetailDTO {
+  id?: string;
+  name?: string;
+  questionType?: QuestionDetailDTOQuestionType;
+  orderNumber?: number;
+  maximumScore?: number;
+  subject?: string;
+  difficulty?: string;
+  category?: QuestionDetailDTOCategory;
+  courseSection?: string;
+}
+
 export type QuestionGroupStatus =
   (typeof QuestionGroupStatus)[keyof typeof QuestionGroupStatus];
 
@@ -1331,6 +1385,28 @@ export interface QuestionGroup {
   questions?: Question[];
   headers?: QuestionGroupHeader[];
   examItems?: ExamItem[];
+}
+
+export type QuestionGroupDetailDTOCategory =
+  (typeof QuestionGroupDetailDTOCategory)[keyof typeof QuestionGroupDetailDTOCategory];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionGroupDetailDTOCategory = {
+  IELTS: "IELTS",
+  TOEFL: "TOEFL",
+  SAT_ENGLISH: "SAT_ENGLISH",
+  SAT_MATH: "SAT_MATH",
+  GENERAL_ENGLISH: "GENERAL_ENGLISH",
+} as const;
+
+export interface QuestionGroupDetailDTO {
+  id?: string;
+  code?: string;
+  category?: QuestionGroupDetailDTOCategory;
+  maximumScore?: number;
+  difficultyLevel?: number;
+  courseSection?: string;
+  usagePart?: string;
 }
 
 export type QuestionGroupHeaderStatus =
@@ -1850,8 +1926,8 @@ export interface PageCurriculumDto {
   content?: CurriculumDto[];
   number?: number;
   sort?: SortObject;
-  pageable?: PageableObject;
   numberOfElements?: number;
+  pageable?: PageableObject;
   empty?: boolean;
 }
 
@@ -1859,9 +1935,9 @@ export interface PageableObject {
   offset?: number;
   sort?: SortObject;
   paged?: boolean;
+  unpaged?: boolean;
   pageNumber?: number;
   pageSize?: number;
-  unpaged?: boolean;
 }
 
 export interface SortObject {

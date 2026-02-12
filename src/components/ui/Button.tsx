@@ -15,6 +15,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
          className = "",
          variant = "primary",
          size = "md",
+         type = "button",
          ...props
      }, ref) => {
         // Tailwind CSS design matching styles
@@ -34,6 +35,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
         return (
             <button
+                type={type}
                 className={cn(
                     variants[variant],
                     sizes[size],

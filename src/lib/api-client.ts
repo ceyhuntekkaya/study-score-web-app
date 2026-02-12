@@ -12,10 +12,14 @@ export const AXIOS_INSTANCE = Axios.create({
 // Request interceptor - token ekleme + FormData için Content-Type düzeltmesi
 AXIOS_INSTANCE.interceptors.request.use(
   (config) => {
-    // FormData gönderiliyorsa Content-Type'ı set etme; tarayıcı multipart/form-data; boundary=... ekler.
-    // Aksi halde varsayılan application/json gider ve sunucu 415 döner.
-    if (config.data instanceof FormData && config.headers) {
-      delete config.headers['Content-Type'];
+    if (config.headers) {
+      // FormData gönderiliyorsa Content-Type'ı set etme; tarayıcı multipart/form-data; boundary=... ekler.
+      if (config.data instanceof FormData) {
+        delete config.headers['Content-Type'];
+      } else {
+        // Bazı sunucular application/json;charset=UTF-8 kabul etmiyor. Sadece application/json kullan.
+        config.headers['Content-Type'] = 'application/json';
+      }
     }
 
     // Auth endpoint'lerine token EKLEME (login, register, refresh-token)

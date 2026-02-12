@@ -242,6 +242,7 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
                 courseLessonPartId: partId,
                 uploadedFileId: materialWithDetails.uploadedFileId || editingMaterial.uploadedFile?.id,
                 uploadedFileName: materialWithDetails.uploadedFileName || editingMaterial.uploadedFile?.fileOriginalName || editingMaterial.uploadedFile?.fileName,
+                quizItems: materialWithDetails.quizItems,
               };
             })() : undefined}
             onSuccess={handleFormSuccess}
