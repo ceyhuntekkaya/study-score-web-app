@@ -5,6 +5,7 @@ import type { BaseQuestionProps } from './types';
 import QuestionBody from './QuestionBody';
 import QuestionAIChatButton from './QuestionAIChatButton';
 import QuestionSettingsSummary from './QuestionSettingsSummary';
+import { uploadQuestionResponseAudio } from '@/services/api/questionResponseMediaUpload';
 
 interface AudioResponseTemplateData {
   prompt?: string;
@@ -65,16 +66,18 @@ export default function AudioResponseQuestion({
   const [duration, setDuration] = useState<number>(0);
   const [retakeCount, setRetakeCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const durationRef = useRef(0);
 
   const {
     prompt,
-    maxRecordingDuration = 120,
-    minRecordingDuration = 30,
+    maxRecordingDuration = 300,
+    minRecordingDuration = 5,
     allowRetake = true,
     maxRetakes = 3,
   } = templateData;
@@ -105,34 +108,47 @@ export default function AudioResponseQuestion({
 
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const url = URL.createObjectURL(audioBlob);
+        const blobUrl = URL.createObjectURL(audioBlob);
+        const durationSeconds = durationRef.current;
         setRecordedAudio(audioBlob);
-        setAudioUrl(url);
-        setDuration(duration);
-
-        // Notify parent
-        if (onAnswerChange) {
-          onAnswerChange({
-            audioUrl: url, // In production, upload to server and get real URL
-            durationSeconds: duration,
-            mimeType: audioBlob.type,
-            fileSize: audioBlob.size,
-          });
-        }
-
-        // Stop all tracks
+        setAudioUrl(blobUrl);
+        setDuration(durationSeconds);
         stream.getTracks().forEach((track) => track.stop());
+
+        // Upload then notify parent with serve URL
+        if (!onAnswerChange) return;
+        setIsUploading(true);
+        setError(null);
+        uploadQuestionResponseAudio(audioBlob)
+          .then((serveUrl) => {
+            URL.revokeObjectURL(blobUrl);
+            setAudioUrl(serveUrl);
+            onAnswerChange({
+              audioUrl: serveUrl,
+              durationSeconds,
+              mimeType: audioBlob.type,
+              fileSize: audioBlob.size,
+            });
+          })
+          .catch((err) => {
+            console.error('Audio upload failed:', err);
+            setError('Upload failed. You can retake the recording.');
+          })
+          .finally(() => {
+            setIsUploading(false);
+          });
       };
 
       mediaRecorder.start();
       setIsRecording(true);
       setDuration(0);
+      durationRef.current = 0;
 
       // Start duration timer
       durationIntervalRef.current = setInterval(() => {
         setDuration((prev) => {
           const newDuration = prev + 1;
-          // Auto-stop at max duration
+          durationRef.current = newDuration;
           if (newDuration >= maxRecordingDuration) {
             stopRecording();
             return maxRecordingDuration;
@@ -426,6 +442,12 @@ export default function AudioResponseQuestion({
                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>
                   Recorded Audio
                 </div>
+                {isUploading && (
+                  <div style={{ fontSize: '14px', color: '#4d79ff', marginBottom: '8px' }}>
+                    <i className="feather-loader me-2"></i>
+                    Uploading…
+                  </div>
+                )}
                 <div style={{ fontSize: '24px', fontWeight: '600', color: '#4d79ff', fontFamily: 'monospace' }}>
                   {formatTime(duration)}
                 </div>
@@ -448,6 +470,7 @@ export default function AudioResponseQuestion({
                   <button
                     type="button"
                     onClick={handleRetake}
+                    disabled={isUploading}
                     style={{
                       padding: '10px 20px',
                       fontSize: '14px',

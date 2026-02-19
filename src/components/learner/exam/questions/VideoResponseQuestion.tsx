@@ -5,6 +5,7 @@ import type { BaseQuestionProps } from './types';
 import QuestionBody from './QuestionBody';
 import QuestionAIChatButton from './QuestionAIChatButton';
 import QuestionSettingsSummary from './QuestionSettingsSummary';
+import { uploadQuestionResponseVideo } from '@/services/api/questionResponseMediaUpload';
 
 interface VideoResponseTemplateData {
   prompt?: string;
@@ -69,12 +70,14 @@ export default function VideoResponseQuestion({
   const [retakeCount, setRetakeCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [isPreviewing, setIsPreviewing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const videoChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const videoPreviewRef = useRef<HTMLVideoElement>(null);
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const durationRef = useRef(0);
 
   const {
     prompt,
@@ -138,20 +141,20 @@ export default function VideoResponseQuestion({
 
       mediaRecorder.onstop = async () => {
         const videoBlob = new Blob(videoChunksRef.current, { type: 'video/webm' });
-        const url = URL.createObjectURL(videoBlob);
+        const blobUrl = URL.createObjectURL(videoBlob);
+        const durationSeconds = durationRef.current;
         setRecordedVideo(videoBlob);
-        setVideoUrl(url);
-        setDuration(duration);
+        setVideoUrl(blobUrl);
+        setDuration(durationSeconds);
 
-        // Get resolution from video element
         let resolution = 'Unknown';
         if (videoPreviewRef.current) {
           const video = videoPreviewRef.current;
           resolution = `${video.videoWidth}x${video.videoHeight}`;
         }
 
-        // Generate thumbnail (first frame)
-        let thumbnailUrl: string | undefined;
+        // Thumbnail as Blob for upload (before stopping stream)
+        let thumbnailBlob: Blob | undefined;
         if (videoPreviewRef.current) {
           const canvas = document.createElement('canvas');
           const video = videoPreviewRef.current;
@@ -160,36 +163,49 @@ export default function VideoResponseQuestion({
           const ctx = canvas.getContext('2d');
           if (ctx) {
             ctx.drawImage(video, 0, 0);
-            thumbnailUrl = canvas.toDataURL('image/jpeg');
+            thumbnailBlob = await new Promise<Blob | undefined>((resolve) => {
+              canvas.toBlob((b) => resolve(b ?? undefined), 'image/jpeg', 0.85);
+            });
           }
         }
 
-        // Notify parent
-        if (onAnswerChange) {
+        stream.getTracks().forEach((track) => track.stop());
+        setIsPreviewing(false);
+
+        if (!onAnswerChange) return;
+        setIsUploading(true);
+        setError(null);
+        try {
+          const { videoUrl: serveVideoUrl, thumbnailUrl: serveThumbUrl } =
+            await uploadQuestionResponseVideo(videoBlob, thumbnailBlob);
+          URL.revokeObjectURL(blobUrl);
+          setVideoUrl(serveVideoUrl);
           onAnswerChange({
-            videoUrl: url, // In production, upload to server and get real URL
-            durationSeconds: duration,
+            videoUrl: serveVideoUrl,
+            durationSeconds,
             mimeType: videoBlob.type,
             fileSize: videoBlob.size,
             resolution,
-            thumbnailUrl,
+            thumbnailUrl: serveThumbUrl,
           });
+        } catch (err) {
+          console.error('Video upload failed:', err);
+          setError('Upload failed. You can retake the recording.');
+        } finally {
+          setIsUploading(false);
         }
-
-        // Stop all tracks
-        stream.getTracks().forEach((track) => track.stop());
-        setIsPreviewing(false);
       };
 
       mediaRecorder.start();
       setIsRecording(true);
       setDuration(0);
+      durationRef.current = 0;
 
       // Start duration timer
       durationIntervalRef.current = setInterval(() => {
         setDuration((prev) => {
           const newDuration = prev + 1;
-          // Auto-stop at max duration
+          durationRef.current = newDuration;
           if (newDuration >= maxRecordingDuration) {
             stopRecording();
             return maxRecordingDuration;
@@ -223,6 +239,7 @@ export default function VideoResponseQuestion({
       durationIntervalRef.current = setInterval(() => {
         setDuration((prev) => {
           const newDuration = prev + 1;
+          durationRef.current = newDuration;
           if (newDuration >= maxRecordingDuration) {
             stopRecording();
             return maxRecordingDuration;
@@ -530,6 +547,12 @@ export default function VideoResponseQuestion({
                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>
                   Recorded Video
                 </div>
+                {isUploading && (
+                  <div style={{ fontSize: '14px', color: '#4d79ff', marginBottom: '8px' }}>
+                    <i className="feather-loader me-2"></i>
+                    Uploading…
+                  </div>
+                )}
                 <div style={{ fontSize: '24px', fontWeight: '600', color: '#4d79ff', fontFamily: 'monospace' }}>
                   {formatTime(duration)}
                 </div>
@@ -558,6 +581,7 @@ export default function VideoResponseQuestion({
                   <button
                     type="button"
                     onClick={handleRetake}
+                    disabled={isUploading}
                     style={{
                       padding: '10px 20px',
                       fontSize: '14px',

@@ -50,6 +50,7 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               display: 'block',
               margin: '0 auto',
+              border: 'none',
             }}
             onError={(e) => {
               console.error('Image load error:', { content, imageSrc });

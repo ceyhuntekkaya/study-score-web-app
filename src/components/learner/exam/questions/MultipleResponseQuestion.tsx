@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { BaseQuestionProps } from './types';
 import QuestionBody from './QuestionBody';
 import QuestionAIChatButton from './QuestionAIChatButton';
@@ -58,20 +58,9 @@ export default function MultipleResponseQuestion({
   );
   const [choices, setChoices] = useState<Choice[]>([]);
   const correctIds = choices.filter((c) => c.isCorrect).map((c) => c.id);
+  const initializedForQuestionIdRef = useRef<string | null>(null);
 
-  // Initialize and shuffle choices if needed
-  useEffect(() => {
-    let processedChoices = [...(templateData.options?.choices || [])];
-    
-    // Shuffle if enabled
-    if (templateData.shuffleChoices) {
-      processedChoices = shuffleArray([...processedChoices]);
-    }
-    
-    setChoices(processedChoices);
-  }, [templateData]);
-
-  // Shuffle array function
+  // Shuffle array function (stable reference)
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -80,6 +69,19 @@ export default function MultipleResponseQuestion({
     }
     return shuffled;
   };
+
+  // Initialize and shuffle choices only once per question (so order doesn't change after answering)
+  useEffect(() => {
+    if (initializedForQuestionIdRef.current === questionId) return;
+    const rawChoices = templateData.options?.choices ?? [];
+    if (rawChoices.length === 0) return;
+    let processedChoices = [...rawChoices];
+    if (templateData.shuffleChoices) {
+      processedChoices = shuffleArray(processedChoices);
+    }
+    setChoices(processedChoices);
+    initializedForQuestionIdRef.current = questionId;
+  }, [questionId, templateData.options?.choices, templateData.shuffleChoices]);
 
   // Handle option toggle (no-op in preview)
   const handleOptionToggle = (optionId: string) => {

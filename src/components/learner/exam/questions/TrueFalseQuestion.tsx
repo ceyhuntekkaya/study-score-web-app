@@ -86,10 +86,18 @@ export default function TrueFalseQuestion({
     return notGivenLabel;
   };
 
+  const templateQuestionText = (templateData.questionText ?? '').trim();
+
   return (
     <div className="true-false-question">
-
- <QuestionBody questionText={questionText} />
+      <QuestionBody questionText={questionText} />
+      {templateQuestionText && (
+        <div
+          className="question-text mb-3"
+          style={{ fontSize: '16px', fontWeight: '500', color: '#333' }}
+          dangerouslySetInnerHTML={{ __html: templateQuestionText }}
+        />
+      )}
       {/* True / False / Not Given Options */}
       <div className="true-false-options">
         <div className="row g-3">
