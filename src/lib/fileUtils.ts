@@ -60,6 +60,17 @@ export function getFilePreviewUrl(path: string): string {
   return `${base}/files/serve/${normalized}`;
 }
 
+/**
+ * API'den gelen medya content'i için URL.
+ * Zaten tam URL (http/https veya //) ise olduğu gibi döner;
+ * path ise FileRestController serve URL'ine çevirir (GET /files/serve/{path}).
+ */
+export function getMediaServeUrl(content: string | undefined | null): string {
+  if (!content) return "";
+  if (content.startsWith("http") || content.startsWith("//")) return content;
+  return getFilePreviewUrl(content);
+}
+
 /** Dosyanın MIME tipine göre kategori */
 export function getCategoryFromFile(file: File): FileTypeCategory {
   const type = file.type.toLowerCase();

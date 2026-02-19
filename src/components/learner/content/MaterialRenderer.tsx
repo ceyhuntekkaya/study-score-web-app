@@ -1,6 +1,8 @@
 'use client';
 
 import type { CourseLessonPartMaterialDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
+import { getMediaServeUrl } from '@/lib/fileUtils';
+import AudioPlayer from '@/components/ui/AudioPlayer';
 import QuizItemsRenderer from './QuizItemsRenderer';
 
 interface MaterialRendererProps {
@@ -38,7 +40,7 @@ export default function MaterialRenderer({
         {content && (
           <div className="image-wrapper">
             <img
-              src={"/assets/" + content}
+              src={getMediaServeUrl(content)}
               alt={material.name || 'Image'}
               style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
               onError={(e) => {
@@ -94,7 +96,7 @@ export default function MaterialRenderer({
                 }}
                 controls
                 style={{ width: '100%', borderRadius: '8px' }}
-                src={content}
+                src={getMediaServeUrl(content)}
                 onError={(e) => {
                   console.error('Video load error:', content);
                 }}
@@ -113,19 +115,8 @@ export default function MaterialRenderer({
     return (
       <div className="material-item material-audio mb--30">
         {content && (
-          <div className="audio-wrapper">
-            <audio
-              ref={(el) => {
-                if (el && material.id && onVideoRef) {
-                  onVideoRef(material.id, el);
-                }
-              }}
-              controls
-              style={{ width: '100%' }}
-            >
-              <source src={content} />
-              Your browser does not support the audio tag.
-            </audio>
+          <div className="audio-wrapper" style={{ maxWidth: '600px' }}>
+            <AudioPlayer src={getMediaServeUrl(content)} minHeight={72} />
           </div>
         )}
       </div>
@@ -146,44 +137,27 @@ export default function MaterialRenderer({
     );
   }
 
-  // PDF
+  // PDF – sadece indirme butonu (ön izleme yok; bazı tarayıcılar iframe ile PDF desteklemiyor)
   if (mediaType === 'PDF') {
     return (
       <div className="material-item material-pdf mb--30">
         {content && (
           <div className="pdf-wrapper">
-            <iframe
-              src={content}
-              style={{ width: '100%', height: '600px', border: 'none', borderRadius: '8px' }}
-              title={material.name || 'PDF Document'}
-              onError={(e) => {
-                console.error('PDF load error:', content);
-              }}
-              onLoad={() => {
-                if (material.id && onPdfLoad) {
-                  onPdfLoad(material.id);
+            <a
+              href={getMediaServeUrl(content)}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                if (material.id && onPdfDownload) {
+                  onPdfDownload(material.id);
                 }
               }}
-            />
-            {material.id && (
-              <div className="mt-3">
-                <a
-                  href={content}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    if (material.id && onPdfDownload) {
-                      onPdfDownload(material.id);
-                    }
-                  }}
-                  className="rbt-btn btn-md bg-primary"
-                >
-                  <span className="btn-text">Download PDF</span>
-                  <span className="btn-icon"><i className="feather-download"></i></span>
-                </a>
-              </div>
-            )}
+              className="rbt-btn btn-md bg-primary"
+            >
+              <span className="btn-text">Download PDF</span>
+              <span className="btn-icon"><i className="feather-download"></i></span>
+            </a>
           </div>
         )}
       </div>
@@ -197,7 +171,7 @@ export default function MaterialRenderer({
         {content && (
           <div className="link-wrapper">
             <a
-              href={content}
+              href={getMediaServeUrl(content)}
               target="_blank"
               rel="noopener noreferrer"
               className="rbt-btn btn-md bg-primary"

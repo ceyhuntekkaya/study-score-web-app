@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useGetAllCourses } from '@/generated/api/course-rest-controller/course-rest-controller';
 import type { Course } from '@/generated/api/openAPIDefinition.schemas';
+import { getMediaServeUrl } from '@/lib/fileUtils';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -96,7 +97,7 @@ export default function CategorySection() {
                       <div className="thumbnail">
                         <Link href={`/courses/${course.id}`}>
                           <Image 
-                            src={'/assets/'+course.imageUrl || '/assets/images/category/image/default.jpg'} 
+                            src={course.imageUrl ? getMediaServeUrl(course.imageUrl) : '/assets/images/category/image/default.jpg'} 
                             alt={course.name || 'Course'} 
                             width={300} 
                             height={200}

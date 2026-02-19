@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useGetDashboard } from '@/generated/api/learner-activity-rest-controller/learner-activity-rest-controller';
+import { getMediaServeUrl } from '@/lib/fileUtils';
 
 // Type definitions for dashboard data
 type ActiveCourseInfo = {
@@ -144,7 +145,7 @@ export default function EnrolledCoursesPage() {
                     <div className="rbt-card-img">
                       <Link href={`/courses/${course.courseId}`}>
                         <Image
-                          src={'/assets/'+course.imageUrl || '/assets/images/course/course-online-01.jpg'}
+                          src={course.imageUrl ? getMediaServeUrl(course.imageUrl) : '/assets/images/course/course-online-01.jpg'}
                           alt={course.courseName || 'Course'}
                           width={400}
                           height={250}

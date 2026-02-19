@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import type { BaseQuestionProps } from './types';
+import { getMediaServeUrl } from '@/lib/fileUtils';
 import QuestionBody from './QuestionBody';
 import QuestionAIChatButton from './QuestionAIChatButton';
 import QuestionSettingsSummary from './QuestionSettingsSummary';
@@ -170,7 +171,7 @@ export default function MatchingQuestion({
                         {leftItem.mediaUrl && (
                           <div className="item-media mt-2">
                             <img
-                              src={leftItem.mediaUrl.startsWith('http') ? leftItem.mediaUrl : `/assets/${leftItem.mediaUrl}`}
+                              src={getMediaServeUrl(leftItem.mediaUrl)}
                               alt={leftItem.text}
                               style={{
                                 maxWidth: '100%',
@@ -268,7 +269,7 @@ export default function MatchingQuestion({
                       {rightItem.mediaUrl && (
                         <div className="option-media mt-2">
                           <img
-                            src={rightItem.mediaUrl.startsWith('http') ? rightItem.mediaUrl : `/assets/${rightItem.mediaUrl}`}
+                            src={getMediaServeUrl(rightItem.mediaUrl)}
                             alt={rightItem.text}
                             style={{
                               maxWidth: '100%',

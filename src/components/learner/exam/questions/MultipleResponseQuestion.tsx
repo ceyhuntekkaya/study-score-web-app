@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import type { BaseQuestionProps } from './types';
+import { getMediaServeUrl } from '@/lib/fileUtils';
 import QuestionBody from './QuestionBody';
 import QuestionAIChatButton from './QuestionAIChatButton';
 import QuestionSettingsSummary from './QuestionSettingsSummary';
@@ -107,7 +108,7 @@ export default function MultipleResponseQuestion({
         return (
           <div className="choice-media mb-2" style={{ textAlign: 'center' }}>
             <img
-              src={choice.mediaUrl.startsWith('http') ? choice.mediaUrl : `/assets/${choice.mediaUrl}`}
+              src={getMediaServeUrl(choice.mediaUrl)}
               alt={choice.text}
               style={{
                 maxWidth: '100%',
@@ -127,7 +128,7 @@ export default function MultipleResponseQuestion({
         return (
           <div className="choice-media mb-2">
             <audio controls style={{ width: '100%' }}>
-              <source src={choice.mediaUrl} />
+              <source src={getMediaServeUrl(choice.mediaUrl)} />
               Your browser does not support the audio tag.
             </audio>
           </div>
@@ -137,7 +138,7 @@ export default function MultipleResponseQuestion({
         return (
           <div className="choice-media mb-2">
             <video controls style={{ width: '100%', maxHeight: '300px', borderRadius: '8px' }}>
-              <source src={choice.mediaUrl} />
+              <source src={getMediaServeUrl(choice.mediaUrl)} />
               Your browser does not support the video tag.
             </video>
           </div>

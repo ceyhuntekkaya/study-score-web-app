@@ -1,6 +1,7 @@
 'use client';
 
 import AudioPlayer from '@/components/ui/AudioPlayer';
+import { getMediaServeUrl } from '@/lib/fileUtils';
 
 interface Header {
   mediaType: 'IMAGE' | 'VIDEO' | 'AUDIO' | 'DOCUMENT' | 'PDF' | 'TEXT' | 'LINK' | 'OTHER';
@@ -20,13 +21,8 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
 
   // IMAGE
   if (mediaType === 'IMAGE') {
-    const imageSrc = content?.startsWith('http') || content?.startsWith('//') 
-      ? content 
-      : content 
-        ? `/assets/${content}` 
-        : '';
-    
-    
+    const imageSrc = getMediaServeUrl(content ?? '');
+
     if (!content) {
       return (
         <div className="header-item header-image mb--20">
@@ -127,7 +123,7 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
                   boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                   display: 'block',
                 }}
-                src={content}
+                src={getMediaServeUrl(content)}
                 onError={(e) => {
                   console.error('Video load error:', content);
                 }}
@@ -147,7 +143,7 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
       <div className="header-item header-audio mb--20">
         {content && (
           <div className="audio-wrapper" style={{ maxWidth: '600px', margin: '0 auto' }}>
-            <AudioPlayer src={content} minHeight={72} />
+            <AudioPlayer src={getMediaServeUrl(content)} minHeight={72} />
           </div>
         )}
       </div>
@@ -178,7 +174,7 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
         {content && (
           <div className="pdf-wrapper">
             <a
-              href={content}
+              href={getMediaServeUrl(content)}
               download
               target="_blank"
               rel="noopener noreferrer"
@@ -200,7 +196,7 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
         {content && (
           <div className="link-wrapper">
             <a
-              href={content}
+              href={getMediaServeUrl(content)}
               target="_blank"
               rel="noopener noreferrer"
               className="rbt-btn btn-md bg-primary"

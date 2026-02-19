@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import ModalPanel from '@/components/ui/ModalPanel';
+import { getMediaServeUrl } from '@/lib/fileUtils';
 import CourseReportDemo from '@/components/learner/course-report';
 
 // Type definition for ActiveCourseInfo (temporary until generated types are available)
@@ -101,7 +102,7 @@ export default function ActiveCourseCard({ course }: ActiveCourseCardProps) {
             <div className="rbt-card-img h-100" style={{ minHeight: '200px' }}>
               {imageUrl ? (
                 <Image
-                  src={"/assets/"+imageUrl}
+                  src={getMediaServeUrl(imageUrl)}
                   alt={courseName || 'Course'}
                   width={400}
                   height={300}

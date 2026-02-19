@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { getFilePreviewUrl } from '@/lib/fileUtils';
+import { getMediaServeUrl } from '@/lib/fileUtils';
 import type { BaseQuestionProps } from './types';
 import QuestionBody from './QuestionBody';
 import QuestionAIChatButton from './QuestionAIChatButton';
@@ -324,7 +324,7 @@ export default function HotSpotQuestion({
         {imageUrl ? (
           <img
             ref={imageRef}
-            src={imageUrl.startsWith('http') ? imageUrl : getFilePreviewUrl(imageUrl)}
+            src={getMediaServeUrl(imageUrl)}
             alt="Hot spot image"
             onLoad={handleImageLoad}
             style={{
