@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 interface Choice {
   id: string;
@@ -27,12 +31,12 @@ interface MultipleResponseTemplateData {
   };
 }
 
-interface MultipleResponseQuestionProps {
+interface MultipleResponseQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: MultipleResponseTemplateData;
   onAnswerChange?: (answerData: { selectedOptionIds: string[] }) => void;
   initialAnswer?: { selectedOptionIds: string[] } | null;
-  questionId?: string; // Unique identifier for this question
+  questionId?: string;
 }
 
 /**
@@ -45,12 +49,15 @@ export default function MultipleResponseQuestion({
   onAnswerChange,
   initialAnswer,
   questionId = 'multiple-response',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: MultipleResponseQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>(
     initialAnswer?.selectedOptionIds || []
   );
   const [choices, setChoices] = useState<Choice[]>([]);
-
+  const correctIds = choices.filter((c) => c.isCorrect).map((c) => c.id);
 
   // Initialize and shuffle choices if needed
   useEffect(() => {
@@ -74,8 +81,9 @@ export default function MultipleResponseQuestion({
     return shuffled;
   };
 
-  // Handle option toggle (no min/max limit)
+  // Handle option toggle (no-op in preview)
   const handleOptionToggle = (optionId: string) => {
+    if (isPreview) return;
     setSelectedOptionIds((prev) => {
       const newSelection = prev.includes(optionId)
         ? prev.filter((id) => id !== optionId)
@@ -140,15 +148,10 @@ export default function MultipleResponseQuestion({
 
   return (
     <div className="multiple-response-question">
-      {/* Question Text */}
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-      </div>
 
-      {/* Selection counter */}
-      {selectedOptionIds.length > 0 && (
+<QuestionBody questionText={questionText} />
+      {/* Selection counter (sadece uygulama modunda) */}
+      {selectedOptionIds.length > 0 && !isPreview && (
         <div className="selection-counter mb--20" style={{ 
           padding: '10px 15px', 
           backgroundColor: '#f0f4ff', 
@@ -163,9 +166,10 @@ export default function MultipleResponseQuestion({
       )}
 
       {/* Choices */}
-      <div className="choices-container">
+      <div className="choices-container" style={isPreview ? { pointerEvents: 'none' } : undefined}>
         {choices.map((choice) => {
           const isSelected = selectedOptionIds.includes(choice.id);
+          const isCorrectChoice = choice.isCorrect;
           
           return (
             <div
@@ -173,10 +177,10 @@ export default function MultipleResponseQuestion({
               className={`choice-item mb--15 ${isSelected ? 'selected' : ''}`}
               style={{
                 padding: '15px',
-                border: `2px solid ${isSelected ? '#4d79ff' : '#e0e0e0'}`,
+                border: `2px solid ${isSelected ? '#4d79ff' : isCorrectChoice && isPreview ? '#22c55e' : '#e0e0e0'}`,
                 borderRadius: '8px',
-                backgroundColor: isSelected ? '#f0f4ff' : '#ffffff',
-                cursor: 'pointer',
+                backgroundColor: isSelected ? '#f0f4ff' : isCorrectChoice && isPreview ? '#f0fdf4' : '#ffffff',
+                cursor: isPreview ? 'default' : 'pointer',
                 transition: 'all 0.2s ease',
               }}
               onClick={() => handleOptionToggle(choice.id)}
@@ -233,6 +237,19 @@ export default function MultipleResponseQuestion({
           );
         })}
       </div>
+
+      {isPreview && correctIds.length > 0 && (
+        <div className="mt-3 p-3 rounded small" style={{ backgroundColor: '#f0fdf4', border: '1px solid #22c55e', color: '#166534' }}>
+          <strong>Doğru seçenekler:</strong> {choices.filter((c) => c.isCorrect).map((c) => c.text).join(', ')}
+        </div>
+      )}
+      {isPreview && (
+        <QuestionSettingsSummary>
+          Birden fazla doğru seçenek. {templateData.shuffleChoices ? 'Seçenekler karıştırılır.' : ''}
+        </QuestionSettingsSummary>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
     </div>
   );
 }

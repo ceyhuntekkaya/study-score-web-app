@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
 import type { CourseLessonPartMaterialDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
+import QuizItemsRenderer from './QuizItemsRenderer';
 
 interface MaterialRendererProps {
   material: CourseLessonPartMaterialDetailDTO;
@@ -21,7 +21,15 @@ export default function MaterialRenderer({
   const mediaType = material.mediaType;
   const content = material.content || '';
 
-  console.log(material)
+  // QUIZ: If material has quizItems, show only quiz items (ignore other media types)
+  if (material.quizItems && material.quizItems.length > 0) {
+    return (
+      <QuizItemsRenderer
+        quizItems={material.quizItems}
+        courseLessonPartMaterialId={material.id}
+      />
+    );
+  }
 
   // IMAGE
   if (mediaType === 'IMAGE') {

@@ -303,12 +303,12 @@ export interface User {
   tutor?: boolean;
   writer?: boolean;
   admin?: boolean;
+  accountNonExpired?: boolean;
+  accountNonLocked?: boolean;
+  credentialsNonExpired?: boolean;
   institutionalLearner?: boolean;
   individualLearner?: boolean;
   authorities?: GrantedAuthority[];
-  accountNonExpired?: boolean;
-  credentialsNonExpired?: boolean;
-  accountNonLocked?: boolean;
 }
 
 export type UserAssignmentStatus =
@@ -384,6 +384,8 @@ export interface QuestionCreateRequest {
    */
   name: string;
   questionGroupId?: string;
+  /** @minimum 1 */
+  orderNumber?: number;
   questionType: QuestionCreateRequestQuestionType;
   /**
    * @minimum 0.1
@@ -1283,7 +1285,6 @@ export interface Question {
   difficulty?: string;
   category?: QuestionCategory;
   courseSection?: string;
-  curriculumContents?: CurriculumContent[];
   headers?: QuestionGroupHeader[];
   examItems?: ExamItem[];
   templateData?: string;
@@ -1332,6 +1333,8 @@ export interface QuestionDetailDTO {
   difficulty?: string;
   category?: QuestionDetailDTOCategory;
   courseSection?: string;
+  templateData?: string;
+  headers?: QuestionHeaderDetailDTO[];
 }
 
 export type QuestionGroupStatus =
@@ -1381,7 +1384,6 @@ export interface QuestionGroup {
   difficultyLevel?: number;
   courseSection?: string;
   usagePart?: string;
-  curriculumContents?: CurriculumContent[];
   questions?: Question[];
   headers?: QuestionGroupHeader[];
   examItems?: ExamItem[];
@@ -1407,6 +1409,8 @@ export interface QuestionGroupDetailDTO {
   difficultyLevel?: number;
   courseSection?: string;
   usagePart?: string;
+  headers?: QuestionHeaderDetailDTO[];
+  questions?: QuestionDetailDTO[];
 }
 
 export type QuestionGroupHeaderStatus =
@@ -1458,6 +1462,27 @@ export interface QuestionGroupHeader {
   orderNumber?: number;
   mediaType?: QuestionGroupHeaderMediaType;
   content?: string;
+}
+
+export type QuestionHeaderDetailDTOMediaType =
+  (typeof QuestionHeaderDetailDTOMediaType)[keyof typeof QuestionHeaderDetailDTOMediaType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionHeaderDetailDTOMediaType = {
+  IMAGE: "IMAGE",
+  VIDEO: "VIDEO",
+  AUDIO: "AUDIO",
+  DOCUMENT: "DOCUMENT",
+  PDF: "PDF",
+  TEXT: "TEXT",
+  LINK: "LINK",
+  OTHER: "OTHER",
+} as const;
+
+export interface QuestionHeaderDetailDTO {
+  mediaType?: QuestionHeaderDetailDTOMediaType;
+  content?: string;
+  orderNumber?: number;
 }
 
 export type UploadedFileStatus =
@@ -1569,6 +1594,28 @@ export interface CourseLessonDTO {
   childLessons?: CourseLessonDTO[];
 }
 
+export type QuestionResponseRequestContextType =
+  (typeof QuestionResponseRequestContextType)[keyof typeof QuestionResponseRequestContextType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const QuestionResponseRequestContextType = {
+  EXAM_ATTEMPT: "EXAM_ATTEMPT",
+  COURSE_LESSON_PART_MATERIAL: "COURSE_LESSON_PART_MATERIAL",
+} as const;
+
+export interface QuestionResponseRequest {
+  /** @minLength 1 */
+  userId: string;
+  /** @minLength 1 */
+  questionId: string;
+  contextType: QuestionResponseRequestContextType;
+  examAttemptId?: string;
+  courseLessonPartMaterialId?: string;
+  questionGroupId?: string;
+  answerData?: unknown;
+  timeSpentSeconds?: number;
+}
+
 export interface UpdatePartProgressRequest {
   partId?: string;
   progressPercentage?: number;
@@ -1583,6 +1630,11 @@ export interface UpdateMaterialProgressRequest {
   totalDurationSeconds?: number;
   watchDurationSeconds?: number;
   isDownloaded?: boolean;
+}
+
+export interface QuestionLlmTextRequest {
+  /** @minLength 1 */
+  questionId: string;
 }
 
 export type ExamCreateRequestCategory =
@@ -1918,16 +1970,16 @@ export interface AuthenticationRequest {
 }
 
 export interface PageCurriculumDto {
-  totalElements?: number;
   totalPages?: number;
+  totalElements?: number;
   first?: boolean;
   last?: boolean;
   size?: number;
   content?: CurriculumDto[];
   number?: number;
   sort?: SortObject;
-  numberOfElements?: number;
   pageable?: PageableObject;
+  numberOfElements?: number;
   empty?: boolean;
 }
 
@@ -1935,9 +1987,9 @@ export interface PageableObject {
   offset?: number;
   sort?: SortObject;
   paged?: boolean;
-  unpaged?: boolean;
   pageNumber?: number;
   pageSize?: number;
+  unpaged?: boolean;
 }
 
 export interface SortObject {
@@ -1951,6 +2003,12 @@ export type GetQuestion200 = { [key: string]: unknown };
 export type UpdateQuestion200 = { [key: string]: unknown };
 
 export type DeleteQuestion200 = { [key: string]: unknown };
+
+export type GetById200 = { [key: string]: unknown };
+
+export type Update200 = { [key: string]: unknown };
+
+export type DeleteById200 = { [key: string]: unknown };
 
 export type GetQuestionGroup200 = { [key: string]: unknown };
 
@@ -1978,6 +2036,17 @@ export type MoveContentParams = {
   newParentId: string;
 };
 
+export type GetResponsesParams = {
+  contextType?: string;
+  examAttemptId?: string;
+  courseLessonPartMaterialId?: string;
+  userId?: string;
+};
+
+export type GetResponses200 = { [key: string]: unknown };
+
+export type SaveOrUpdate200 = { [key: string]: unknown };
+
 export type UpdatePartProgress200 = { [key: string]: unknown };
 
 export type UpdateMaterialProgress200 = { [key: string]: unknown };
@@ -1989,6 +2058,10 @@ export type UploadFileParams = {
 };
 
 export type CreateQuestion200 = { [key: string]: unknown };
+
+export type CreateOrUpdate200 = { [key: string]: unknown };
+
+export type ConvertAllQuestions200 = { [key: string]: unknown };
 
 export type ListQuestionGroupsParams = {
   page?: number;
@@ -2060,6 +2133,10 @@ export type GetStandaloneQuestions200 = { [key: string]: unknown };
 export type GetQuestionsByGroup200 = { [key: string]: unknown };
 
 export type CountQuestionsInGroup200 = { [key: string]: unknown };
+
+export type GetByQuestionId200 = { [key: string]: unknown };
+
+export type DeleteByQuestionId200 = { [key: string]: unknown };
 
 export type GetExamWithUserDataParams = {
   userId?: string;

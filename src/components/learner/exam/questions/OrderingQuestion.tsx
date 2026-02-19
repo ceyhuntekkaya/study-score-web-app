@@ -2,13 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import type { OrderingTemplateData, OrderingItemTemplate } from '@/components/admin/templateForms/types';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 /** Internal item with stable id for drag/drop and answer; API sends items without id. */
 interface OrderingItemWithId extends OrderingItemTemplate {
   id: string;
 }
 
-interface OrderingQuestionProps {
+interface OrderingQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: OrderingTemplateData;
   onAnswerChange?: (answerData: { orderedItemIds: string[] }) => void;
@@ -34,7 +38,10 @@ export default function OrderingQuestion({
   onAnswerChange,
   initialAnswer,
   questionId = 'ordering',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: OrderingQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [items, setItems] = useState<OrderingItemWithId[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -42,6 +49,7 @@ export default function OrderingQuestion({
   const rawItems = templateData.options?.items ?? [];
   const shuffleItems = templateData.shuffleItems ?? false;
   const originalItems = withStableIds(rawItems);
+  const correctOrderText = originalItems.map((i) => i.text).join(' → ');
 
   // Stable deps to avoid infinite loop when parent passes new object/array refs every render
   const itemsSignature = JSON.stringify(rawItems);
@@ -78,19 +86,20 @@ export default function OrderingQuestion({
     return shuffled;
   };
 
-  // Handle drag start
+  // Handle drag start (no-op in preview)
   const handleDragStart = (index: number) => {
+    if (isPreview) return;
     setDraggedIndex(index);
   };
 
-  // Handle drag over
   const handleDragOver = (e: React.DragEvent, index: number) => {
+    if (isPreview) return;
     e.preventDefault();
     setDragOverIndex(index);
   };
 
-  // Handle drop
   const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    if (isPreview) return;
     e.preventDefault();
     
     if (draggedIndex === null || draggedIndex === dropIndex) {
@@ -101,84 +110,56 @@ export default function OrderingQuestion({
 
     const newItems = [...items];
     const draggedItem = newItems[draggedIndex];
-    
-    // Remove from old position
     newItems.splice(draggedIndex, 1);
-    
-    // Insert at new position
     newItems.splice(dropIndex, 0, draggedItem);
-    
     setItems(newItems);
     setDraggedIndex(null);
     setDragOverIndex(null);
-
-    // Notify parent
     if (onAnswerChange) {
-      onAnswerChange({
-        orderedItemIds: newItems.map((item) => item.id),
-      });
+      onAnswerChange({ orderedItemIds: newItems.map((item) => item.id) });
     }
   };
 
-  // Handle drag end
   const handleDragEnd = () => {
     setDraggedIndex(null);
     setDragOverIndex(null);
   };
 
-  // Move item up
   const moveItemUp = (index: number) => {
-    if (index === 0) return;
-    
+    if (isPreview || index === 0) return;
     const newItems = [...items];
     [newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]];
     setItems(newItems);
-
-    if (onAnswerChange) {
-      onAnswerChange({
-        orderedItemIds: newItems.map((item) => item.id),
-      });
-    }
+    if (onAnswerChange) onAnswerChange({ orderedItemIds: newItems.map((item) => item.id) });
   };
 
-  // Move item down
   const moveItemDown = (index: number) => {
-    if (index === items.length - 1) return;
-    
+    if (isPreview || index === items.length - 1) return;
     const newItems = [...items];
     [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
     setItems(newItems);
-
-    if (onAnswerChange) {
-      onAnswerChange({
-        orderedItemIds: newItems.map((item) => item.id),
-      });
-    }
+    if (onAnswerChange) onAnswerChange({ orderedItemIds: newItems.map((item) => item.id) });
   };
 
   return (
     <div className="ordering-question">
-      {/* Question Text */}
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-      </div>
 
-      {/* Instructions */}
-      <div className="ordering-instructions mb--20" style={{
-        padding: '12px 15px',
-        backgroundColor: '#f0f4ff',
-        borderRadius: '6px',
-        fontSize: '14px',
-        color: '#4d79ff',
-      }}>
-        <i className="feather-move me-2"></i>
-        Drag and drop items to arrange them in the correct order. You can also use the arrow buttons.
-      </div>
+<QuestionBody questionText={questionText} />
+      {!isPreview && (
+        <div className="ordering-instructions mb--20" style={{
+          padding: '12px 15px',
+          backgroundColor: '#f0f4ff',
+          borderRadius: '6px',
+          fontSize: '14px',
+          color: '#4d79ff',
+        }}>
+          <i className="feather-move me-2"></i>
+          Drag and drop items to arrange them in the correct order. You can also use the arrow buttons.
+        </div>
+      )}
 
       {/* Orderable Items */}
-      <div className="ordering-items">
+      <div className="ordering-items" style={isPreview ? { pointerEvents: 'none' } : undefined}>
         {items.map((item, index) => {
           const isDragging = draggedIndex === index;
           const isDragOver = dragOverIndex === index;
@@ -186,7 +167,7 @@ export default function OrderingQuestion({
           return (
             <div
               key={item.id}
-              draggable
+              draggable={!isPreview}
               onDragStart={() => handleDragStart(index)}
               onDragOver={(e) => handleDragOver(e, index)}
               onDrop={(e) => handleDrop(e, index)}
@@ -197,7 +178,7 @@ export default function OrderingQuestion({
                 border: `2px solid ${isDragOver ? '#4d79ff' : isDragging ? '#999' : '#e0e0e0'}`,
                 borderRadius: '8px',
                 backgroundColor: isDragOver ? '#f0f4ff' : isDragging ? '#f5f5f5' : '#ffffff',
-                cursor: 'move',
+                cursor: isPreview ? 'default' : 'move',
                 transition: 'all 0.2s ease',
                 opacity: isDragging ? 0.5 : 1,
                 display: 'flex',
@@ -232,7 +213,8 @@ export default function OrderingQuestion({
                 {item.text}
               </div>
 
-              {/* Move Buttons */}
+              {/* Move Buttons (gizli önizlemede) */}
+              {!isPreview && (
               <div className="move-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                 <button
                   type="button"
@@ -267,22 +249,37 @@ export default function OrderingQuestion({
                   <i className="feather-chevron-down" style={{ fontSize: '14px' }}></i>
                 </button>
               </div>
+              )}
             </div>
           );
         })}
       </div>
 
-      {/* Order Status */}
-      <div className="order-status mt--20" style={{
-        padding: '12px 15px',
-        backgroundColor: '#f0f4ff',
-        borderRadius: '6px',
-        fontSize: '14px',
-        color: '#4d79ff',
-      }}>
-        <i className="feather-list me-2"></i>
-        Items ordered: {items.length} total
-      </div>
+      {!isPreview && (
+        <div className="order-status mt--20" style={{
+          padding: '12px 15px',
+          backgroundColor: '#f0f4ff',
+          borderRadius: '6px',
+          fontSize: '14px',
+          color: '#4d79ff',
+        }}>
+          <i className="feather-list me-2"></i>
+          Items ordered: {items.length} total
+        </div>
+      )}
+
+      {isPreview && correctOrderText && (
+        <div className="mt-3 p-3 rounded small" style={{ backgroundColor: '#f0fdf4', border: '1px solid #22c55e', color: '#166534' }}>
+          <strong>Doğru sıra:</strong> {correctOrderText}
+        </div>
+      )}
+      {isPreview && (
+        <QuestionSettingsSummary>
+          {items.length} öğe. {shuffleItems ? 'Başlangıçta karıştırılır.' : 'Sabit sıra.'}
+        </QuestionSettingsSummary>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
     </div>
   );
 }

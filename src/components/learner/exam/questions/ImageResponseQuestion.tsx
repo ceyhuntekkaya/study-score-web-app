@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 interface ImageResponseTemplateData {
   prompt?: string;
@@ -22,7 +26,7 @@ interface ImageResponseTemplateData {
   };
 }
 
-interface ImageResponseQuestionProps {
+interface ImageResponseQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: ImageResponseTemplateData;
   onAnswerChange?: (answerData: {
@@ -67,7 +71,10 @@ export default function ImageResponseQuestion({
   onAnswerChange,
   initialAnswer,
   questionId = 'image-response',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: ImageResponseQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -239,19 +246,22 @@ export default function ImageResponseQuestion({
 
   return (
     <div className="image-response-question">
-      {/* Question Text */}
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-        {prompt && (
-          <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
-            {prompt}
-          </p>
-        )}
-      </div>
 
-      {/* Upload Instructions */}
+<QuestionBody questionText={questionText} />
+      {isPreview && (
+        <>
+          <div className="mb--20 p-3 rounded small" style={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', color: '#6c757d' }}>
+            Önizleme modu – yükleme yapılamaz.
+          </div>
+          <QuestionSettingsSummary>
+            Formatlar: {allowedFormats.join(', ')}. Maks: {(maxFileSize / 1024 / 1024).toFixed(2)}MB. Değerlendirme: {templateData.gradingType}. {allowMultipleImages ? `En fazla ${maxImages} görsel.` : 'Tek görsel.'}
+          </QuestionSettingsSummary>
+          {aiReady && <QuestionAIChatButton questionId={questionId} />}
+        </>
+      )}
+
+      {!isPreview && (
+      <>
       <div className="upload-instructions mb--20" style={{
         padding: '12px 15px',
         backgroundColor: '#f0f4ff',
@@ -409,6 +419,10 @@ export default function ImageResponseQuestion({
             {String(templateData.criteria)}
           </p>
         </div>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
+      </>
       )}
     </div>
   );

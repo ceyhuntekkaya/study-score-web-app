@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { useTranslation } from "@/i18n";
 import type { QuestionHeaderRequest } from "@/generated/api/openAPIDefinition.schemas";
 import { getFilePreviewUrl } from "@/lib/fileUtils";
-import HeaderRenderer from "@/components/learner/exam/HeaderRenderer";
 import QuestionRenderer from "@/components/learner/exam/questions/QuestionRenderer";
 
 const FILE_MEDIA = ["IMAGE", "VIDEO", "AUDIO", "DOCUMENT", "PDF", "OTHER"];
@@ -69,19 +68,6 @@ export default function QuestionPreview({
         </h6>
       </div>
       <div className="flex-grow-1 overflow-auto">
-        {sortedHeaders.length > 0 && (
-          <div className="headers-preview mb-3">
-            {sortedHeaders.map((h, i) => (
-              <HeaderRenderer
-                key={i}
-                header={{
-                  mediaType: (h.mediaType ?? "TEXT") as "TEXT" | "IMAGE" | "VIDEO" | "AUDIO" | "DOCUMENT" | "PDF" | "LINK" | "OTHER",
-                  content: contentToHeaderContent(h.mediaType, h.content),
-                }}
-              />
-            ))}
-          </div>
-        )}
         <div className="template-preview">
           {questionType ? (
             <QuestionRenderer

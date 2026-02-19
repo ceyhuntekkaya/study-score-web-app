@@ -1,5 +1,6 @@
 'use client';
 
+import type { QuestionDisplayMode } from './types';
 import MultipleChoiceQuestion from './MultipleChoiceQuestion';
 import MultipleResponseQuestion from './MultipleResponseQuestion';
 import FillInTheBlanksQuestion from './FillInTheBlanksQuestion';
@@ -20,12 +21,19 @@ interface Question {
   questionType: string;
   questionText: string;
   templateData: any;
+  /** Öğrenci cevabı – daha önce cevaplandıysa buradan geçirilir */
   userAnswer?: any;
+  /** APPLICATION (varsayılan) veya PREVIEW */
+  mode?: QuestionDisplayMode;
+  /** true ise soru altında AI Chat butonu gösterilir. Varsayılan: false */
+  aiReady?: boolean;
 }
 
 interface QuestionRendererProps {
   question: Question;
   onAnswerChange?: (answerData: any) => void;
+  /** Sadece ESSAY tipi için: öğrenci "Kaydet"e bastığında çağrılır (backend’e kayıt için). */
+  onSaveAnswer?: (answerData: any) => void | Promise<void>;
   questionId?: string; // Unique identifier for this question
 }
 
@@ -36,20 +44,38 @@ interface QuestionRendererProps {
 export default function QuestionRenderer({
   question,
   onAnswerChange,
+  onSaveAnswer,
   questionId,
 }: QuestionRendererProps) {
-  const { questionType, questionText, templateData, userAnswer } = question;
+  const { questionType, questionText, templateData, userAnswer, mode = 'APPLICATION', aiReady = false } = question;
   const uniqueQuestionId = questionId || question.questionId || (question as any).id || 'question';
 
   // Parse templateData if it's a string
-  const parsedTemplateData = typeof templateData === 'string' 
-    ? JSON.parse(templateData) 
+  const parsedTemplateData = typeof templateData === 'string'
+    ? JSON.parse(templateData)
     : templateData;
 
   // Parse userAnswer if it's a string
-  const parsedUserAnswer = typeof userAnswer === 'string' 
-    ? JSON.parse(userAnswer) 
+  const parsedUserAnswer = typeof userAnswer === 'string'
+    ? JSON.parse(userAnswer)
     : userAnswer;
+
+  // Backend often returns userAnswer as { answerData: { essayText, ... }, ... }; components expect the payload (answerData) as initialAnswer
+  const normalizedInitialAnswer =
+    parsedUserAnswer != null &&
+    typeof parsedUserAnswer === 'object' &&
+    'answerData' in parsedUserAnswer &&
+    (parsedUserAnswer as { answerData?: unknown }).answerData != null
+      ? (parsedUserAnswer as { answerData: unknown }).answerData
+      : parsedUserAnswer;
+
+  const commonProps = {
+    mode,
+    aiReady,
+    questionId: uniqueQuestionId,
+    onAnswerChange,
+    initialAnswer: normalizedInitialAnswer,
+  };
 
   switch (questionType) {
     case 'MULTIPLE_CHOICE':
@@ -57,9 +83,7 @@ export default function QuestionRenderer({
         <MultipleChoiceQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 
@@ -68,9 +92,7 @@ export default function QuestionRenderer({
         <TrueFalseQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 
@@ -79,9 +101,7 @@ export default function QuestionRenderer({
         <MultipleResponseQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 
@@ -90,9 +110,7 @@ export default function QuestionRenderer({
         <ShortAnswerQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 
@@ -101,9 +119,7 @@ export default function QuestionRenderer({
         <FillInTheBlanksQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 
@@ -112,9 +128,7 @@ export default function QuestionRenderer({
         <MatchingQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 
@@ -123,20 +137,18 @@ export default function QuestionRenderer({
         <OrderingQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 
-    case 'ESSAY':
+      case 'ESSAY':
       return (
         <EssayQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
+          onAnswerChange={undefined}
+          onSave={onSaveAnswer}
         />
       );
 
@@ -145,9 +157,7 @@ export default function QuestionRenderer({
         <DragAndDropQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 
@@ -156,9 +166,7 @@ export default function QuestionRenderer({
         <HotSpotQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 
@@ -167,9 +175,7 @@ export default function QuestionRenderer({
         <AudioResponseQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 
@@ -178,9 +184,7 @@ export default function QuestionRenderer({
         <VideoResponseQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 
@@ -189,9 +193,7 @@ export default function QuestionRenderer({
         <ImageResponseQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
-          onAnswerChange={onAnswerChange}
-          initialAnswer={parsedUserAnswer}
-          questionId={uniqueQuestionId}
+          {...commonProps}
         />
       );
 

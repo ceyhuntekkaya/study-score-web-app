@@ -99,6 +99,23 @@ a {
   }
 }
 
+/* Audio Player – dalga çubukları (çalarken hareketli) */
+.ap-wave-bar {
+  transform-origin: center bottom;
+}
+.ap-wave-bar--playing {
+  animation: audio-wave-bar 0.6s ease-in-out infinite;
+}
+@keyframes audio-wave-bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
 .loading-dots-enhanced .loading-dot-1,
 .loading-dots-enhanced .loading-dot-2,
 .loading-dots-enhanced .loading-dot-3 {

@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 /** Item inside a drop zone (template: correct placement). */
 interface DragAndDropItem {
@@ -29,7 +33,7 @@ interface DragAndDropTemplateData {
   };
 }
 
-interface DragAndDropQuestionProps {
+interface DragAndDropQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: DragAndDropTemplateData;
   onAnswerChange?: (answerData: { placements: Record<string, string> }) => void;
@@ -47,7 +51,10 @@ export default function DragAndDropQuestion({
   onAnswerChange,
   initialAnswer,
   questionId = 'drag-drop',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: DragAndDropQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [placements, setPlacements] = useState<Record<string, string>>(
     initialAnswer?.placements || {}
   );
@@ -94,51 +101,41 @@ export default function DragAndDropQuestion({
     return shuffledItems.filter((item) => !placements[item.id]);
   };
 
-  // Handle drag start
   const handleDragStart = (itemId: string) => {
+    if (isPreview) return;
     setDraggedItemId(itemId);
   };
 
-  // Handle drag over
   const handleDragOver = (e: React.DragEvent, zoneId: string) => {
+    if (isPreview) return;
     e.preventDefault();
     setDragOverZoneId(zoneId);
   };
 
-  // Handle drop
   const handleDrop = (e: React.DragEvent, zoneId: string) => {
+    if (isPreview) return;
     e.preventDefault();
     if (!draggedItemId) {
       setDraggedItemId(null);
       setDragOverZoneId(null);
       return;
     }
-
     const newPlacements = { ...placements };
     newPlacements[draggedItemId] = zoneId;
-    
     setPlacements(newPlacements);
     setDraggedItemId(null);
     setDragOverZoneId(null);
-
-    if (onAnswerChange) {
-      onAnswerChange({ placements: newPlacements });
-    }
+    if (onAnswerChange) onAnswerChange({ placements: newPlacements });
   };
 
-  // Handle remove from zone
   const handleRemoveFromZone = (itemId: string) => {
+    if (isPreview) return;
     const newPlacements = { ...placements };
     delete newPlacements[itemId];
-    
     setPlacements(newPlacements);
-
-    if (onAnswerChange) {
-      onAnswerChange({ placements: newPlacements });
-    }
+    if (onAnswerChange) onAnswerChange({ placements: newPlacements });
   };
 
-  // Render draggable item
   const renderDraggableItem = (item: DragAndDropItem, isInZone: boolean = false) => {
     const isDragging = draggedItemId === item.id;
     const isPlaced = !!placements[item.id];
@@ -146,7 +143,7 @@ export default function DragAndDropQuestion({
     return (
       <div
         key={item.id}
-        draggable={!isInZone}
+        draggable={!isPreview && !isInZone}
         onDragStart={() => !isInZone && handleDragStart(item.id)}
         className="draggable-item"
         style={{
@@ -154,17 +151,18 @@ export default function DragAndDropQuestion({
           border: `2px solid ${isPlaced ? '#4d79ff' : '#e0e0e0'}`,
           borderRadius: '8px',
           backgroundColor: isPlaced ? '#f0f4ff' : '#ffffff',
-          cursor: isInZone ? 'default' : 'move',
+          cursor: isPreview || isInZone ? 'default' : 'move',
           transition: 'all 0.2s ease',
           opacity: isDragging ? 0.5 : 1,
           marginBottom: '10px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          pointerEvents: isPreview ? 'none' : undefined,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-          {!isInZone && (
+          {!isInZone && !isPreview && (
             <div style={{ fontSize: '18px', color: '#999' }}>
               <i className="feather-move"></i>
             </div>
@@ -173,7 +171,7 @@ export default function DragAndDropQuestion({
             {item.text}
           </div>
         </div>
-        {isInZone && (
+        {isInZone && !isPreview && (
           <button
             type="button"
             onClick={() => handleRemoveFromZone(item.id)}
@@ -204,9 +202,9 @@ export default function DragAndDropQuestion({
       <div
         key={zone.id}
         className="drop-zone mb--20"
-        onDragOver={(e) => handleDragOver(e, zone.id)}
-        onDrop={(e) => handleDrop(e, zone.id)}
-        onDragLeave={() => setDragOverZoneId(null)}
+        onDragOver={isPreview ? undefined : (e) => handleDragOver(e, zone.id)}
+        onDrop={isPreview ? undefined : (e) => handleDrop(e, zone.id)}
+        onDragLeave={isPreview ? undefined : () => setDragOverZoneId(null)}
         style={{
           padding: '20px',
           border: `3px dashed ${isDragOver ? '#4d79ff' : '#e0e0e0'}`,
@@ -214,6 +212,7 @@ export default function DragAndDropQuestion({
           backgroundColor: isDragOver ? '#f0f4ff' : '#f9f9f9',
           minHeight: '150px',
           transition: 'all 0.2s ease',
+          pointerEvents: isPreview ? 'none' : undefined,
         }}
       >
         <div className="zone-header mb--15" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -260,24 +259,20 @@ export default function DragAndDropQuestion({
 
   return (
     <div className="drag-and-drop-question">
-      {/* Question Text */}
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-      </div>
 
-      {/* Instructions */}
-      <div className="drag-drop-instructions mb--20" style={{
-        padding: '12px 15px',
-        backgroundColor: '#f0f4ff',
-        borderRadius: '6px',
-        fontSize: '14px',
-        color: '#4d79ff',
-      }}>
-        <i className="feather-move me-2"></i>
-        Drag items from the source area to the appropriate drop zones below.
-      </div>
+<QuestionBody questionText={questionText} />
+      {!isPreview && (
+        <div className="drag-drop-instructions mb--20" style={{
+          padding: '12px 15px',
+          backgroundColor: '#f0f4ff',
+          borderRadius: '6px',
+          fontSize: '14px',
+          color: '#4d79ff',
+        }}>
+          <i className="feather-move me-2"></i>
+          Drag items from the source area to the appropriate drop zones below.
+        </div>
+      )}
 
       {/* Source Area - Unplaced Items */}
       {unplacedItems.length > 0 && (
@@ -320,17 +315,31 @@ export default function DragAndDropQuestion({
         </div>
       </div>
 
-      {/* Placement Status */}
-      <div className="placement-status mt--20" style={{
-        padding: '12px 15px',
-        backgroundColor: '#f0f4ff',
-        borderRadius: '6px',
-        fontSize: '14px',
-        color: '#4d79ff',
-      }}>
-        <i className="feather-check-circle me-2"></i>
-        Placed: {Object.keys(placements).length} of {allItems.length} items
-      </div>
+      {!isPreview && (
+        <div className="placement-status mt--20" style={{
+          padding: '12px 15px',
+          backgroundColor: '#f0f4ff',
+          borderRadius: '6px',
+          fontSize: '14px',
+          color: '#4d79ff',
+        }}>
+          <i className="feather-check-circle me-2"></i>
+          Placed: {Object.keys(placements).length} of {allItems.length} items
+        </div>
+      )}
+
+      {isPreview && dropZones.length > 0 && (
+        <div className="mt-3 p-3 rounded small" style={{ backgroundColor: '#f0fdf4', border: '1px solid #22c55e', color: '#166534' }}>
+          <strong>Doğru yerleşim:</strong> {dropZones.map((z) => `${z.label}: ${(z.items || []).map((i) => i.text).join(', ') || '—'}`).join('; ')}
+        </div>
+      )}
+      {isPreview && (
+        <QuestionSettingsSummary>
+          {dropZones.length} bölge, {allItems.length} öğe. {shuffleItems ? 'Öğeler karıştırılır.' : ''}
+        </QuestionSettingsSummary>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
     </div>
   );
 }

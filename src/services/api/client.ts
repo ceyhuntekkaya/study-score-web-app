@@ -1,6 +1,8 @@
 /**
- * API Client
- * Axios-based HTTP client with token management and error handling
+ * API Client (legacy)
+ * Axios-based HTTP client with token management and error handling.
+ * Not used by the app: auth uses Orval (auth-rest-controller); other APIs use Orval + lib/api-client (customInstance).
+ * 401 refresh here uses /auth/refresh; Orval uses /auth/refresh-token. Prefer Orval when adding new auth flows.
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';

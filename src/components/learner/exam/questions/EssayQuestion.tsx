@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 interface EssayTemplateData {
   prompt?: string;
@@ -23,10 +27,17 @@ interface EssayTemplateData {
   };
 }
 
-interface EssayQuestionProps {
+interface EssayQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: EssayTemplateData;
   onAnswerChange?: (answerData: {
+    essayText: string;
+    wordCount: number;
+    format: 'PLAIN_TEXT' | 'HTML' | 'MARKDOWN';
+    outline?: string;
+  }) => void;
+  /** Öğrenci "Kaydet" butonuna bastığında çağrılır; cevabı backend’e kaydetmek için kullanılabilir. */
+  onSave?: (answerData: {
     essayText: string;
     wordCount: number;
     format: 'PLAIN_TEXT' | 'HTML' | 'MARKDOWN';
@@ -49,9 +60,13 @@ export default function EssayQuestion({
   questionText,
   templateData,
   onAnswerChange,
+  onSave,
   initialAnswer,
   questionId = 'essay',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: EssayQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [essayText, setEssayText] = useState<string>(
     initialAnswer?.essayText || ''
   );
@@ -61,6 +76,7 @@ export default function EssayQuestion({
   const [format, setFormat] = useState<'PLAIN_TEXT' | 'HTML' | 'MARKDOWN'>(
     initialAnswer?.format || 'PLAIN_TEXT'
   );
+  const [saveFeedback, setSaveFeedback] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   const rawTopics = templateData.requiredTopics;
   const requiredTopics = Array.isArray(rawTopics)
@@ -96,52 +112,51 @@ export default function EssayQuestion({
   const wordCount = countWords(essayText);
   const outlineWordCount = countWords(outline);
 
-  // Handle text change
+  /** Sadece local state güncellenir; yazarken onAnswerChange çağrılmaz (her tuşta istek gitmesin). */
   const handleTextChange = (value: string) => {
+    if (isPreview) return;
     setEssayText(value);
-    
-    if (onAnswerChange) {
-      onAnswerChange({
-        essayText: value,
-        wordCount: countWords(value),
-        format,
-        outline: requireOutline ? outline : undefined,
-      });
-    }
   };
 
-  // Handle outline change
   const handleOutlineChange = (value: string) => {
+    if (isPreview) return;
     setOutline(value);
-    
-    if (onAnswerChange) {
-      onAnswerChange({
-        essayText,
-        wordCount: countWords(essayText),
-        format,
-        outline: value,
-      });
-    }
   };
 
-  // Handle format change
   const handleFormatChange = (newFormat: 'PLAIN_TEXT' | 'HTML' | 'MARKDOWN') => {
+    if (isPreview) return;
     setFormat(newFormat);
-    
-    if (onAnswerChange) {
-      onAnswerChange({
-        essayText,
-        wordCount: countWords(essayText),
-        format: newFormat,
-        outline: requireOutline ? outline : undefined,
-      });
-    }
   };
 
   // Validation
   const isValid = () => {
     return wordCount >= minWords && wordCount <= maxWords;
   };
+
+  const getCurrentAnswerPayload = () => ({
+    essayText,
+    wordCount: countWords(essayText),
+    format,
+    outline: requireOutline ? outline : undefined,
+  });
+
+  /** Cevap sadece "Cevabı kaydet" butonuna tıklanınca backend’e gönderilir (onSave ile). Her yazım anında kayıt yapılmaz. */
+  const handleSave = async () => {
+    if (isPreview) return;
+    const payload = getCurrentAnswerPayload();
+    setSaveFeedback('saving');
+    try {
+      onAnswerChange?.(payload);
+      if (onSave) await Promise.resolve(onSave(payload));
+      setSaveFeedback('saved');
+      setTimeout(() => setSaveFeedback('idle'), 2500);
+    } catch {
+      setSaveFeedback('error');
+      setTimeout(() => setSaveFeedback('idle'), 3000);
+    }
+  };
+
+  const canSave = wordCount > 0 && isValid();
 
   const isUnderMin = () => {
     return wordCount > 0 && wordCount < minWords;
@@ -166,20 +181,10 @@ export default function EssayQuestion({
 
   return (
     <div className="essay-question">
-      {/* Question Text */}
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-        {prompt && (
-          <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
-            {prompt}
-          </p>
-        )}
-      </div>
 
-      {/* Format Selector (if multiple formats allowed) */}
-      {allowedFormats.length > 1 && (
+<QuestionBody questionText={questionText} />
+      {/* Format Selector (sadece uygulama modunda) */}
+      {!isPreview && allowedFormats.length > 1 && (
         <div className="format-selector mb--20" style={{
           padding: '12px 15px',
           backgroundColor: '#f9f9f9',
@@ -213,7 +218,7 @@ export default function EssayQuestion({
 
       {/* Outline Section (if required) */}
       {requireOutline && (
-        <div className="outline-section mb--20">
+        <div className="outline-section mb--20" style={isPreview ? { pointerEvents: 'none' } : undefined}>
           <label style={{ fontSize: '16px', fontWeight: '600', color: '#333', marginBottom: '10px', display: 'block' }}>
             <i className="feather-list me-2"></i>
             Outline (Optional but recommended)
@@ -221,7 +226,8 @@ export default function EssayQuestion({
           <textarea
             value={outline}
             onChange={(e) => handleOutlineChange(e.target.value)}
-            placeholder="Write your essay outline here..."
+            placeholder={isPreview ? '' : 'Write your essay outline here...'}
+            readOnly={isPreview}
             rows={4}
             style={{
               width: '100%',
@@ -240,7 +246,7 @@ export default function EssayQuestion({
       )}
 
       {/* Essay Text Editor */}
-      <div className="essay-editor mb--20">
+      <div className="essay-editor mb--20" style={isPreview ? { pointerEvents: 'none' } : undefined}>
         <label style={{ fontSize: '16px', fontWeight: '600', color: '#333', marginBottom: '10px', display: 'block' }}>
           <i className="feather-edit me-2"></i>
           Your Essay
@@ -249,7 +255,8 @@ export default function EssayQuestion({
           id={`essay-${questionId}`}
           value={essayText}
           onChange={(e) => handleTextChange(e.target.value)}
-          placeholder="Write your essay here..."
+          placeholder={isPreview ? '' : 'Write your essay here...'}
+          readOnly={isPreview}
           rows={15}
           style={{
             width: '100%',
@@ -274,7 +281,8 @@ export default function EssayQuestion({
         />
       </div>
 
-      {/* Word Count & Validation */}
+      {/* Word Count & Validation (sadece uygulama modunda) */}
+      {!isPreview && (
       <div className="word-count-section mb--20">
         <div
           style={{
@@ -300,9 +308,10 @@ export default function EssayQuestion({
           )}
         </div>
       </div>
+      )}
 
-      {/* Required Topics Check */}
-      {requiredTopics.length > 0 && (
+      {/* Required Topics Check (sadece uygulama modunda) */}
+      {!isPreview && requiredTopics.length > 0 && (
         <div className="required-topics mb--20" style={{
           padding: '12px 15px',
           backgroundColor: topicCheck.allFound ? '#d4edda' : '#fff3cd',
@@ -337,8 +346,8 @@ export default function EssayQuestion({
         </div>
       )}
 
-      {/* Validation Messages */}
-      {isUnderMin() && (
+      {/* Validation Messages (sadece uygulama modunda) */}
+      {!isPreview && isUnderMin() && (
         <div
           className="validation-message mb--20"
           style={{
@@ -355,7 +364,7 @@ export default function EssayQuestion({
         </div>
       )}
 
-      {isOverMax() && (
+      {!isPreview && isOverMax() && (
         <div
           className="validation-message mb--20"
           style={{
@@ -372,7 +381,7 @@ export default function EssayQuestion({
         </div>
       )}
 
-      {isValid() && wordCount > 0 && (
+      {!isPreview && isValid() && wordCount > 0 && (
         <div
           className="success-message mb--20"
           style={{
@@ -389,8 +398,67 @@ export default function EssayQuestion({
         </div>
       )}
 
-      {/* Grading Rubrik (backend: string) */}
-      {templateData.rubrik && String(templateData.rubrik).trim() && (
+      {/* Kaydet butonu – tıklanınca handleSave → onSave(payload) → parent (örn. take page) POST /api/question-responses çağrısını yapar */}
+      {!isPreview && (
+        <div className="essay-save-actions mb--20">
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!canSave || saveFeedback === 'saving'}
+            style={{
+              padding: '10px 24px',
+              borderRadius: '8px',
+              border: 'none',
+              backgroundColor: canSave && saveFeedback !== 'saving' ? '#4d79ff' : '#e0e0e0',
+              color: canSave && saveFeedback !== 'saving' ? '#fff' : '#999',
+              fontWeight: '600',
+              fontSize: '14px',
+              cursor: canSave && saveFeedback !== 'saving' ? 'pointer' : 'not-allowed',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            {saveFeedback === 'saving' && (
+              <>
+                <i className="feather-loader" style={{ animation: 'spin 0.8s linear infinite' }}></i>
+                Kaydediliyor…
+              </>
+            )}
+            {saveFeedback === 'saved' && (
+              <>
+                <i className="feather-check"></i>
+                Cevap kaydedildi
+              </>
+            )}
+            {saveFeedback === 'error' && (
+              <>
+                <i className="feather-alert-circle"></i>
+                Kaydedilemedi, tekrar deneyin
+              </>
+            )}
+            {saveFeedback === 'idle' && (
+              <>
+                <i className="feather-save"></i>
+                Cevabı kaydet
+              </>
+            )}
+          </button>
+          {!canSave && wordCount === 0 && (
+            <span style={{ marginLeft: '12px', fontSize: '13px', color: '#666' }}>
+              Cevap yazıp kelime sınırına uyduğunuzda kaydedebilirsiniz.
+            </span>
+          )}
+          {!canSave && wordCount > 0 && !isValid() && (
+            <span style={{ marginLeft: '12px', fontSize: '13px', color: '#856404' }}>
+              Kelime sayısı {minWords}–{maxWords} aralığında olmalıdır.
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Grading Rubrik (sadece uygulama modunda - öğrenci görebilir) */}
+      {!isPreview && templateData.rubrik && String(templateData.rubrik).trim() && (
         <div className="grading-rubric mt--20" style={{
           padding: '15px',
           backgroundColor: '#fff9e6',
@@ -406,6 +474,14 @@ export default function EssayQuestion({
           </p>
         </div>
       )}
+
+      {isPreview && (
+        <QuestionSettingsSummary>
+          Kelime: {minWords}–{maxWords}. Değerlendirme: {templateData.gradingType}. {requireOutline ? 'Özet zorunlu.' : ''}
+        </QuestionSettingsSummary>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
     </div>
   );
 }

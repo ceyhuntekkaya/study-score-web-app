@@ -1,5 +1,7 @@
 'use client';
 
+import AudioPlayer from '@/components/ui/AudioPlayer';
+
 interface Header {
   mediaType: 'IMAGE' | 'VIDEO' | 'AUDIO' | 'DOCUMENT' | 'PDF' | 'TEXT' | 'LINK' | 'OTHER';
   content?: string;
@@ -28,7 +30,7 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
     if (!content) {
       return (
         <div className="header-item header-image mb--20">
-          <div style={{ padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', textAlign: 'center', color: '#999' }}>
+          <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
             No image content provided
           </div>
         </div>
@@ -57,7 +59,7 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
               const wrapper = imgElement.parentElement;
               if (wrapper) {
                 wrapper.innerHTML = `
-                  <div style="padding: 20px; background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; color: #856404;">
+                  <div style="padding: 20px; color: #856404;">
                     <i class="feather-alert-circle"></i> Image could not be loaded: ${content}
                   </div>
                 `;
@@ -144,16 +146,7 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
       <div className="header-item header-audio mb--20">
         {content && (
           <div className="audio-wrapper" style={{ maxWidth: '600px', margin: '0 auto' }}>
-            <audio
-              controls
-              style={{
-                width: '100%',
-                borderRadius: '8px',
-              }}
-            >
-              <source src={content} />
-              Your browser does not support the audio tag.
-            </audio>
+            <AudioPlayer src={content} minHeight={72} />
           </div>
         )}
       </div>
@@ -169,9 +162,6 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
             className="document-content"
             style={{
               padding: '20px',
-              backgroundColor: '#f9f9f9',
-              borderRadius: '8px',
-              border: '1px solid #e0e0e0',
             }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
@@ -180,38 +170,22 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
     );
   }
 
-  // PDF
+  // PDF – sadece indirme butonu, gösterim yok
   if (mediaType === 'PDF') {
     return (
       <div className="header-item header-pdf mb--20">
         {content && (
           <div className="pdf-wrapper">
-            <iframe
-              src={content}
-              style={{
-                width: '100%',
-                height: '600px',
-                border: 'none',
-                borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              }}
-              title="Header PDF Document"
-              onError={(e) => {
-                console.error('PDF load error:', content);
-              }}
-            />
-            <div className="mt-3">
-              <a
-                href={content}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rbt-btn btn-md bg-primary"
-              >
-                <span className="btn-text">Download PDF</span>
-                <span className="btn-icon"><i className="feather-download"></i></span>
-              </a>
-            </div>
+            <a
+              href={content}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rbt-btn btn-md bg-primary"
+            >
+              <span className="btn-text">Download PDF</span>
+              <span className="btn-icon"><i className="feather-download"></i></span>
+            </a>
           </div>
         )}
       </div>
@@ -239,7 +213,7 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
     );
   }
 
-  // TEXT or OTHER
+  // TEXT or OTHER – soru gövdesi gibi; siyah, kalın değil
   if (mediaType === 'TEXT' || mediaType === 'OTHER' || !mediaType) {
     return (
       <div className="header-item header-text mb--20">
@@ -247,11 +221,11 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
           <div
             className="text-content"
             style={{
-              padding: '20px',
-              backgroundColor: '#f9f9f9',
-              borderRadius: '8px',
-              border: '1px solid #e0e0e0',
-              lineHeight: '1.6',
+              padding: '0 20px',
+              margin: '0px',
+              lineHeight: 1.5,
+              color: '#111',
+              fontWeight: 400,
             }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
@@ -268,9 +242,6 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
           className="unknown-content"
           style={{
             padding: '20px',
-            backgroundColor: '#f9f9f9',
-            borderRadius: '8px',
-            border: '1px solid #e0e0e0',
           }}
           dangerouslySetInnerHTML={{ __html: content }}
         />

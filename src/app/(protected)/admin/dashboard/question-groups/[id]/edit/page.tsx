@@ -58,10 +58,12 @@ function questionToCreateRequest(
         content: (h.content as string) ?? '',
       }))
     : [{ ...EMPTY_HEADER }];
+  const orderNumber = Math.max(1, Number(q.orderNumber) || 1);
   const payload: QuestionCreateRequest = {
     name: (q.name as string) || '',
     questionType: (q.questionType as QuestionCreateRequestQuestionType) ?? QuestionCreateRequestQuestionType.MULTIPLE_CHOICE,
     maximumScore: Number(q.maximumScore) || 100,
+    orderNumber,
     templateData: parsedTemplateData,
     ...(headers.length ? { headers } : {}),
     ...(questionGroupId !== undefined ? { questionGroupId: questionGroupId || undefined } : {}),

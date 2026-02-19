@@ -2,6 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { getFilePreviewUrl } from '@/lib/fileUtils';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 interface HotSpot {
   id: string;
@@ -37,7 +41,7 @@ interface HotSpotTemplateData {
   };
 }
 
-interface HotSpotQuestionProps {
+interface HotSpotQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: HotSpotTemplateData;
   onAnswerChange?: (answerData: { selectedSpotIds: string[]; clickCoordinates: Array<{ x: number; y: number }> }) => void;
@@ -55,7 +59,10 @@ export default function HotSpotQuestion({
   onAnswerChange,
   initialAnswer,
   questionId = 'hotspot',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: HotSpotQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [selectedSpotIds, setSelectedSpotIds] = useState<string[]>(
     initialAnswer?.selectedSpotIds || []
   );
@@ -74,6 +81,7 @@ export default function HotSpotQuestion({
     allowMultipleSpots = true,
   } = safeData;
   const { hotSpots = [], selectionType = 'CLICK' } = optionsData ?? {};
+  const correctSpots = hotSpots.filter((s) => s.isCorrect);
 
   // Handle image load to get dimensions
   const handleImageLoad = () => {
@@ -137,9 +145,8 @@ export default function HotSpotQuestion({
     }
   };
 
-  // Handle image click
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!imageRef.current || !containerRef.current) return;
+    if (isPreview || !imageRef.current || !containerRef.current) return;
 
     const rect = imageRef.current.getBoundingClientRect();
     const containerRect = containerRef.current.getBoundingClientRect();
@@ -284,25 +291,21 @@ export default function HotSpotQuestion({
 
   return (
     <div className="hotspot-question">
-      {/* Question Text */}
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-      </div>
 
-      {/* Instructions */}
-      <div className="hotspot-instructions mb--20" style={{
-        padding: '12px 15px',
-        backgroundColor: '#f0f4ff',
-        borderRadius: '6px',
-        fontSize: '14px',
-        color: '#4d79ff',
-      }}>
-        <i className="feather-mouse-pointer me-2"></i>
-        Click on the image to select areas.
-        {maxSelections && ` Maximum ${maxSelections} selection${maxSelections > 1 ? 's' : ''} allowed.`}
-      </div>
+<QuestionBody questionText={questionText} />
+      {!isPreview && (
+        <div className="hotspot-instructions mb--20" style={{
+          padding: '12px 15px',
+          backgroundColor: '#f0f4ff',
+          borderRadius: '6px',
+          fontSize: '14px',
+          color: '#4d79ff',
+        }}>
+          <i className="feather-mouse-pointer me-2"></i>
+          Click on the image to select areas.
+          {maxSelections && ` Maximum ${maxSelections} selection${maxSelections > 1 ? 's' : ''} allowed.`}
+        </div>
+      )}
 
       {/* Image Container */}
       <div
@@ -313,7 +316,8 @@ export default function HotSpotQuestion({
           display: 'inline-block',
           width: '100%',
           maxWidth: '100%',
-          cursor: 'crosshair',
+          cursor: isPreview ? 'default' : 'crosshair',
+          pointerEvents: isPreview ? 'none' : undefined,
         }}
         onClick={handleImageClick}
       >
@@ -354,26 +358,40 @@ export default function HotSpotQuestion({
         {renderHotSpotOverlay()}
       </div>
 
-      {/* Selection Status */}
-      <div className="selection-status mb--20" style={{
-        padding: '12px 15px',
-        backgroundColor: '#f0f4ff',
-        borderRadius: '6px',
-        fontSize: '14px',
-        color: '#4d79ff',
-      }}>
-        <i className="feather-target me-2"></i>
-        Selected: {selectedSpotIds.length}
-        {maxSelections && ` / ${maxSelections} maximum`}
-        {selectedSpotIds.length > 0 && (
-          <span style={{ marginLeft: '10px', fontSize: '12px' }}>
-            ({selectedSpotIds.join(', ')})
-          </span>
-        )}
-      </div>
+      {!isPreview && (
+        <div className="selection-status mb--20" style={{
+          padding: '12px 15px',
+          backgroundColor: '#f0f4ff',
+          borderRadius: '6px',
+          fontSize: '14px',
+          color: '#4d79ff',
+        }}>
+          <i className="feather-target me-2"></i>
+          Selected: {selectedSpotIds.length}
+          {maxSelections && ` / ${maxSelections} maximum`}
+          {selectedSpotIds.length > 0 && (
+            <span style={{ marginLeft: '10px', fontSize: '12px' }}>
+              ({selectedSpotIds.join(', ')})
+            </span>
+          )}
+        </div>
+      )}
 
-      {/* Hotspot Legend (for debugging/help) */}
-      {hotSpots.length > 0 && (
+      {isPreview && correctSpots.length > 0 && (
+        <div className="mt-3 p-3 rounded small" style={{ backgroundColor: '#f0fdf4', border: '1px solid #22c55e', color: '#166534' }}>
+          <strong>Doğru bölgeler:</strong> {correctSpots.map((s) => s.label || s.id).join(', ')}
+        </div>
+      )}
+      {isPreview && (
+        <QuestionSettingsSummary>
+          {hotSpots.length} bölge. {allowMultipleSpots ? 'Çoklu seçim.' : 'Tek seçim.'} {maxSelections ? `En fazla ${maxSelections} seçim.` : ''}
+        </QuestionSettingsSummary>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
+
+      {/* Hotspot Legend (sadece uygulama modunda) */}
+      {!isPreview && hotSpots.length > 0 && (
         <div className="hotspot-legend" style={{
           padding: '15px',
           backgroundColor: '#f9f9f9',

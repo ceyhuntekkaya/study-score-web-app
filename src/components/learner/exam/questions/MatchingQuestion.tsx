@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 interface Pair {
   leftText: string;
@@ -20,7 +24,7 @@ interface MatchingTemplateData {
   };
 }
 
-interface MatchingQuestionProps {
+interface MatchingQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: MatchingTemplateData;
   onAnswerChange?: (answerData: { matches: Record<string, string> }) => void;
@@ -38,7 +42,10 @@ export default function MatchingQuestion({
   onAnswerChange,
   initialAnswer,
   questionId = 'matching',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: MatchingQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [matches, setMatches] = useState<Record<string, string>>(
     initialAnswer?.matches || {}
   );
@@ -76,16 +83,14 @@ export default function MatchingQuestion({
     return shuffled;
   };
 
-  // Handle match selection
+  // Handle match selection (no-op in preview)
   const handleMatchChange = (leftId: string, rightId: string) => {
+    if (isPreview) return;
     const newMatches = { ...matches };
     
     if (rightId === '') {
-      // Remove match
       delete newMatches[leftId];
     } else {
-      // Add/update match
-      // If ONE_TO_ONE, remove any existing match for this rightId
       if (matchingType === 'ONE_TO_ONE') {
         Object.keys(newMatches).forEach((key) => {
           if (newMatches[key] === rightId) {
@@ -114,28 +119,25 @@ export default function MatchingQuestion({
 
   return (
     <div className="matching-question">
-      {/* Question Text */}
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-      </div>
 
-      {/* Matching Instructions */}
-      <div className="matching-instructions mb--20" style={{
-        padding: '12px 15px',
-        backgroundColor: '#f0f4ff',
-        borderRadius: '6px',
-        fontSize: '14px',
-        color: '#4d79ff',
-      }}>
-        <i className="feather-link me-2"></i>
-        Match each item on the left with the corresponding item on the right.
-        {matchingType === 'ONE_TO_ONE' && ' Each item can only be used once.'}
-      </div>
+<QuestionBody questionText={questionText} />
+      {/* Matching Instructions (sadece uygulama modunda) */}
+      {!isPreview && (
+        <div className="matching-instructions mb--20" style={{
+          padding: '12px 15px',
+          backgroundColor: '#f0f4ff',
+          borderRadius: '6px',
+          fontSize: '14px',
+          color: '#4d79ff',
+        }}>
+          <i className="feather-link me-2"></i>
+          Match each item on the left with the corresponding item on the right.
+          {matchingType === 'ONE_TO_ONE' && ' Each item can only be used once.'}
+        </div>
+      )}
 
       {/* Matching Table */}
-      <div className="matching-table">
+      <div className="matching-table" style={isPreview ? { pointerEvents: 'none' } : undefined}>
         <div className="row g-3">
           {/* Left Column */}
           <div className="col-md-6">
@@ -190,6 +192,7 @@ export default function MatchingQuestion({
                           id={`match-${questionId}-${leftItem.id}`}
                           value={matchedRightId}
                           onChange={(e) => handleMatchChange(leftItem.id, e.target.value)}
+                          disabled={isPreview}
                           style={{
                             width: '100%',
                             padding: '10px',
@@ -287,17 +290,32 @@ export default function MatchingQuestion({
         </div>
       </div>
 
-      {/* Match Status */}
-      <div className="match-status mt--20" style={{
-        padding: '12px 15px',
-        backgroundColor: '#f0f4ff',
-        borderRadius: '6px',
-        fontSize: '14px',
-        color: '#4d79ff',
-      }}>
-        <i className="feather-link-2 me-2"></i>
-        Matched: {Object.keys(matches).length} of {shuffledLeftItems.length} items
-      </div>
+      {/* Match Status (sadece uygulama modunda) */}
+      {!isPreview && (
+        <div className="match-status mt--20" style={{
+          padding: '12px 15px',
+          backgroundColor: '#f0f4ff',
+          borderRadius: '6px',
+          fontSize: '14px',
+          color: '#4d79ff',
+        }}>
+          <i className="feather-link-2 me-2"></i>
+          Matched: {Object.keys(matches).length} of {shuffledLeftItems.length} items
+        </div>
+      )}
+
+      {isPreview && pairs.length > 0 && (
+        <div className="mt-3 p-3 rounded small" style={{ backgroundColor: '#f0fdf4', border: '1px solid #22c55e', color: '#166534' }}>
+          <strong>Doğru eşleşmeler:</strong> {pairs.map((p, i) => `${p.leftText} → ${p.rightText}`).join('; ')}
+        </div>
+      )}
+      {isPreview && (
+        <QuestionSettingsSummary>
+          {pairs.length} eşleşme. Bire bir eşleşme.
+        </QuestionSettingsSummary>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
     </div>
   );
 }

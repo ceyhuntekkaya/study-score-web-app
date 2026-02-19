@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 interface AudioResponseTemplateData {
   prompt?: string;
@@ -20,7 +24,7 @@ interface AudioResponseTemplateData {
   };
 }
 
-interface AudioResponseQuestionProps {
+interface AudioResponseQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: AudioResponseTemplateData;
   onAnswerChange?: (answerData: {
@@ -50,7 +54,10 @@ export default function AudioResponseQuestion({
   onAnswerChange,
   initialAnswer,
   questionId = 'audio-response',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: AudioResponseQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [recordedAudio, setRecordedAudio] = useState<Blob | null>(null);
@@ -226,18 +233,22 @@ export default function AudioResponseQuestion({
 
   return (
     <div className="audio-response-question">
-      {/* Question Text */}
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-        {prompt && (
-          <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
-            {prompt}
-          </p>
-        )}
-      </div>
 
+<QuestionBody questionText={questionText} />
+      {isPreview && (
+        <>
+          <div className="mb--20 p-3 rounded small" style={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', color: '#6c757d' }}>
+            Önizleme modu – kayıt yapılamaz.
+          </div>
+          <QuestionSettingsSummary>
+            Süre: {minRecordingDuration}s–{maxRecordingDuration}s. Değerlendirme: {templateData.gradingType}. {allowRetake && maxRetakes ? `Yeniden deneme: ${maxRetakes}.` : ''}
+          </QuestionSettingsSummary>
+          {aiReady && <QuestionAIChatButton questionId={questionId} />}
+        </>
+      )}
+
+      {!isPreview && (
+      <>
       {/* Recording Instructions */}
       <div className="recording-instructions mb--20" style={{
         padding: '12px 15px',
@@ -483,6 +494,10 @@ export default function AudioResponseQuestion({
             {String(templateData.criteria)}
           </p>
         </div>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
+      </>
       )}
     </div>
   );

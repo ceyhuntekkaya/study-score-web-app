@@ -1,8 +1,9 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { useGetExamWithUserData } from '@/generated/api/exam-controller/exam-controller';
+import { useStartExam } from '@/generated/api/exam-controller/exam-controller';
+import { useAuth } from '@/contexts/AuthContext';
 
 /**
  * Learner Exam Welcome Page
@@ -13,13 +14,20 @@ export default function ExamWelcomePage() {
   const params = useParams();
   const router = useRouter();
   const examId = params?.examId as string;
+  const { user } = useAuth();
 
   // Fetch exam data with user data
-  const { data, isLoading, error } = useGetExamWithUserData(examId, undefined, {
-    query: {
-      enabled: !!examId,
-    },
-  });
+  const { data, isLoading, error } = useGetExamWithUserData(
+    examId,
+    user?.id ? { userId: user.id } : undefined,
+    {
+      query: {
+        enabled: !!examId,
+      },
+    }
+  );
+
+  const startExamMutation = useStartExam();
 
 
   if (!examId) {
@@ -132,7 +140,29 @@ export default function ExamWelcomePage() {
           {/* Start Exam Button */}
           <div className="text-center">
             <button
-              onClick={() => router.push(`/learner/exam/${examId}/take`)}
+              onClick={async () => {
+                if (!user?.id) return;
+                try {
+                  const res = await startExamMutation.mutateAsync({
+                    examId,
+                    params: { userId: user.id },
+                  });
+                  const attemptId =
+                    (res as { examAttemptId?: string })?.examAttemptId ??
+                    (res as { id?: string })?.id;
+                  if (attemptId) {
+                    router.push(
+                      `/learner/exam/${examId}/take?attemptId=${encodeURIComponent(attemptId)}`
+                    );
+                  } else {
+                    router.push(`/learner/exam/${examId}/take`);
+                  }
+                } catch (err) {
+                  console.error('Start exam failed:', err);
+                  router.push(`/learner/exam/${examId}/take`);
+                }
+              }}
+              disabled={!user?.id || startExamMutation.isPending}
               className="rbt-btn btn-lg bg-secondary-opacity"
               style={{
                 padding: '15px 40px',

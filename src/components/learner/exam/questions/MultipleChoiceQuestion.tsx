@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 interface Choice {
   id: string;
@@ -25,12 +29,12 @@ interface MultipleChoiceTemplateData {
   };
 }
 
-interface MultipleChoiceQuestionProps {
+interface MultipleChoiceQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: MultipleChoiceTemplateData;
   onAnswerChange?: (answerData: { selectedOptionId: string }) => void;
   initialAnswer?: { selectedOptionId: string } | null;
-  questionId?: string; // Unique identifier for this question
+  questionId?: string;
 }
 
 /**
@@ -43,11 +47,15 @@ export default function MultipleChoiceQuestion({
   onAnswerChange,
   initialAnswer,
   questionId = 'multiple-choice',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: MultipleChoiceQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(
     initialAnswer?.selectedOptionId || null
   );
   const [choices, setChoices] = useState<Choice[]>([]);
+  const correctChoice = choices.find((c) => c.isCorrect);
 
   // Initialize and shuffle choices if needed
   useEffect(() => {
@@ -71,8 +79,9 @@ export default function MultipleChoiceQuestion({
     return shuffled;
   };
 
-  // Handle option selection
+  // Handle option selection (no-op in preview)
   const handleOptionSelect = (optionId: string) => {
+    if (isPreview) return;
     setSelectedOptionId(optionId);
     if (onAnswerChange) {
       onAnswerChange({ selectedOptionId: optionId });
@@ -131,13 +140,9 @@ export default function MultipleChoiceQuestion({
 
   return (
     <div className="multiple-choice-question">
-      {/* Question Text */}
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-      </div>
-
+ 
+    
+    <QuestionBody questionText={questionText} />
       {/* Choices */}
       <div className="choices-container">
         {choices.map((choice) => {
@@ -151,11 +156,12 @@ export default function MultipleChoiceQuestion({
               }`}
               style={{
                 padding: '15px',
-                border: `2px solid ${isSelected ? '#4d79ff' : '#e0e0e0'}`,
+                border: `2px solid ${isSelected ? '#4d79ff' : choice.isCorrect && isPreview ? '#22c55e' : '#e0e0e0'}`,
                 borderRadius: '8px',
-                backgroundColor: isSelected ? '#f0f4ff' : '#ffffff',
-                cursor: 'pointer',
+                backgroundColor: isSelected ? '#f0f4ff' : choice.isCorrect && isPreview ? '#f0fdf4' : '#ffffff',
+                cursor: isPreview ? 'default' : 'pointer',
                 transition: 'all 0.2s ease',
+                pointerEvents: isPreview ? 'none' : undefined,
               }}
               onClick={() => handleOptionSelect(choice.id)}
               onMouseOver={(e) => {
@@ -214,12 +220,26 @@ export default function MultipleChoiceQuestion({
       </div>
 
       {/* Selection Info */}
-      {selectedOptionId && (
+      {selectedOptionId && !isPreview && (
         <div className="selection-info mt--20" style={{ padding: '10px', backgroundColor: '#f0f4ff', borderRadius: '6px', fontSize: '14px', color: '#4d79ff' }}>
           <i className="feather-check-circle me-2"></i>
           Option selected
         </div>
       )}
+
+      {/* Önizleme: doğru cevap ve ayar özeti */}
+      {isPreview && correctChoice && (
+        <div className="mt-3 p-3 rounded small" style={{ backgroundColor: '#f0fdf4', border: '1px solid #22c55e', color: '#166534' }}>
+          <strong>Doğru cevap:</strong> {correctChoice.text}
+        </div>
+      )}
+      {isPreview && (
+        <QuestionSettingsSummary>
+          Tek doğru cevap. {templateData.shuffleChoices ? 'Seçenekler karıştırılır.' : ''}
+        </QuestionSettingsSummary>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
     </div>
   );
 }

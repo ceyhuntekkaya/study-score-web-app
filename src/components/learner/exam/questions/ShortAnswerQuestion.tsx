@@ -1,6 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 export interface ShortAnswerTemplateData {
   acceptableAnswers: string[];
@@ -15,7 +19,7 @@ export interface ShortAnswerTemplateData {
   };
 }
 
-interface ShortAnswerQuestionProps {
+interface ShortAnswerQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: ShortAnswerTemplateData;
   onAnswerChange?: (answerData: { answerText: string; characterCount: number }) => void;
@@ -37,7 +41,10 @@ export default function ShortAnswerQuestion({
   onAnswerChange,
   initialAnswer,
   questionId = 'short-answer',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: ShortAnswerQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [answerText, setAnswerText] = useState<string>(
     initialAnswer?.answerText || ''
   );
@@ -45,8 +52,10 @@ export default function ShortAnswerQuestion({
   const maxCharacters = DEFAULT_MAX_CHARACTERS;
   const placeholder = DEFAULT_PLACEHOLDER;
   const characterCount = answerText.length;
+  const acceptableAnswers = templateData.acceptableAnswers ?? [];
 
   const handleInputChange = (value: string) => {
+    if (isPreview) return;
     const trimmedValue = value.length > maxCharacters ? value.substring(0, maxCharacters) : value;
     setAnswerText(trimmedValue);
 
@@ -63,18 +72,15 @@ export default function ShortAnswerQuestion({
 
   return (
     <div className="short-answer-question">
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-      </div>
 
-      <div className="answer-input mb--20">
+<QuestionBody questionText={questionText} />
+      <div className="answer-input mb--20" style={isPreview ? { pointerEvents: 'none' } : undefined}>
         <textarea
           id={`short-answer-${questionId}`}
           value={answerText}
           onChange={(e) => handleInputChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder={isPreview ? '' : placeholder}
+          readOnly={isPreview}
           rows={4}
           style={{
             width: '100%',
@@ -141,19 +147,34 @@ export default function ShortAnswerQuestion({
         </div>
       )}
 
-      <div
-        className="info-note"
-        style={{
-          padding: '10px',
-          backgroundColor: '#e7f3ff',
-          borderRadius: '6px',
-          fontSize: '12px',
-          color: '#0066cc',
-        }}
-      >
-        <i className="feather-info me-2"></i>
-        <strong>Note:</strong> Leading and trailing spaces are trimmed when saving.
-      </div>
+      {!isPreview && (
+        <div
+          className="info-note"
+          style={{
+            padding: '10px',
+            backgroundColor: '#e7f3ff',
+            borderRadius: '6px',
+            fontSize: '12px',
+            color: '#0066cc',
+          }}
+        >
+          <i className="feather-info me-2"></i>
+          <strong>Note:</strong> Leading and trailing spaces are trimmed when saving.
+        </div>
+      )}
+
+      {isPreview && acceptableAnswers.length > 0 && (
+        <div className="mt-3 p-3 rounded small" style={{ backgroundColor: '#f0fdf4', border: '1px solid #22c55e', color: '#166534' }}>
+          <strong>Kabul edilen cevaplar:</strong> {acceptableAnswers.join(', ')}
+        </div>
+      )}
+      {isPreview && (
+        <QuestionSettingsSummary>
+          Kabul edilen cevaplar: {acceptableAnswers.length ? acceptableAnswers.join(', ') : '—'}. {templateData.caseSensitive ? 'Büyük/küçük harf duyarlı.' : ''} {templateData.exactMatch ? 'Tam eşleşme.' : ''}
+        </QuestionSettingsSummary>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
     </div>
   );
 }

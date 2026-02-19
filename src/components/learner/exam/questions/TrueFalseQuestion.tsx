@@ -1,6 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 export type TrueFalseAnswerValue = 'true' | 'false' | 'notGiven';
 
@@ -20,7 +24,7 @@ interface TrueFalseTemplateData {
   };
 }
 
-interface TrueFalseQuestionProps {
+interface TrueFalseQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: TrueFalseTemplateData;
   onAnswerChange?: (answerData: { answer: TrueFalseAnswerValue }) => void;
@@ -58,7 +62,10 @@ export default function TrueFalseQuestion({
   onAnswerChange,
   initialAnswer,
   questionId = 'true-false',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: TrueFalseQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [selectedAnswer, setSelectedAnswer] = useState<TrueFalseAnswerValue | null>(
     initialAnswer?.answer !== undefined ? initialAnswer.answer : null
   );
@@ -66,6 +73,7 @@ export default function TrueFalseQuestion({
   const { correctAnswer, trueLabel, falseLabel, notGivenLabel } = getOptions(templateData);
 
   const handleAnswerSelect = (answer: TrueFalseAnswerValue) => {
+    if (isPreview) return;
     setSelectedAnswer(answer);
     if (onAnswerChange) {
       onAnswerChange({ answer });
@@ -80,13 +88,8 @@ export default function TrueFalseQuestion({
 
   return (
     <div className="true-false-question">
-      {/* Question Text */}
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-      </div>
 
+ <QuestionBody questionText={questionText} />
       {/* True / False / Not Given Options */}
       <div className="true-false-options">
         <div className="row g-3">
@@ -96,13 +99,14 @@ export default function TrueFalseQuestion({
               className={`true-false-option ${selectedAnswer === 'true' ? 'selected' : ''}`}
               style={{
                 padding: '25px',
-                border: `3px solid ${selectedAnswer === 'true' ? '#4d79ff' : '#e0e0e0'}`,
+                border: `3px solid ${selectedAnswer === 'true' ? '#4d79ff' : correctAnswer === 'true' && isPreview ? '#22c55e' : '#e0e0e0'}`,
                 borderRadius: '12px',
-                backgroundColor: selectedAnswer === 'true' ? '#f0f4ff' : '#ffffff',
-                cursor: 'pointer',
+                backgroundColor: selectedAnswer === 'true' ? '#f0f4ff' : correctAnswer === 'true' && isPreview ? '#f0fdf4' : '#ffffff',
+                cursor: isPreview ? 'default' : 'pointer',
                 transition: 'all 0.2s ease',
                 textAlign: 'center',
                 position: 'relative',
+                pointerEvents: isPreview ? 'none' : undefined,
               }}
               onClick={() => handleAnswerSelect('true')}
               onMouseOver={(e) => {
@@ -139,13 +143,14 @@ export default function TrueFalseQuestion({
               className={`true-false-option ${selectedAnswer === 'false' ? 'selected' : ''}`}
               style={{
                 padding: '25px',
-                border: `3px solid ${selectedAnswer === 'false' ? '#ff4444' : '#e0e0e0'}`,
+                border: `3px solid ${selectedAnswer === 'false' ? '#ff4444' : correctAnswer === 'false' && isPreview ? '#22c55e' : '#e0e0e0'}`,
                 borderRadius: '12px',
-                backgroundColor: selectedAnswer === 'false' ? '#fff0f0' : '#ffffff',
-                cursor: 'pointer',
+                backgroundColor: selectedAnswer === 'false' ? '#fff0f0' : correctAnswer === 'false' && isPreview ? '#f0fdf4' : '#ffffff',
+                cursor: isPreview ? 'default' : 'pointer',
                 transition: 'all 0.2s ease',
                 textAlign: 'center',
                 position: 'relative',
+                pointerEvents: isPreview ? 'none' : undefined,
               }}
               onClick={() => handleAnswerSelect('false')}
               onMouseOver={(e) => {
@@ -182,13 +187,14 @@ export default function TrueFalseQuestion({
               className={`true-false-option ${selectedAnswer === 'notGiven' ? 'selected' : ''}`}
               style={{
                 padding: '25px',
-                border: `3px solid ${selectedAnswer === 'notGiven' ? '#6b7280' : '#e0e0e0'}`,
+                border: `3px solid ${selectedAnswer === 'notGiven' ? '#6b7280' : correctAnswer === 'notGiven' && isPreview ? '#22c55e' : '#e0e0e0'}`,
                 borderRadius: '12px',
-                backgroundColor: selectedAnswer === 'notGiven' ? '#f3f4f6' : '#ffffff',
-                cursor: 'pointer',
+                backgroundColor: selectedAnswer === 'notGiven' ? '#f3f4f6' : correctAnswer === 'notGiven' && isPreview ? '#f0fdf4' : '#ffffff',
+                cursor: isPreview ? 'default' : 'pointer',
                 transition: 'all 0.2s ease',
                 textAlign: 'center',
                 position: 'relative',
+                pointerEvents: isPreview ? 'none' : undefined,
               }}
               onClick={() => handleAnswerSelect('notGiven')}
               onMouseOver={(e) => {
@@ -221,8 +227,8 @@ export default function TrueFalseQuestion({
         </div>
       </div>
 
-      {/* Selection Info */}
-      {selectedAnswer !== null && (
+      {/* Selection Info (sadece uygulama modunda) */}
+      {selectedAnswer !== null && !isPreview && (
         <div
           className="selection-info mt--20"
           style={{
@@ -237,6 +243,19 @@ export default function TrueFalseQuestion({
           You selected: <strong>{getLabel(selectedAnswer)}</strong>
         </div>
       )}
+
+      {isPreview && (
+        <div className="mt-3 p-3 rounded small" style={{ backgroundColor: '#f0fdf4', border: '1px solid #22c55e', color: '#166534' }}>
+          <strong>Doğru cevap:</strong> {getLabel(correctAnswer)}
+        </div>
+      )}
+      {isPreview && (
+        <QuestionSettingsSummary>
+          Doğru cevap: {getLabel(correctAnswer)}.
+        </QuestionSettingsSummary>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
     </div>
   );
 }

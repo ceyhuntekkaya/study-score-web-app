@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import type { BaseQuestionProps } from './types';
+import QuestionBody from './QuestionBody';
+import QuestionAIChatButton from './QuestionAIChatButton';
+import QuestionSettingsSummary from './QuestionSettingsSummary';
 
 interface VideoResponseTemplateData {
   prompt?: string;
@@ -21,7 +25,7 @@ interface VideoResponseTemplateData {
   };
 }
 
-interface VideoResponseQuestionProps {
+interface VideoResponseQuestionProps extends BaseQuestionProps {
   questionText: string;
   templateData: VideoResponseTemplateData;
   onAnswerChange?: (answerData: {
@@ -53,7 +57,10 @@ export default function VideoResponseQuestion({
   onAnswerChange,
   initialAnswer,
   questionId = 'video-response',
+  mode = 'APPLICATION',
+  aiReady = false,
 }: VideoResponseQuestionProps) {
+  const isPreview = mode === 'PREVIEW';
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [recordedVideo, setRecordedVideo] = useState<Blob | null>(null);
@@ -290,19 +297,22 @@ export default function VideoResponseQuestion({
 
   return (
     <div className="video-response-question">
-      {/* Question Text */}
-      <div className="question-text mb--30">
-        <h5 className="rbt-title-style-2 mb--20" style={{ fontSize: '18px', fontWeight: '600' }}>
-          {questionText}
-        </h5>
-        {prompt && (
-          <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
-            {prompt}
-          </p>
-        )}
-      </div>
 
-      {/* Recording Instructions */}
+<QuestionBody questionText={questionText} />
+      {isPreview && (
+        <>
+          <div className="mb--20 p-3 rounded small" style={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', color: '#6c757d' }}>
+            Önizleme modu – video kaydı yapılamaz.
+          </div>
+          <QuestionSettingsSummary>
+            Süre: {minRecordingDuration}s–{maxRecordingDuration}s. Değerlendirme: {templateData.gradingType}. {requiredQuality ? `Kalite: ${requiredQuality}.` : ''} {allowRetake && maxRetakes ? `Yeniden deneme: ${maxRetakes}.` : ''}
+          </QuestionSettingsSummary>
+          {aiReady && <QuestionAIChatButton questionId={questionId} />}
+        </>
+      )}
+
+      {!isPreview && (
+      <>
       <div className="recording-instructions mb--20" style={{
         padding: '12px 15px',
         backgroundColor: '#f0f4ff',
@@ -594,6 +604,10 @@ export default function VideoResponseQuestion({
             {String(templateData.criteria)}
           </p>
         </div>
+      )}
+
+      {aiReady && <QuestionAIChatButton questionId={questionId} />}
+      </>
       )}
     </div>
   );

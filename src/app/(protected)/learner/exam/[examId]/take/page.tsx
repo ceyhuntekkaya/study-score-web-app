@@ -1,10 +1,15 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useGetExamWithUserData } from '@/generated/api/exam-controller/exam-controller';
 import HeaderRenderer from '@/components/learner/exam/HeaderRenderer';
 import QuestionRenderer from '@/components/learner/exam/questions/QuestionRenderer';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  CONTEXT_TYPE,
+  useSaveQuestionResponse,
+} from '@/services/api/questionResponseService';
 
 /**
  * Learner Exam Taking Page
@@ -14,16 +19,29 @@ import QuestionRenderer from '@/components/learner/exam/questions/QuestionRender
 export default function ExamTakePage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const examId = params?.examId as string;
+  const attemptId = searchParams?.get('attemptId') ?? undefined;
+  const { user } = useAuth();
+  const userId = user?.id ?? '';
+
   const [elapsedTime, setElapsedTime] = useState(0); // in seconds
   const [isRunning, setIsRunning] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // 0-based index
 
-  // Fetch exam data with user data
-  const { data, isLoading, error } = useGetExamWithUserData(examId, undefined, {
-    query: {
-      enabled: !!examId,
-    },
+  // Fetch exam data with user data (backend returns questions + userAnswer per question)
+  const { data, isLoading, error } = useGetExamWithUserData(
+    examId,
+    userId ? { userId } : undefined,
+    {
+      query: {
+        enabled: !!examId,
+      },
+    }
+  );
+
+  const saveResponse = useSaveQuestionResponse({
+    invalidateExamAttemptId: attemptId,
   });
 
   // Timer effect
@@ -72,10 +90,27 @@ export default function ExamTakePage() {
   // Get questions from current question group
   const currentQuestions = (currentQuestionGroup as any)?.questions || [];
   
-  // Handle answer change
+  // Handle answer change – POST /api/question-responses (EXAM_ATTEMPT)
   const handleAnswerChange = (questionId: string, answerData: any) => {
-    console.log('Answer changed for question:', questionId, answerData);
-    // TODO: Save answer to backend
+    if (!userId || !attemptId) return;
+    saveResponse.mutate({
+      userId,
+      questionId,
+      contextType: CONTEXT_TYPE.EXAM_ATTEMPT,
+      examAttemptId: attemptId,
+      answerData: answerData ?? null,
+    });
+  };
+
+  const handleSaveAnswer = (questionId: string, answerData: any) => {
+    if (!userId || !attemptId) return;
+    return saveResponse.mutateAsync({
+      userId,
+      questionId,
+      contextType: CONTEXT_TYPE.EXAM_ATTEMPT,
+      examAttemptId: attemptId,
+      answerData: answerData ?? null,
+    });
   };
 
   // Handle exit exam
@@ -283,7 +318,25 @@ export default function ExamTakePage() {
                   <QuestionRenderer
                     question={question}
                     questionId={question.questionId || question.id || `question-${questionIndex}`}
-                    onAnswerChange={(answerData) => handleAnswerChange(question.questionId || question.id, answerData)}
+                    onAnswerChange={
+                      question.questionType === 'ESSAY'
+                        ? undefined
+                        : (answerData) =>
+                            handleAnswerChange(
+                              question.questionId || question.id || `question-${questionIndex}`,
+                              answerData
+                            )
+                    }
+                    onSaveAnswer={
+                      question.questionType === 'ESSAY'
+                        ? (answerData) => {
+                            void handleSaveAnswer(
+                              question.questionId || question.id || `question-${questionIndex}`,
+                              answerData
+                            );
+                          }
+                        : undefined
+                    }
                   />
                 </div>
               ))

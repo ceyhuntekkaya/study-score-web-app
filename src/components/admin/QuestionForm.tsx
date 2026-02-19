@@ -43,7 +43,7 @@ interface QuestionFormProps {
 
 type FormState = Omit<QuestionCreateRequest, "headers"> & {
   headers: QuestionHeaderRequest[];
-  orderNumber: number;
+  orderNumber: number | undefined;
   version: number;
 };
 
@@ -164,6 +164,10 @@ export default function QuestionForm({
     if (score != null && (score < 0.1 || score > 1000)) {
       newErrors.maximumScore = t("common.validation.range", { min: 0.1, max: 1000 });
     }
+    const orderNum = formData.orderNumber != null ? Number(formData.orderNumber) : NaN;
+    if (orderNum < 1 || Number.isNaN(orderNum)) {
+      newErrors.orderNumber = t("common.validation.required");
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -172,11 +176,13 @@ export default function QuestionForm({
     e.preventDefault();
     if (!validateForm()) return;
     try {
+      const orderNumber = Math.max(1, Number(formData.orderNumber) || DEFAULT_ORDER_NUMBER);
       const payload: QuestionCreateRequest = {
         name: formData.name.trim(),
         questionType: formData.questionType,
         category: formData.category,
         maximumScore: formData.maximumScore ?? DEFAULT_MAXIMUM_SCORE,
+        orderNumber,
         headers: formData.headers.length ? formData.headers : undefined,
         templateData: formData.templateData,
         ...(formData.questionGroupId ? { questionGroupId: formData.questionGroupId } : {}),
@@ -321,15 +327,17 @@ export default function QuestionForm({
             <div className="border rounded p-3 mt-2 bg-light">
               <div className="row g-3">
                 <div className="col-md-4">
-                  <Label htmlFor="orderNumber">{t("admin.exam.orderNumber")}</Label>
+                  <Label htmlFor="orderNumber">{t("admin.exam.orderNumber")} <span className="text-danger">*</span></Label>
                   <Input
                     id="orderNumber"
                     name="orderNumber"
                     type="number"
                     min={1}
-                    value={formData.orderNumber}
+                    value={formData.orderNumber ?? ""}
                     onChange={handleChange}
+                    className={errors.orderNumber ? "is-invalid" : ""}
                   />
+                  {errors.orderNumber && <div className="invalid-feedback d-block">{errors.orderNumber}</div>}
                 </div>
                 <div className="col-md-4">
                   <Label htmlFor="maximumScore">{t("admin.exam.maximumScore")}</Label>

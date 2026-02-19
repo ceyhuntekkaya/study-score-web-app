@@ -250,8 +250,6 @@ export default function MaterialForm({
   const isEditMode = !!initialData?.id;
 
 
-  console.log(initialData)
-
   // Quiz items: checkbox = "bu materyalde quiz öğeleri olsun"; edit modda quizItems varsa seçili
   const [hasQuizItems, setHasQuizItems] = useState<boolean>(() =>
     Boolean(initialData?.quizItems?.length)
