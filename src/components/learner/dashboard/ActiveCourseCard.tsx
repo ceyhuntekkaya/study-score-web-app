@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import ModalPanel from '@/components/ui/ModalPanel';
 import { getMediaServeUrl } from '@/lib/fileUtils';
@@ -101,11 +100,9 @@ export default function ActiveCourseCard({ course }: ActiveCourseCardProps) {
           <div className="col-md-4">
             <div className="rbt-card-img h-100" style={{ minHeight: '200px' }}>
               {imageUrl ? (
-                <Image
+                <img
                   src={getMediaServeUrl(imageUrl)}
                   alt={courseName || 'Course'}
-                  width={400}
-                  height={300}
                   className="w-100 h-100"
                   style={{ objectFit: 'cover' }}
                 />

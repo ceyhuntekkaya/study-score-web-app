@@ -3,7 +3,7 @@ version: "3.8"
 services:
   app:
     container_name: speaking-exam-admin
-    image: ctekkaya/study-score-app:2.0
+    image: ctekkaya/study-score-app:5.0
     build:
       context: .
       dockerfile: Dockerfile

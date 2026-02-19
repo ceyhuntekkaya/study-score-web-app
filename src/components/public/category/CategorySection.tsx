@@ -5,7 +5,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useGetAllCourses } from '@/generated/api/course-rest-controller/course-rest-controller';
 import type { Course } from '@/generated/api/openAPIDefinition.schemas';
 import { getMediaServeUrl } from '@/lib/fileUtils';
@@ -34,7 +33,7 @@ export default function CategorySection() {
                 <h2 className="title">
                   Best Platform To{' '}
                   <span>
-                    <Image 
+                    <img 
                       src="/assets/images/shape/o-icon-2.png" 
                       alt="Cap Icon" 
                       width={40} 
@@ -96,11 +95,9 @@ export default function CategorySection() {
                     <div className="inner">
                       <div className="thumbnail">
                         <Link href={`/courses/${course.id}`}>
-                          <Image 
+                          <img 
                             src={course.imageUrl ? getMediaServeUrl(course.imageUrl) : '/assets/images/category/image/default.jpg'} 
                             alt={course.name || 'Course'} 
-                            width={300} 
-                            height={200}
                             style={{ objectFit: 'cover' }}
                           />
                           <div className="read-more-btn">

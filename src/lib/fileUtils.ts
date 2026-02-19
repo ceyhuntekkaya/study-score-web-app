@@ -59,7 +59,7 @@ export function getFilePreviewUrl(path: string): string {
   const normalized = path.startsWith("/") ? path.slice(1) : path;
   return `${base}/files/serve/${normalized}`;
 }
-
+//ceyhun
 /**
  * API'den gelen medya content'i için URL.
  * Zaten tam URL (http/https veya //) ise olduğu gibi döner;
