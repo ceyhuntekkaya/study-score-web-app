@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { BaseQuestionProps } from './types';
 import QuestionBody from './QuestionBody';
 import QuestionAIChatButton from './QuestionAIChatButton';
@@ -70,6 +70,13 @@ export default function TrueFalseQuestion({
     initialAnswer?.answer !== undefined ? initialAnswer.answer : null
   );
 
+  // Sync state when saved answer arrives (e.g. after API load on material quiz page)
+  useEffect(() => {
+    if (initialAnswer != null && initialAnswer.answer !== undefined) {
+      setSelectedAnswer(initialAnswer.answer);
+    }
+  }, [initialAnswer]);
+
   const { correctAnswer, trueLabel, falseLabel, notGivenLabel } = getOptions(templateData);
 
   const handleAnswerSelect = (answer: TrueFalseAnswerValue) => {
@@ -106,7 +113,7 @@ export default function TrueFalseQuestion({
             <div
               className={`true-false-option ${selectedAnswer === 'true' ? 'selected' : ''}`}
               style={{
-                padding: '25px',
+                padding: '12px 16px',
                 border: `3px solid ${selectedAnswer === 'true' ? '#4d79ff' : correctAnswer === 'true' && isPreview ? '#22c55e' : '#e0e0e0'}`,
                 borderRadius: '12px',
                 backgroundColor: selectedAnswer === 'true' ? '#f0f4ff' : correctAnswer === 'true' && isPreview ? '#f0fdf4' : '#ffffff',
@@ -115,6 +122,10 @@ export default function TrueFalseQuestion({
                 textAlign: 'center',
                 position: 'relative',
                 pointerEvents: isPreview ? 'none' : undefined,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
               }}
               onClick={() => handleAnswerSelect('true')}
               onMouseOver={(e) => {
@@ -138,8 +149,8 @@ export default function TrueFalseQuestion({
                 onChange={() => handleAnswerSelect('true')}
                 style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
               />
-              <div style={{ fontSize: '48px', marginBottom: '15px' }}>✓</div>
-              <label htmlFor={`true-${questionId}`} style={{ cursor: 'pointer', fontSize: '20px', fontWeight: '600', color: selectedAnswer === 'true' ? '#4d79ff' : '#333', margin: 0, display: 'block' }}>
+              <span style={{ fontSize: '24px', lineHeight: 1 }}>✓</span>
+              <label htmlFor={`true-${questionId}`} style={{ cursor: 'pointer', fontSize: '16px', fontWeight: '600', color: selectedAnswer === 'true' ? '#4d79ff' : '#333', margin: 0 }}>
                 {trueLabel}
               </label>
             </div>
@@ -150,7 +161,7 @@ export default function TrueFalseQuestion({
             <div
               className={`true-false-option ${selectedAnswer === 'false' ? 'selected' : ''}`}
               style={{
-                padding: '25px',
+                padding: '12px 16px',
                 border: `3px solid ${selectedAnswer === 'false' ? '#ff4444' : correctAnswer === 'false' && isPreview ? '#22c55e' : '#e0e0e0'}`,
                 borderRadius: '12px',
                 backgroundColor: selectedAnswer === 'false' ? '#fff0f0' : correctAnswer === 'false' && isPreview ? '#f0fdf4' : '#ffffff',
@@ -159,6 +170,10 @@ export default function TrueFalseQuestion({
                 textAlign: 'center',
                 position: 'relative',
                 pointerEvents: isPreview ? 'none' : undefined,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
               }}
               onClick={() => handleAnswerSelect('false')}
               onMouseOver={(e) => {
@@ -182,8 +197,8 @@ export default function TrueFalseQuestion({
                 onChange={() => handleAnswerSelect('false')}
                 style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
               />
-              <div style={{ fontSize: '48px', marginBottom: '15px' }}>✗</div>
-              <label htmlFor={`false-${questionId}`} style={{ cursor: 'pointer', fontSize: '20px', fontWeight: '600', color: selectedAnswer === 'false' ? '#ff4444' : '#333', margin: 0, display: 'block' }}>
+              <span style={{ fontSize: '24px', lineHeight: 1 }}>✗</span>
+              <label htmlFor={`false-${questionId}`} style={{ cursor: 'pointer', fontSize: '16px', fontWeight: '600', color: selectedAnswer === 'false' ? '#ff4444' : '#333', margin: 0 }}>
                 {falseLabel}
               </label>
             </div>
@@ -194,7 +209,7 @@ export default function TrueFalseQuestion({
             <div
               className={`true-false-option ${selectedAnswer === 'notGiven' ? 'selected' : ''}`}
               style={{
-                padding: '25px',
+                padding: '12px 16px',
                 border: `3px solid ${selectedAnswer === 'notGiven' ? '#6b7280' : correctAnswer === 'notGiven' && isPreview ? '#22c55e' : '#e0e0e0'}`,
                 borderRadius: '12px',
                 backgroundColor: selectedAnswer === 'notGiven' ? '#f3f4f6' : correctAnswer === 'notGiven' && isPreview ? '#f0fdf4' : '#ffffff',
@@ -203,6 +218,10 @@ export default function TrueFalseQuestion({
                 textAlign: 'center',
                 position: 'relative',
                 pointerEvents: isPreview ? 'none' : undefined,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
               }}
               onClick={() => handleAnswerSelect('notGiven')}
               onMouseOver={(e) => {
@@ -226,8 +245,8 @@ export default function TrueFalseQuestion({
                 onChange={() => handleAnswerSelect('notGiven')}
                 style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
               />
-              <div style={{ fontSize: '48px', marginBottom: '15px' }}>—</div>
-              <label htmlFor={`notGiven-${questionId}`} style={{ cursor: 'pointer', fontSize: '20px', fontWeight: '600', color: selectedAnswer === 'notGiven' ? '#6b7280' : '#333', margin: 0, display: 'block' }}>
+              <span style={{ fontSize: '24px', lineHeight: 1 }}>—</span>
+              <label htmlFor={`notGiven-${questionId}`} style={{ cursor: 'pointer', fontSize: '16px', fontWeight: '600', color: selectedAnswer === 'notGiven' ? '#6b7280' : '#333', margin: 0 }}>
                 {notGivenLabel}
               </label>
             </div>

@@ -78,6 +78,15 @@ export default function EssayQuestion({
   );
   const [saveFeedback, setSaveFeedback] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
+  // Sync state when saved answer arrives (e.g. after API load on material quiz page)
+  useEffect(() => {
+    if (initialAnswer != null) {
+      if (initialAnswer.essayText != null) setEssayText(initialAnswer.essayText);
+      if (initialAnswer.outline != null) setOutline(initialAnswer.outline);
+      if (initialAnswer.format != null) setFormat(initialAnswer.format);
+    }
+  }, [initialAnswer]);
+
   const rawTopics = templateData.requiredTopics;
   const requiredTopics = Array.isArray(rawTopics)
     ? rawTopics

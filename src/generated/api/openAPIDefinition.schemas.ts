@@ -302,13 +302,13 @@ export interface User {
   manager?: boolean;
   tutor?: boolean;
   writer?: boolean;
-  admin?: boolean;
+  authorities?: GrantedAuthority[];
+  institutionalLearner?: boolean;
+  individualLearner?: boolean;
   accountNonExpired?: boolean;
   accountNonLocked?: boolean;
   credentialsNonExpired?: boolean;
-  institutionalLearner?: boolean;
-  individualLearner?: boolean;
-  authorities?: GrantedAuthority[];
+  admin?: boolean;
 }
 
 export type UserAssignmentStatus =
@@ -1288,6 +1288,7 @@ export interface Question {
   headers?: QuestionGroupHeader[];
   examItems?: ExamItem[];
   templateData?: string;
+  fullText?: string;
   version?: number;
 }
 
@@ -1334,6 +1335,7 @@ export interface QuestionDetailDTO {
   category?: QuestionDetailDTOCategory;
   courseSection?: string;
   templateData?: string;
+  fullText?: string;
   headers?: QuestionHeaderDetailDTO[];
 }
 
@@ -1630,11 +1632,6 @@ export interface UpdateMaterialProgressRequest {
   totalDurationSeconds?: number;
   watchDurationSeconds?: number;
   isDownloaded?: boolean;
-}
-
-export interface QuestionLlmTextRequest {
-  /** @minLength 1 */
-  questionId: string;
 }
 
 export type ExamCreateRequestCategory =
@@ -1970,8 +1967,8 @@ export interface AuthenticationRequest {
 }
 
 export interface PageCurriculumDto {
-  totalPages?: number;
   totalElements?: number;
+  totalPages?: number;
   first?: boolean;
   last?: boolean;
   size?: number;
@@ -2003,12 +2000,6 @@ export type GetQuestion200 = { [key: string]: unknown };
 export type UpdateQuestion200 = { [key: string]: unknown };
 
 export type DeleteQuestion200 = { [key: string]: unknown };
-
-export type GetById200 = { [key: string]: unknown };
-
-export type Update200 = { [key: string]: unknown };
-
-export type DeleteById200 = { [key: string]: unknown };
 
 export type GetQuestionGroup200 = { [key: string]: unknown };
 
@@ -2059,9 +2050,7 @@ export type UploadFileParams = {
 
 export type CreateQuestion200 = { [key: string]: unknown };
 
-export type CreateOrUpdate200 = { [key: string]: unknown };
-
-export type ConvertAllQuestions200 = { [key: string]: unknown };
+export type RecalculateFullTextForAll200 = { [key: string]: unknown };
 
 export type ListQuestionGroupsParams = {
   page?: number;
@@ -2133,10 +2122,6 @@ export type GetStandaloneQuestions200 = { [key: string]: unknown };
 export type GetQuestionsByGroup200 = { [key: string]: unknown };
 
 export type CountQuestionsInGroup200 = { [key: string]: unknown };
-
-export type GetByQuestionId200 = { [key: string]: unknown };
-
-export type DeleteByQuestionId200 = { [key: string]: unknown };
 
 export type GetExamWithUserDataParams = {
   userId?: string;

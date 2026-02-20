@@ -61,6 +61,13 @@ export default function DragAndDropQuestion({
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
   const [dragOverZoneId, setDragOverZoneId] = useState<string | null>(null);
 
+  // Sync state when saved answer arrives (e.g. after API load on material quiz page)
+  useEffect(() => {
+    if (initialAnswer != null && initialAnswer.placements != null && Object.keys(initialAnswer.placements).length > 0) {
+      setPlacements(initialAnswer.placements);
+    }
+  }, [initialAnswer]);
+
   const { dropZones = [] } = templateData.options || {};
   const { layout = 'VERTICAL', shuffleItems = false } = templateData;
 

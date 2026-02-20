@@ -63,6 +63,13 @@ export default function FillInTheBlanksQuestion({
     latestAnswersRef.current = answers;
   }, [answers]);
 
+  // Sync state when saved answer arrives (e.g. after API load on material quiz page)
+  useEffect(() => {
+    if (initialAnswer != null && initialAnswer.answers != null && Object.keys(initialAnswer.answers).length > 0) {
+      setAnswers(initialAnswer.answers);
+    }
+  }, [initialAnswer]);
+
   const { textWithBlanks = '', options, trimWhitespace = true } = templateData ?? {};
   const blanks = options?.blanks || [];
 

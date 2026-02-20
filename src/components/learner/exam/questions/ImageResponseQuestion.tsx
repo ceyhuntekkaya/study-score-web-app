@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { BaseQuestionProps } from './types';
 import QuestionBody from './QuestionBody';
 import QuestionAIChatButton from './QuestionAIChatButton';
@@ -76,8 +76,16 @@ export default function ImageResponseQuestion({
 }: ImageResponseQuestionProps) {
   const isPreview = mode === 'PREVIEW';
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [savedImageUrls, setSavedImageUrls] = useState<string[]>(initialAnswer?.imageUrls ?? []);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync state when saved answer arrives (e.g. after API load on material quiz page)
+  useEffect(() => {
+    if (initialAnswer != null && Array.isArray(initialAnswer.imageUrls) && initialAnswer.imageUrls.length > 0) {
+      setSavedImageUrls(initialAnswer.imageUrls);
+    }
+  }, [initialAnswer]);
 
   const rawFormats = templateData.allowedFormats;
   const allowedFormats = Array.isArray(rawFormats)
@@ -309,6 +317,44 @@ export default function ImageResponseQuestion({
           </p>
         </div>
       </div>
+
+      {/* Previously saved images (e.g. after API load on material quiz page) */}
+      {savedImageUrls.length > 0 && (
+        <div className="saved-images mb--20">
+          <h6 className="mb--15" style={{ fontSize: '16px', fontWeight: '600', color: '#333' }}>
+            <i className="feather-image me-2"></i>
+            Saved images
+          </h6>
+          <div className="row g-3">
+            {savedImageUrls.map((url, idx) => (
+              <div key={`saved-${idx}`} className="col-md-6 col-lg-4">
+                <div
+                  style={{
+                    border: '2px solid #e0e0e0',
+                    borderRadius: '8px',
+                    padding: '15px',
+                    backgroundColor: '#ffffff',
+                  }}
+                >
+                  <img
+                    src={url}
+                    alt={`Saved ${idx + 1}`}
+                    style={{
+                      width: '100%',
+                      height: '200px',
+                      objectFit: 'contain',
+                      borderRadius: '6px',
+                    }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Uploaded Images */}
       {uploadedImages.length > 0 && (

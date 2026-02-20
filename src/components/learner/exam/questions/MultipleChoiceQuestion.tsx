@@ -82,6 +82,13 @@ export default function MultipleChoiceQuestion({
     initializedForQuestionIdRef.current = questionId;
   }, [questionId, templateData.options?.choices, templateData.shuffleChoices]);
 
+  // Sync state when saved answer arrives (e.g. after API load on material quiz page)
+  useEffect(() => {
+    if (initialAnswer != null && initialAnswer.selectedOptionId != null) {
+      setSelectedOptionId(initialAnswer.selectedOptionId);
+    }
+  }, [initialAnswer]);
+
   // Handle option selection (no-op in preview)
   const handleOptionSelect = (optionId: string) => {
     if (isPreview) return;

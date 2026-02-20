@@ -29,6 +29,7 @@ import type {
   GetStandaloneQuestions200,
   HardDeleteQuestion200,
   QuestionCreateRequest,
+  RecalculateFullTextForAll200,
   ReorderQuestion200,
   ReorderQuestionParams,
   UpdateQuestion200,
@@ -414,6 +415,82 @@ export const useCreateQuestion = <TError = unknown, TContext = unknown>(
   TContext
 > => {
   const mutationOptions = getCreateQuestionMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export const recalculateFullTextForAll = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<RecalculateFullTextForAll200>(
+    { url: `/exams/questions/recalculate-full-text`, method: "POST", signal },
+    options,
+  );
+};
+
+export const getRecalculateFullTextForAllMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof recalculateFullTextForAll>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof recalculateFullTextForAll>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["recalculateFullTextForAll"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof recalculateFullTextForAll>>,
+    void
+  > = () => {
+    return recalculateFullTextForAll(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RecalculateFullTextForAllMutationResult = NonNullable<
+  Awaited<ReturnType<typeof recalculateFullTextForAll>>
+>;
+
+export type RecalculateFullTextForAllMutationError = unknown;
+
+export const useRecalculateFullTextForAll = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof recalculateFullTextForAll>>,
+      TError,
+      void,
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof recalculateFullTextForAll>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getRecalculateFullTextForAllMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

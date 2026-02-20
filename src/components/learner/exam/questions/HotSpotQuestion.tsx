@@ -73,6 +73,14 @@ export default function HotSpotQuestion({
   const imageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Sync state when saved answer arrives (e.g. after API load on material quiz page)
+  useEffect(() => {
+    if (initialAnswer != null) {
+      if (Array.isArray(initialAnswer.selectedSpotIds)) setSelectedSpotIds(initialAnswer.selectedSpotIds);
+      if (Array.isArray(initialAnswer.clickCoordinates)) setClickCoordinates(initialAnswer.clickCoordinates);
+    }
+  }, [initialAnswer]);
+
   const safeData = templateData ?? {};
   const {
     imageUrl = '',

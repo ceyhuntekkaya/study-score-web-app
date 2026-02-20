@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { BaseQuestionProps } from './types';
 import QuestionBody from './QuestionBody';
 import QuestionAIChatButton from './QuestionAIChatButton';
@@ -48,6 +48,13 @@ export default function ShortAnswerQuestion({
   const [answerText, setAnswerText] = useState<string>(
     initialAnswer?.answerText || ''
   );
+
+  // Sync state when saved answer arrives (e.g. after API load on material quiz page)
+  useEffect(() => {
+    if (initialAnswer != null && initialAnswer.answerText != null) {
+      setAnswerText(initialAnswer.answerText);
+    }
+  }, [initialAnswer]);
 
   const maxCharacters = DEFAULT_MAX_CHARACTERS;
   const placeholder = DEFAULT_PLACEHOLDER;

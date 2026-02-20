@@ -51,6 +51,13 @@ export default function MatchingQuestion({
     initialAnswer?.matches || {}
   );
 
+  // Sync state when saved answer arrives (e.g. after API load on material quiz page)
+  useEffect(() => {
+    if (initialAnswer != null && initialAnswer.matches != null && Object.keys(initialAnswer.matches).length > 0) {
+      setMatches(initialAnswer.matches);
+    }
+  }, [initialAnswer]);
+
   const pairs: Pair[] = templateData.options?.pairs ?? [];
   const matchingType = 'ONE_TO_ONE';
 

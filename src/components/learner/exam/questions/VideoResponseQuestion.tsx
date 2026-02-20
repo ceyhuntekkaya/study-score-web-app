@@ -72,6 +72,13 @@ export default function VideoResponseQuestion({
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Sync state when saved answer arrives (e.g. after API load on material quiz page)
+  useEffect(() => {
+    if (initialAnswer != null && initialAnswer.videoUrl) {
+      setVideoUrl(initialAnswer.videoUrl);
+    }
+  }, [initialAnswer]);
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const videoChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
