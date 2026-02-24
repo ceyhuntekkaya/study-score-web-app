@@ -1,12 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslation } from '@/i18n';
+import LearnerForm from '@/components/admin/LearnerForm';
 
 export default function AddStudentPage() {
   const { t } = useTranslation();
-  const router = useRouter();
 
   return (
     <>
@@ -14,13 +13,13 @@ export default function AddStudentPage() {
         <div>
           <h2>{t('admin.entity.addStudent')}</h2>
           <Link href="/admin/dashboard/students" className="rbt-btn-link">
-            <i className="feather-arrow-left me-1"></i>
+            <i className="feather-arrow-left me-1" />
             {t('admin.entity.backToStudentsList')}
           </Link>
         </div>
       </div>
       <div className="rbt-dashboard-content-wrapper">
-        <p>Form içeriği yakında eklenecek...</p>
+        <LearnerForm />
       </div>
     </>
   );

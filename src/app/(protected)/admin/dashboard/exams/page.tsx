@@ -3,30 +3,15 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useGetAllActiveExams } from '@/generated/api/exam-controller/exam-controller';
+import type { Exam } from '@/generated/api/openAPIDefinition.schemas';
 import DataTable, { Column } from '@/components/admin/DataTable';
 import { useTranslation } from '@/i18n';
-
-// Exam type - API referansına göre (Exam, ExamPart, ExamItem yapısı)
-type Exam = {
-  id?: string;
-  name?: string;
-  code?: string;
-  category?: string;
-  examLevel?: string;
-  examType?: string;
-  configuration?: Record<string, unknown>;
-  examParts?: Array<{ id: string; name: string; orderNumber?: number }>;
-  status?: string;
-  createdAt?: string;
-  [key: string]: unknown;
-};
 
 export default function ExamsPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { data: exams, isLoading, error } = useGetAllActiveExams();
 
-  // API'den dönen veriyi Exam array'ine dönüştür
   const examList: Exam[] = Array.isArray(exams) ? exams : exams ? [exams] : [];
 
   const columns: Column<Exam>[] = [

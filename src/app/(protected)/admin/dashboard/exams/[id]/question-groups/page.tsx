@@ -7,28 +7,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from '@/i18n';
 import { useGetExamItems, getGetExamItemsQueryKey } from '@/generated/api/exam-controller/exam-controller';
 import { useGetQuestionsByGroup } from '@/generated/api/question-controller/question-controller';
+import type { QuestionGroup, Question } from '@/generated/api/openAPIDefinition.schemas';
 import DataTable, { Column } from '@/components/admin/DataTable';
 import QuestionGroupForm from '@/components/admin/QuestionGroupForm';
 import QuestionForm from '@/components/admin/QuestionForm';
-
-type QuestionGroup = {
-  id?: string;
-  code?: string;
-  maximumScore?: number;
-  examId?: string;
-  [key: string]: any;
-};
-
-type Question = {
-  id?: string;
-  name?: string;
-  questionType?: string;
-  maximumScore?: number;
-  difficulty?: string;
-  questionText?: string;
-  questionGroupId?: string;
-  [key: string]: any;
-};
 
 // ExamItem with itemType QUESTION_GROUP has questionGroup: { id, code }; we show these as "groups in this exam"
 function useQuestionGroupsInExam(examId: string) {

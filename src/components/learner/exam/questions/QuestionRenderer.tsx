@@ -1,5 +1,6 @@
 'use client';
 
+import type { Question as ApiQuestion } from '@/generated/api/openAPIDefinition.schemas';
 import type { QuestionDisplayMode } from './types';
 import MultipleChoiceQuestion from './MultipleChoiceQuestion';
 import MultipleResponseQuestion from './MultipleResponseQuestion';
@@ -15,19 +16,22 @@ import AudioResponseQuestion from './AudioResponseQuestion';
 import VideoResponseQuestion from './VideoResponseQuestion';
 import EssayQuestion from './EssayQuestion';
 
-interface Question {
-  questionId?: string;
-  id?: string;
+/** Soru renderer için: ORVAL Question tabanlı + ekran alanları (questionText, userAnswer, mode, aiReady). */
+type Question = Pick<ApiQuestion, 'id'> & {
+  /** Soru tipi; API'de QuestionQuestionType, farklı kaynaklarda string gelebilir. */
   questionType: string;
+  questionId?: string;
+  /** Soru metni; API'de fullText olarak da gelebilir. */
   questionText: string;
-  templateData: any;
+  /** API'de string (JSON); önizleme/formda object de gelebilir. */
+  templateData?: unknown;
   /** Öğrenci cevabı – daha önce cevaplandıysa buradan geçirilir */
-  userAnswer?: any;
+  userAnswer?: unknown;
   /** APPLICATION (varsayılan) veya PREVIEW */
   mode?: QuestionDisplayMode;
   /** true ise soru altında AI Chat butonu gösterilir. Varsayılan: false */
   aiReady?: boolean;
-}
+};
 
 interface QuestionRendererProps {
   question: Question;

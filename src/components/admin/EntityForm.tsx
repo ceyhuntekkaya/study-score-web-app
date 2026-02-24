@@ -2,28 +2,38 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "@/i18n";
 import {
   Brand,
   Campus,
   Institution,
   Branch,
+  BranchGrade,
 } from "@/generated/api/openAPIDefinition.schemas";
 import {
   useCreateBrand,
   useUpdateBrand,
+  getGetAllBrandsQueryKey,
+  getGetBrandByIdQueryKey,
 } from "@/generated/api/brand-rest-controller/brand-rest-controller";
 import {
   useCreateCampus,
   useUpdateCampus,
+  getGetAllCampussQueryKey,
+  getGetCampusByIdQueryKey,
 } from "@/generated/api/campus-rest-controller/campus-rest-controller";
 import {
   useCreateInstitution,
   useUpdateInstitution,
+  getGetAllInstitutionsQueryKey,
+  getGetInstitutionByIdQueryKey,
 } from "@/generated/api/institution-rest-controller/institution-rest-controller";
 import {
   useCreateBranch,
   useUpdateBranch,
+  getGetAllBranchsQueryKey,
+  getGetBranchByIdQueryKey,
 } from "@/generated/api/branch-rest-controller/branch-rest-controller";
 import { useGetAllBrands } from "@/generated/api/brand-rest-controller/brand-rest-controller";
 import { useGetAllCampuss } from "@/generated/api/campus-rest-controller/campus-rest-controller";
@@ -55,6 +65,7 @@ export default function EntityForm({
 }: EntityFormProps) {
   const { t } = useTranslation();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const isEditMode = !!initialData?.id;
 
   // Form state
@@ -134,8 +145,63 @@ export default function EntityForm({
     }
   };
 
+  // ORVAL şemalarına uygun payload: sadece ilgili entity alanları gönderilir (400 hatasını önlemek için)
+  const getPayload = (): EntityData => {
+    const str = (v: unknown): string | undefined =>
+      v === "" || v == null ? undefined : String(v);
+    switch (entityType) {
+      case "brand": {
+        const b: Brand = {
+          name: formData.name || undefined,
+          description: str(formData.description),
+          logo: str(formData.logo),
+          website: str(formData.website),
+          phone: str(formData.phone),
+          email: str(formData.email),
+          address: str(formData.address),
+          contactPerson: str(formData.contactPerson),
+          status: (formData.status as Brand["status"]) || "ACTIVE",
+        };
+        if (isEditMode && initialData?.id) b.id = initialData.id;
+        return b;
+      }
+      case "campus": {
+        const c: Campus = {
+          name: formData.name || undefined,
+          status: (formData.status as Campus["status"]) || "ACTIVE",
+          brand: formData.brand,
+        };
+        if (isEditMode && initialData?.id) c.id = initialData.id;
+        return c;
+      }
+      case "institution": {
+        const i: Institution = {
+          name: formData.name || undefined,
+          status: (formData.status as Institution["status"]) || "ACTIVE",
+          campus: formData.campus,
+        };
+        if (isEditMode && initialData?.id) i.id = initialData.id;
+        return i;
+      }
+      case "branch": {
+        const br: Branch = {
+          name: formData.name || undefined,
+          status: (formData.status as Branch["status"]) || "ACTIVE",
+          institution: formData.institution,
+          grade: str(formData.grade) as Branch["grade"],
+        };
+        if (isEditMode && initialData?.id) br.id = initialData.id;
+        return br;
+      }
+      default:
+        return formData as EntityData;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const payload = getPayload();
 
     try {
       if (isEditMode) {
@@ -145,25 +211,25 @@ export default function EntityForm({
           case "brand":
             await updateBrand.mutateAsync({
               brandId: id,
-              data: formData as Brand,
+              data: payload as Brand,
             });
             break;
           case "campus":
             await updateCampus.mutateAsync({
               campusId: id,
-              data: formData as Campus,
+              data: payload as Campus,
             });
             break;
           case "institution":
             await updateInstitution.mutateAsync({
               institutionId: id,
-              data: formData as Institution,
+              data: payload as Institution,
             });
             break;
           case "branch":
             await updateBranch.mutateAsync({
               branchId: id,
-              data: formData as Branch,
+              data: payload as Branch,
             });
             break;
         }
@@ -171,21 +237,43 @@ export default function EntityForm({
         // Create mode
         switch (entityType) {
           case "brand":
-            await createBrand.mutateAsync({ data: formData as Brand });
+            await createBrand.mutateAsync({ data: payload as Brand });
             break;
           case "campus":
-            await createCampus.mutateAsync({ data: formData as Campus });
+            await createCampus.mutateAsync({ data: payload as Campus });
             break;
           case "institution":
             await createInstitution.mutateAsync({
-              data: formData as Institution,
+              data: payload as Institution,
             });
             break;
           case "branch":
-            await createBranch.mutateAsync({ data: formData as Branch });
+            await createBranch.mutateAsync({ data: payload as Branch });
             break;
         }
       }
+
+      // Liste ve detay sayfalarının güncel veriyi göstermesi için cache invalidate (await ile yönlendirmeden önce tamamlansın)
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: getGetAllBrandsQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: getGetAllCampussQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: getGetAllInstitutionsQueryKey() }),
+        queryClient.invalidateQueries({ queryKey: getGetAllBranchsQueryKey() }),
+        ...(isEditMode && initialData?.id
+          ? [
+              entityType === "brand" &&
+                queryClient.invalidateQueries({ queryKey: getGetBrandByIdQueryKey(initialData.id) }),
+              entityType === "campus" &&
+                queryClient.invalidateQueries({ queryKey: getGetCampusByIdQueryKey(initialData.id) }),
+              entityType === "institution" &&
+                queryClient.invalidateQueries({
+                  queryKey: getGetInstitutionByIdQueryKey(initialData.id),
+                }),
+              entityType === "branch" &&
+                queryClient.invalidateQueries({ queryKey: getGetBranchByIdQueryKey(initialData.id) }),
+            ].filter(Boolean)
+          : []),
+      ]);
 
       if (onSuccess) {
         onSuccess();
@@ -443,13 +531,23 @@ export default function EntityForm({
             <div className="col-md-6">
               <div className="form-group">
                 <Label htmlFor="grade">{t('form.label.grade')}</Label>
-                <Input
+                <Select
                   id="grade"
                   name="grade"
-                  type="text"
-                  value={formData.grade}
+                  value={formData.grade || ""}
                   onChange={handleChange}
-                />
+                >
+                  <option value="">{t('form.label.selectGrade')}</option>
+                  {Object.values(BranchGrade).map((value) => (
+                    <option key={value} value={value}>
+                      {value === "OTHER"
+                        ? t("form.grade.other")
+                        : t("form.grade.level", {
+                            level: value.replace("GRADE_", ""),
+                          })}
+                    </option>
+                  ))}
+                </Select>
               </div>
             </div>
           </>

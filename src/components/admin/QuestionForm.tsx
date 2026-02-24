@@ -435,7 +435,7 @@ export default function QuestionForm({
         </form>
       </div>
 
-      {/* Sağ: Öğrenci önizlemesi */}
+      {/* Sağ: Öğrenci önizlemesi + fullText (edit modunda) */}
       <div className="col-12 col-lg-5 col-xl-4 mt-4 mt-lg-0">
         <div
           className="border rounded p-3 bg-white shadow-sm sticky-top"
@@ -447,6 +447,17 @@ export default function QuestionForm({
             templateData={formData.templateData}
           />
         </div>
+        {isEditMode && questionData && (questionData as Record<string, unknown>).fullText != null && (
+          <div className="border rounded p-3 bg-white shadow-sm mt-3">
+            <h6 className="mb-2 text-muted">{t("admin.exam.fullText") ?? "fullText"}</h6>
+            <pre
+              className="mb-0 small text-body"
+              style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", maxHeight: 300, overflow: "auto" }}
+            >
+              {String((questionData as Record<string, unknown>).fullText)}
+            </pre>
+          </div>
+        )}
       </div>
     </div>
   );

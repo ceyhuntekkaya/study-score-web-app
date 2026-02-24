@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useListQuestionGroups } from '@/generated/api/question-group-controller/question-group-controller';
 import { useGetQuestionsByGroup } from '@/generated/api/question-controller/question-controller';
+import type { QuestionGroup, Question } from '@/generated/api/openAPIDefinition.schemas';
 import DataTable, { Column } from '@/components/admin/DataTable';
 import { useTranslation } from '@/i18n';
 import { customInstance } from '@/lib/api-client';
@@ -13,41 +14,23 @@ import { customInstance } from '@/lib/api-client';
 /** Sentinel value for "questions without group" in the dropdown */
 const STANDALONE_GROUP_ID = '__standalone__';
 
-type QuestionGroupRow = {
-  id?: string;
-  code?: string;
-  category?: string;
-  examId?: string;
-  examName?: string;
-  [key: string]: unknown;
-};
+/** Liste endpoint'i bazen examName döndürebilir. */
+type QuestionGroupOption = QuestionGroup & { examName?: string };
 
-type QuestionRow = {
-  id?: string;
-  name?: string;
-  questionType?: string;
-  maximumScore?: number;
-  difficulty?: string;
-  questionText?: string;
-  questionGroupId?: string;
-  orderNumber?: number;
-  [key: string]: unknown;
-};
-
-function normalizeGroups(data: unknown): QuestionGroupRow[] {
-  if (Array.isArray(data)) return data as QuestionGroupRow[];
+function normalizeGroups(data: unknown): QuestionGroupOption[] {
+  if (Array.isArray(data)) return data as QuestionGroupOption[];
   if (data && typeof data === 'object' && 'content' in data) {
     const content = (data as { content?: unknown[] }).content;
-    return Array.isArray(content) ? (content as QuestionGroupRow[]) : [];
+    return Array.isArray(content) ? (content as QuestionGroupOption[]) : [];
   }
   return [];
 }
 
-function normalizeQuestions(data: unknown): QuestionRow[] {
-  if (Array.isArray(data)) return data as QuestionRow[];
+function normalizeQuestions(data: unknown): Question[] {
+  if (Array.isArray(data)) return data as Question[];
   if (data && typeof data === 'object' && 'content' in data) {
     const content = (data as { content?: unknown[] }).content;
-    return Array.isArray(content) ? (content as QuestionRow[]) : [];
+    return Array.isArray(content) ? (content as Question[]) : [];
   }
   return [];
 }
@@ -87,7 +70,7 @@ export default function QuestionsPage() {
   const questionsError = isStandalone ? standaloneError : questionsByGroupError;
   const questions = useMemo(() => normalizeQuestions(questionsData), [questionsData]);
 
-  const columns: Column<QuestionRow>[] = [
+  const columns: Column<Question>[] = [
     {
       key: 'orderNumber',
       label: t('admin.lesson.orderNumber') ?? 'Sıra',
@@ -141,7 +124,7 @@ export default function QuestionsPage() {
     },
   ];
 
-  const handleRowClick = (row: QuestionRow) => {
+  const handleRowClick = (row: Question) => {
     if (row.id) router.push(`/admin/dashboard/questions/${row.id}/edit`);
   };
 

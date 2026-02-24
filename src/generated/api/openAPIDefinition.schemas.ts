@@ -298,17 +298,17 @@ export interface User {
   roleSet?: UserRoleSetItem[];
   authoritySet?: UserAuthoritySetItem[];
   enabled?: boolean;
+  accountNonExpired?: boolean;
+  accountNonLocked?: boolean;
+  credentialsNonExpired?: boolean;
+  authorities?: GrantedAuthority[];
+  institutionalLearner?: boolean;
+  individualLearner?: boolean;
+  admin?: boolean;
   learner?: boolean;
   manager?: boolean;
   tutor?: boolean;
   writer?: boolean;
-  authorities?: GrantedAuthority[];
-  institutionalLearner?: boolean;
-  individualLearner?: boolean;
-  accountNonExpired?: boolean;
-  accountNonLocked?: boolean;
-  credentialsNonExpired?: boolean;
-  admin?: boolean;
 }
 
 export type UserAssignmentStatus =
@@ -1538,6 +1538,7 @@ export interface UploadedFile {
   fileSize?: number;
   updatedAt?: string;
   version?: number;
+  llmExplain?: string;
 }
 
 export type UserProgressCourseLessonPartMaterialStatus =
@@ -1594,6 +1595,15 @@ export interface CourseLessonDTO {
   orderNumber?: number;
   parentLessonId?: string;
   childLessons?: CourseLessonDTO[];
+}
+
+export interface AdminUpdateLearnerRequest {
+  name?: string;
+  lastName?: string;
+  email?: string;
+  mobilePhone?: string;
+  password?: string;
+  branchId?: string;
 }
 
 export type QuestionResponseRequestContextType =
@@ -1966,6 +1976,29 @@ export interface AuthenticationRequest {
   password?: string;
 }
 
+export interface AdminCreateLearnerRequest {
+  /** @minLength 1 */
+  username: string;
+  /** @minLength 1 */
+  password: string;
+  name?: string;
+  lastName?: string;
+  email?: string;
+  mobilePhone?: string;
+  brandId?: string;
+  campusId?: string;
+  institutionId?: string;
+  branchId?: string;
+  individual?: boolean;
+}
+
+export interface AdminBulkUpdateBranchRequest {
+  /** @minItems 1 */
+  learnerIds: string[];
+  /** @minLength 1 */
+  branchId: string;
+}
+
 export interface PageCurriculumDto {
   totalElements?: number;
   totalPages?: number;
@@ -1993,6 +2026,44 @@ export interface SortObject {
   empty?: boolean;
   sorted?: boolean;
   unsorted?: boolean;
+}
+
+export interface AdminStatisticsDto {
+  institutionCount?: number;
+  branchCount?: number;
+  campusCount?: number;
+  brandCount?: number;
+  courseCount?: number;
+  examCount?: number;
+  questionCount?: number;
+  questionGroupCount?: number;
+  userCount?: number;
+  learnerCount?: number;
+  institutionalSubscriptionCount?: number;
+  individualSubscriptionCount?: number;
+  examAttemptCount?: number;
+}
+
+export interface Pageable {
+  /** @minimum 0 */
+  page?: number;
+  /** @minimum 1 */
+  size?: number;
+  sort?: string[];
+}
+
+export interface PageUser {
+  totalElements?: number;
+  totalPages?: number;
+  first?: boolean;
+  last?: boolean;
+  size?: number;
+  content?: User[];
+  number?: number;
+  sort?: SortObject;
+  pageable?: PageableObject;
+  numberOfElements?: number;
+  empty?: boolean;
 }
 
 export type GetQuestion200 = { [key: string]: unknown };
@@ -2105,6 +2176,13 @@ export type DuplicateCurriculumParams = {
    * @minLength 1
    */
   newName: string;
+};
+
+export type ListLearnersParams = {
+  branchId?: string;
+  institutionId?: string;
+  individualOnly?: boolean;
+  pageable: Pageable;
 };
 
 export type ReorderQuestionParams = {

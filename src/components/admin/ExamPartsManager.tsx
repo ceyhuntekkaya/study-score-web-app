@@ -18,6 +18,8 @@ import { useListQuestionGroups } from '@/generated/api/question-group-controller
 import { useGetStandaloneQuestions } from '@/generated/api/question-controller/question-controller';
 import {
   ExamAddItemRequestItemType,
+  type ExamPart,
+  type ExamItem,
 } from '@/generated/api/openAPIDefinition.schemas';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
@@ -35,27 +37,6 @@ function normalizeListResponse(data: unknown): unknown[] {
   }
   return [data];
 }
-
-export type ExamPartDto = {
-  id: string;
-  name?: string;
-  orderNumber?: number;
-  examItems?: ExamItemDto[];
-  createdAt?: string;
-  status?: string;
-};
-
-export type ExamItemDto = {
-  id: string;
-  examPart?: { id: string; name?: string; orderNumber?: number };
-  itemType?: 'QUESTION_GROUP' | 'QUESTION';
-  questionGroup?: { id: string; code?: string };
-  question?: { id: string; name?: string; questionType?: string };
-  orderNumber?: number;
-  score?: number;
-  createdAt?: string;
-  status?: string;
-};
 
 interface ExamPartsManagerProps {
   examId: string;
@@ -84,10 +65,10 @@ export default function ExamPartsManager({ examId }: ExamPartsManagerProps) {
   const addItem = useAddItemToExam();
   const removeItem = useRemoveItemFromExam();
 
-  const exam = examData as { examParts?: ExamPartDto[] } | undefined;
-  const parts: ExamPartDto[] = exam?.examParts ?? [];
-  const itemsByPartId: Record<string, ExamItemDto[]> = parts.reduce<Record<string, ExamItemDto[]>>((acc, part) => {
-    acc[part.id] = (part.examItems as ExamItemDto[] | undefined) ?? [];
+  const exam = examData as { examParts?: ExamPart[] } | undefined;
+  const parts: ExamPart[] = exam?.examParts ?? [];
+  const itemsByPartId: Record<string, ExamItem[]> = parts.reduce<Record<string, ExamItem[]>>((acc, part) => {
+    acc[part.id ?? ''] = part.examItems ?? [];
     return acc;
   }, {});
 
@@ -258,10 +239,10 @@ export default function ExamPartsManager({ examId }: ExamPartsManagerProps) {
         <p className="text-muted text-center py--30">{t('admin.exam.noParts')}</p>
       ) : (
         <div className="rbt-course-list">
-          {parts.map((part) => {
-            const partItems = itemsByPartId[part.id] || [];
+          {parts.map((part, index) => {
+            const partItems = itemsByPartId[part.id ?? ''] || [];
             return (
-              <div key={part.id} className="rbt-course rbt-course-wrape mb--20 border rounded p--20">
+              <div key={part.id ?? `part-${index}`} className="rbt-course rbt-course-wrape mb--20 border rounded p--20">
                 <div className="d-flex justify-content-between align-items-center mb--15">
                   <h5 className="mb--0">
                     {part.name || t('admin.exam.part')} {(part.orderNumber ?? 0) > 0 ? `(${part.orderNumber})` : ''}
@@ -271,7 +252,7 @@ export default function ExamPartsManager({ examId }: ExamPartsManagerProps) {
                       type="button"
                       className="rbt-btn btn-sm btn-border-gradient"
                       onClick={() => {
-                        setAddItemPartId(part.id);
+                        setAddItemPartId(part.id ?? null);
                         setAddItemType(ExamAddItemRequestItemType.QUESTION_GROUP);
                         setAddItemQuestionGroupId('');
                         setAddItemQuestionId('');
@@ -284,7 +265,7 @@ export default function ExamPartsManager({ examId }: ExamPartsManagerProps) {
                     <button
                       type="button"
                       className="rbt-btn btn-sm btn-border text-danger"
-                      onClick={() => handleDeletePart(part.id, partItems.length)}
+                      onClick={() => part.id != null && handleDeletePart(part.id, partItems.length)}
                       title={t('common.delete')}
                     >
                       <i className="feather-trash-2"></i>
@@ -331,7 +312,7 @@ function ExamPartItemsList({
   items,
   onRemove,
 }: {
-  items: ExamItemDto[];
+  items: ExamItem[];
   onRemove: (examItemId: string) => void;
 }) {
   const { t } = useTranslation();
@@ -370,7 +351,7 @@ function ExamPartItemsList({
                   <button
                     type="button"
                     className="rbt-btn btn-sm btn-border text-danger"
-                    onClick={() => onRemove(item.id)}
+                    onClick={() => item.id != null && onRemove(item.id)}
                     title={t('admin.exam.removeItem')}
                   >
                     <i className="feather-trash-2"></i>

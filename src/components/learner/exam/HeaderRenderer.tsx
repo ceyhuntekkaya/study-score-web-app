@@ -2,14 +2,10 @@
 
 import AudioPlayer from '@/components/ui/AudioPlayer';
 import { getMediaServeUrl } from '@/lib/fileUtils';
-
-interface Header {
-  mediaType: 'IMAGE' | 'VIDEO' | 'AUDIO' | 'DOCUMENT' | 'PDF' | 'TEXT' | 'LINK' | 'OTHER';
-  content?: string;
-}
+import type { QuestionHeaderDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
 
 interface HeaderRendererProps {
-  header: Header;
+  header: QuestionHeaderDetailDTO;
 }
 
 /**

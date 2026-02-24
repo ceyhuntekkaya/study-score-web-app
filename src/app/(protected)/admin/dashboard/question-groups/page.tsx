@@ -3,22 +3,12 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useListQuestionGroups } from '@/generated/api/question-group-controller/question-group-controller';
+import type { QuestionGroup } from '@/generated/api/openAPIDefinition.schemas';
 import DataTable, { Column } from '@/components/admin/DataTable';
 import { useTranslation } from '@/i18n';
 
-type QuestionGroupRow = {
-  id?: string;
-  code?: string;
-  category?: string;
-  examId?: string;
-  examName?: string;
-  maximumScore?: number;
-  difficultyLevel?: number;
-  courseSection?: string;
-  usagePart?: string;
-  createdAt?: string;
-  [key: string]: unknown;
-};
+/** Liste endpoint'i bazen examId/examName döndürebilir. */
+type QuestionGroupRow = QuestionGroup & { examId?: string; examName?: string };
 
 function normalizeListResponse(data: unknown): QuestionGroupRow[] {
   if (Array.isArray(data)) return data as QuestionGroupRow[];
@@ -114,7 +104,7 @@ export default function QuestionGroupsPage() {
     },
   ];
 
-  const handleRowClick = (row: QuestionGroupRow) => {
+  const handleRowClick = (row: QuestionGroup) => {
     if (row.id) router.push(`/admin/dashboard/question-groups/${row.id}/edit`);
   };
 

@@ -3,6 +3,7 @@ import React, { useMemo, useState } from "react";
 import {
   CourseLessonDetailDTO,
   CourseLessonPartDetailDTO,
+  type CourseLessonDetailDTOLessonLevel,
 } from "@/generated/api/openAPIDefinition.schemas";
 import {
   BookOpen,
@@ -33,8 +34,6 @@ interface CourseLessonsAccordionProps {
 interface CourseLessonDetailDTOWithChildren extends CourseLessonDetailDTO {
   childLessons?: CourseLessonDetailDTOWithChildren[];
 }
-
-type LessonLevel = "UNIT" | "TOPIC" | "LESSON";
 
 export default function CourseLessonsAccordion({
   lessons = [],
@@ -88,7 +87,7 @@ export default function CourseLessonsAccordion({
 
   // Helper functions for level styling
   const getLevelBadgeStyle = (
-    level: LessonLevel | string
+    level: CourseLessonDetailDTOLessonLevel | string
   ): React.CSSProperties => {
     const baseStyle: React.CSSProperties = {
       display: "inline-flex",
@@ -115,7 +114,7 @@ export default function CourseLessonsAccordion({
     }
   };
 
-  const getLevelText = (level: LessonLevel | string): string => {
+  const getLevelText = (level: CourseLessonDetailDTOLessonLevel | string): string => {
     switch (level) {
       case "UNIT":
         return "UNIT";
@@ -128,7 +127,7 @@ export default function CourseLessonsAccordion({
     }
   };
 
-  const getLevelIcon = (level: LessonLevel | string) => {
+  const getLevelIcon = (level: CourseLessonDetailDTOLessonLevel | string) => {
     switch (level) {
       case "UNIT":
         return GraduationCap;
