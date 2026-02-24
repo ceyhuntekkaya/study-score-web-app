@@ -11,6 +11,7 @@ import {
   CourseLessonPartMaterial,
   CourseLessonPartMaterialDetailDTO,
   CourseLessonPartMaterialDetailDTOMediaType,
+  CourseLessonPartMaterialDetailDTOMaterialType,
   CourseLessonPartQuizItemDetailDTOType,
 } from "@/generated/api/openAPIDefinition.schemas";
 import DynamicTable from "@/components/ui/DynamicTable";
@@ -60,6 +61,7 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
         courseLessonPartId: partId,
         name: quizMaterialName,
         mediaType: CourseLessonPartMaterialDetailDTOMediaType.OTHER,
+        materialType: CourseLessonPartMaterialDetailDTOMaterialType.QUIZ,
         duration: 0,
         description: "",
         orderNumber: 0,
@@ -98,6 +100,7 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
       description: description,
       content: material.content || "",
       mediaType: material.mediaType as any,
+      materialType: materialWithDetails.materialType,
       orderNumber: material.orderNumber || 0,
       duration: material.duration || 0,
       courseLessonPartId: partId,
@@ -138,6 +141,11 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
 
   const columns: Column<CourseLessonPartMaterial>[] = [
     {
+      key: "orderNumber",
+      header: t('admin.material.orderNumber'),
+      sortable: true,
+    },
+    {
       key: "id" as any, // Using id as key since name doesn't exist in type
       header: t('admin.material.name') || "Name",
       sortable: true,
@@ -165,19 +173,16 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
       },
     },
     {
-      key: "orderNumber",
-      header: t('admin.material.orderNumber'),
+      key: "materialType",
+      header: t('admin.material.materialType'),
       sortable: true,
-    },
-    {
-      key: "duration",
-      header: t('admin.material.duration'),
-      sortable: true,
-      render: (value) => {
-        const duration = value as number;
-        return <span>{duration ? `${duration} sn` : "-"}</span>;
+      render: (value, item) => {
+        const materialWithDetails = item as any;
+        const materialType = (value ?? materialWithDetails.materialType) as string;
+        return <span>{materialType || "-"}</span>;
       },
     },
+   
     {
       key: "actions",
       header: t('common.actions'),
@@ -292,6 +297,7 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
                 description: description,
                 content: editingMaterial.content || "",
                 mediaType: editingMaterial.mediaType as any,
+                materialType: materialWithDetails.materialType,
                 orderNumber: editingMaterial.orderNumber || 0,
                 duration: editingMaterial.duration || 0,
                 courseLessonPartId: partId,

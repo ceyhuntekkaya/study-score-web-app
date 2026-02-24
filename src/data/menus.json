@@ -264,6 +264,16 @@
               "icon": "feather-users",
               "labelKey": "menu.students",
               "href": "/admin/dashboard/students"
+            },
+            {
+              "icon": "feather-calendar",
+              "labelKey": "menu.events",
+              "href": "/admin/dashboard/events"
+            },
+            {
+              "icon": "feather-file-text",
+              "labelKey": "menu.blog",
+              "href": "/admin/dashboard/blog"
             }
           ]
         },

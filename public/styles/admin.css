@@ -54,6 +54,14 @@
   font-family: 'Quicksand', sans-serif !important;
 }
 
+/* Feather (and other icon fonts) must keep their font-family so icons render.
+   Quicksand is applied to .rbt-admin-wrapper * so we restore icon font for icon elements. */
+.rbt-admin-wrapper [class^="feather-"],
+.rbt-admin-wrapper [class*=" feather-"],
+.rbt-admin-wrapper .feather {
+  font-family: 'feather' !important;
+}
+
 /* CourseCurriculum.css */
 
 /* Table hover effects */

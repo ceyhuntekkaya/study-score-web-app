@@ -298,17 +298,17 @@ export interface User {
   roleSet?: UserRoleSetItem[];
   authoritySet?: UserAuthoritySetItem[];
   enabled?: boolean;
-  accountNonExpired?: boolean;
-  accountNonLocked?: boolean;
-  credentialsNonExpired?: boolean;
-  authorities?: GrantedAuthority[];
-  institutionalLearner?: boolean;
-  individualLearner?: boolean;
-  admin?: boolean;
   learner?: boolean;
   manager?: boolean;
   tutor?: boolean;
   writer?: boolean;
+  admin?: boolean;
+  authorities?: GrantedAuthority[];
+  accountNonExpired?: boolean;
+  accountNonLocked?: boolean;
+  credentialsNonExpired?: boolean;
+  institutionalLearner?: boolean;
+  individualLearner?: boolean;
 }
 
 export type UserAssignmentStatus =
@@ -544,6 +544,158 @@ export interface ExamUpdateRequest {
    */
   accessCode?: string;
   requireProctoring?: boolean;
+}
+
+export type EventStatus = (typeof EventStatus)[keyof typeof EventStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const EventStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export interface Event {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: EventStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  startDate?: string;
+  endDate?: string;
+  time?: string;
+  location?: string;
+  category?: string;
+  available?: number;
+  content?: string;
+  description?: string;
+  banner?: string;
+  poster?: string;
+  faqs?: EventFaq[];
+  participants?: EventSpeaker[];
+  registrations?: EventRegistration[];
+}
+
+export type EventFaqStatus =
+  (typeof EventFaqStatus)[keyof typeof EventFaqStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const EventFaqStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export interface EventFaq {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: EventFaqStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  event?: Event;
+  title?: string;
+  description?: string;
+  orderNumber?: number;
+}
+
+export type EventRegistrationStatus =
+  (typeof EventRegistrationStatus)[keyof typeof EventRegistrationStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const EventRegistrationStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export interface EventRegistration {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: EventRegistrationStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  event?: Event;
+  user?: User;
+}
+
+export type EventSpeakerStatus =
+  (typeof EventSpeakerStatus)[keyof typeof EventSpeakerStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const EventSpeakerStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export interface EventSpeaker {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: EventSpeakerStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  event?: Event;
+  photo?: string;
+  name?: string;
+  title?: string;
+  location?: string;
+  description?: string;
+  instagram?: string;
+  facebook?: string;
+  twitter?: string;
+  orderNumber?: number;
 }
 
 export type CurriculumDtoStatus =
@@ -1621,6 +1773,112 @@ export interface CourseLessonDTO {
   childLessons?: CourseLessonDTO[];
 }
 
+export type BlogStatus = (typeof BlogStatus)[keyof typeof BlogStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const BlogStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export interface Blog {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: BlogStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  title?: string;
+  shortDescription?: string;
+  banner?: string;
+  summary?: string;
+  slogan?: string;
+  content?: string;
+  author?: User;
+  category?: BlogCategory;
+  labels?: BlogLabel[];
+}
+
+export type BlogCategoryStatus =
+  (typeof BlogCategoryStatus)[keyof typeof BlogCategoryStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const BlogCategoryStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export interface BlogCategory {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: BlogCategoryStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  name?: string;
+  slug?: string;
+  orderNumber?: number;
+}
+
+export type BlogLabelStatus =
+  (typeof BlogLabelStatus)[keyof typeof BlogLabelStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const BlogLabelStatus = {
+  ACTIVE: "ACTIVE",
+  PASSIVE: "PASSIVE",
+  DELETED: "DELETED",
+  WAITING: "WAITING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+  CANCELLED: "CANCELLED",
+  COMPLETED: "COMPLETED",
+  IN_PROGRESS: "IN_PROGRESS",
+  NOT_STARTED: "NOT_STARTED",
+  PENDING: "PENDING",
+  SUSPENDED: "SUSPENDED",
+  WORKING: "WORKING",
+  NEW: "NEW",
+  FINISHED: "FINISHED",
+} as const;
+
+export interface BlogLabel {
+  id?: string;
+  createdAt?: string;
+  deletedAt?: string;
+  status?: BlogLabelStatus;
+  createdBy?: User;
+  deletedBy?: User;
+  name?: string;
+  slug?: string;
+}
+
 export interface AdminUpdateLearnerRequest {
   name?: string;
   lastName?: string;
@@ -2032,8 +2290,8 @@ export interface PageCurriculumDto {
   content?: CurriculumDto[];
   number?: number;
   sort?: SortObject;
-  pageable?: PageableObject;
   numberOfElements?: number;
+  pageable?: PageableObject;
   empty?: boolean;
 }
 
@@ -2041,9 +2299,9 @@ export interface PageableObject {
   offset?: number;
   sort?: SortObject;
   paged?: boolean;
+  unpaged?: boolean;
   pageNumber?: number;
   pageSize?: number;
-  unpaged?: boolean;
 }
 
 export interface SortObject {
@@ -2085,8 +2343,8 @@ export interface PageUser {
   content?: User[];
   number?: number;
   sort?: SortObject;
-  pageable?: PageableObject;
   numberOfElements?: number;
+  pageable?: PageableObject;
   empty?: boolean;
 }
 
@@ -2195,11 +2453,27 @@ export type GetExamItems200 = { [key: string]: unknown };
 
 export type AddItemToExam200 = { [key: string]: unknown };
 
+export type GetAllEventsParams = {
+  activeOnly?: boolean;
+};
+
 export type DuplicateCurriculumParams = {
   /**
    * @minLength 1
    */
   newName: string;
+};
+
+export type GetAllLabelsParams = {
+  activeOnly?: boolean;
+};
+
+export type GetAllCategoriesParams = {
+  activeOnly?: boolean;
+};
+
+export type GetAllBlogsParams = {
+  activeOnly?: boolean;
 };
 
 export type ListLearnersParams = {
@@ -2401,6 +2675,22 @@ export const GetContentsByCurriculumAndLevelLevel = {
   SUB_TOPIC: "SUB_TOPIC",
   GAIN: "GAIN",
 } as const;
+
+export type GetMyBlogsParams = {
+  activeOnly?: boolean;
+};
+
+export type GetBlogsByLabelParams = {
+  activeOnly?: boolean;
+};
+
+export type GetBlogsByCategoryParams = {
+  activeOnly?: boolean;
+};
+
+export type GetBlogsByAuthorParams = {
+  activeOnly?: boolean;
+};
 
 export type HardDeleteQuestion200 = { [key: string]: unknown };
 

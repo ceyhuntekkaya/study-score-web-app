@@ -5,6 +5,7 @@ import { useTranslation } from "@/i18n";
 import {
   CourseLessonPartMaterialDetailDTO,
   CourseLessonPartMaterialDetailDTOMediaType,
+  CourseLessonPartMaterialDetailDTOMaterialType,
   CourseLessonPartQuizItemDetailDTO,
   CourseLessonPartQuizItemDetailDTOType,
 } from "@/generated/api/openAPIDefinition.schemas";
@@ -274,6 +275,7 @@ export default function MaterialForm({
     description: "",
     content: "",
     mediaType: CourseLessonPartMaterialDetailDTOMediaType.VIDEO,
+    materialType: CourseLessonPartMaterialDetailDTOMaterialType.CONTENT,
     orderNumber: 0,
     duration: 0,
     courseLessonPartId: courseLessonPartId,
@@ -327,6 +329,7 @@ export default function MaterialForm({
         description: initialData.description || "",
         content: initialData.content || "",
         mediaType: initialData.mediaType || CourseLessonPartMaterialDetailDTOMediaType.VIDEO,
+        materialType: initialData.materialType || CourseLessonPartMaterialDetailDTOMaterialType.CONTENT,
         orderNumber: initialData.orderNumber || 0,
         duration: initialData.duration || 0,
         courseLessonPartId: initialData.courseLessonPartId || courseLessonPartId,
@@ -343,6 +346,7 @@ export default function MaterialForm({
         description: "",
         content: "",
         mediaType: CourseLessonPartMaterialDetailDTOMediaType.VIDEO,
+        materialType: CourseLessonPartMaterialDetailDTOMaterialType.CONTENT,
         orderNumber: 0,
         duration: 0,
         courseLessonPartId: courseLessonPartId,
@@ -518,10 +522,11 @@ export default function MaterialForm({
               ...formData,
               name: quizMaterialName,
               mediaType: CourseLessonPartMaterialDetailDTOMediaType.OTHER,
+              materialType: CourseLessonPartMaterialDetailDTOMaterialType.QUIZ,
               duration: 0,
               description: "",
             }
-          : formData;
+          : { ...formData, materialType: formData.materialType ?? CourseLessonPartMaterialDetailDTOMaterialType.CONTENT };
         await updateMaterial.mutateAsync({
           coursePartMaterialId: id,
           data,
@@ -530,10 +535,12 @@ export default function MaterialForm({
       } else {
         const payload: CourseLessonPartMaterialDetailDTO = {
           ...formData,
+          materialType: formData.materialType ?? CourseLessonPartMaterialDetailDTOMaterialType.CONTENT,
           ...(hasQuizItems
             ? {
                 name: quizMaterialName,
                 mediaType: CourseLessonPartMaterialDetailDTOMediaType.OTHER,
+                materialType: CourseLessonPartMaterialDetailDTOMaterialType.QUIZ,
                 duration: 0,
                 description: "",
               }
@@ -656,6 +663,34 @@ export default function MaterialForm({
               </option>
               <option value={CourseLessonPartMaterialDetailDTOMediaType.OTHER}>
                 OTHER
+              </option>
+            </Select>
+          </div>
+        </div>
+
+        {/* Material Type */}
+        <div className="col-md-6">
+          <div className="form-group">
+            <Label htmlFor="materialType">
+              {t("admin.material.materialType")} <span className="text-danger">*</span>
+            </Label>
+            <Select
+              id="materialType"
+              name="materialType"
+              value={formData.materialType || CourseLessonPartMaterialDetailDTOMaterialType.CONTENT}
+              onChange={(e) => handleSelectChange("materialType", e.target.value)}
+            >
+              <option value={CourseLessonPartMaterialDetailDTOMaterialType.CONTENT}>
+                CONTENT
+              </option>
+              <option value={CourseLessonPartMaterialDetailDTOMaterialType.QUIZ}>
+                QUIZ
+              </option>
+              <option value={CourseLessonPartMaterialDetailDTOMaterialType.PRACTICE}>
+                PRACTICE
+              </option>
+              <option value={CourseLessonPartMaterialDetailDTOMaterialType.EXAMPLE}>
+                EXAMPLE
               </option>
             </Select>
           </div>

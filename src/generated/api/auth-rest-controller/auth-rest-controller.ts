@@ -30,7 +30,7 @@ import { customInstance } from "../../../lib/api-client";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
-export const register = (
+export const register1 = (
   user: User,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
@@ -47,24 +47,24 @@ export const register = (
   );
 };
 
-export const getRegisterMutationOptions = <
+export const getRegister1MutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof register>>,
+    Awaited<ReturnType<typeof register1>>,
     TError,
     { data: User },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof register>>,
+  Awaited<ReturnType<typeof register1>>,
   TError,
   { data: User },
   TContext
 > => {
-  const mutationKey = ["register"];
+  const mutationKey = ["register1"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -74,27 +74,27 @@ export const getRegisterMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof register>>,
+    Awaited<ReturnType<typeof register1>>,
     { data: User }
   > = (props) => {
     const { data } = props ?? {};
 
-    return register(data, requestOptions);
+    return register1(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type RegisterMutationResult = NonNullable<
-  Awaited<ReturnType<typeof register>>
+export type Register1MutationResult = NonNullable<
+  Awaited<ReturnType<typeof register1>>
 >;
-export type RegisterMutationBody = User;
-export type RegisterMutationError = unknown;
+export type Register1MutationBody = User;
+export type Register1MutationError = unknown;
 
-export const useRegister = <TError = unknown, TContext = unknown>(
+export const useRegister1 = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof register>>,
+      Awaited<ReturnType<typeof register1>>,
       TError,
       { data: User },
       TContext
@@ -103,12 +103,12 @@ export const useRegister = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof register>>,
+  Awaited<ReturnType<typeof register1>>,
   TError,
   { data: User },
   TContext
 > => {
-  const mutationOptions = getRegisterMutationOptions(options);
+  const mutationOptions = getRegister1MutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
