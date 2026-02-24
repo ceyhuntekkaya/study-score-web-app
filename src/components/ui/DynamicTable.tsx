@@ -279,7 +279,7 @@ const DynamicTable = <T extends RecordType>({
                 className={
                   isIconOnly
                     ? `p-0 border-0 bg-transparent ${action.className ?? ""}`.trim()
-                    : action.className || "rbt-btn btn-sm btn-border-gradient"
+                    : action.className || "rbt-btn btn-sm"
                 }
                 title={action.title ?? (typeof action.label === "string" ? action.label : "")}
                 style={isIconOnly ? { minWidth: 0, lineHeight: 1, cursor: "pointer" } : undefined}

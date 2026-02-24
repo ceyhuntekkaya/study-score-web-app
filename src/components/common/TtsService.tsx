@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { getTtsUrl } from '@/config';
 import speakersData from '@/config/speakers.json';
+import { Select } from '@/components/ui/Select';
 
 interface TtsServiceProps {
   text: string;
@@ -312,19 +313,13 @@ const TtsService = forwardRef<TtsServiceRef, TtsServiceProps>(({
         )}
         
         {showSpeakerSelect && language === 'eng' && (
-          <select
+          <Select
             value={selectedSpeaker}
             onChange={handleSpeakerChange}
             disabled={isLoading}
             style={{
               flex: '1',
               minWidth: '200px',
-              padding: '10px',
-              fontSize: '14px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              backgroundColor: 'white',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
             }}
           >
             <optgroup label="Recommended">
@@ -379,22 +374,16 @@ const TtsService = forwardRef<TtsServiceRef, TtsServiceProps>(({
                 </option>
               ))}
             </optgroup>
-          </select>
+          </Select>
         )}
 
         {showSpeedSelect && (
-          <select
+          <Select
             value={selectedSpeed}
             onChange={handleSpeedChange}
             disabled={isLoading}
             style={{
               flex: selectCount > 2 ? '0 0 160px' : '0 0 150px',
-              padding: '10px',
-              fontSize: '14px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              backgroundColor: 'white',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
             }}
           >
             {SPEED_OPTIONS.map((option) => (
@@ -402,22 +391,16 @@ const TtsService = forwardRef<TtsServiceRef, TtsServiceProps>(({
                 {option.label}
               </option>
             ))}
-          </select>
+          </Select>
         )}
 
         {showEmotionSelect && language === 'eng' && (
-          <select
+          <Select
             value={selectedEmotion}
             onChange={handleEmotionChange}
             disabled={isLoading}
             style={{
               flex: '0 0 140px',
-              padding: '10px',
-              fontSize: '14px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              backgroundColor: 'white',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
             }}
           >
             {EMOTION_OPTIONS.map((option) => (
@@ -425,7 +408,7 @@ const TtsService = forwardRef<TtsServiceRef, TtsServiceProps>(({
                 {option.label}
               </option>
             ))}
-          </select>
+          </Select>
         )}
       </div>
       

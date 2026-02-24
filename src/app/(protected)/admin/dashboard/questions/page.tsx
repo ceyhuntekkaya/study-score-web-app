@@ -1,15 +1,17 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useListQuestionGroups } from '@/generated/api/question-group-controller/question-group-controller';
 import { useGetQuestionsByGroup } from '@/generated/api/question-controller/question-controller';
 import type { QuestionGroup, Question } from '@/generated/api/openAPIDefinition.schemas';
-import DataTable, { Column } from '@/components/admin/DataTable';
+import DynamicTable from '@/components/ui/DynamicTable';
+import { Column } from '@/types/ui/table';
 import { useTranslation } from '@/i18n';
 import { customInstance } from '@/lib/api-client';
+import { Select } from '@/components/ui/Select';
 
 /** Sentinel value for "questions without group" in the dropdown */
 const STANDALONE_GROUP_ID = '__standalone__';
@@ -73,54 +75,49 @@ export default function QuestionsPage() {
   const columns: Column<Question>[] = [
     {
       key: 'orderNumber',
-      label: t('admin.lesson.orderNumber') ?? 'Sıra',
+      header: t('admin.lesson.orderNumber') ?? 'Sıra',
       sortable: true,
       render: (v) => (v != null ? String(v) : '—'),
     },
     {
       key: 'name',
-      label: t('admin.exam.questionName') ?? 'Soru adı',
+      header: t('admin.exam.questionName') ?? 'Soru adı',
       sortable: true,
-      render: (value) => value ?? '—',
+      render: (value): ReactNode => (value ?? '—') as ReactNode,
     },
     {
       key: 'questionType',
-      label: t('admin.exam.questionType') ?? 'Tip',
+      header: t('admin.exam.questionType') ?? 'Tip',
       sortable: true,
-      render: (value) => value ?? '—',
+      render: (value): ReactNode => (value ?? '—') as ReactNode,
     },
     {
       key: 'maximumScore',
-      label: t('admin.exam.maxScore') ?? 'Puan',
+      header: t('admin.exam.maxScore') ?? 'Puan',
       sortable: true,
       render: (value) => (value != null ? String(value) : '—'),
     },
     {
       key: 'difficulty',
-      label: t('admin.exam.difficulty') ?? 'Zorluk',
+      header: t('admin.exam.difficulty') ?? 'Zorluk',
       sortable: true,
-      render: (value) => value ?? '—',
+      render: (value): ReactNode => (value ?? '—') as ReactNode,
     },
     {
       key: 'actions',
-      label: t('common.actions') ?? 'İşlemler',
+      header: t('common.actions') ?? 'İşlemler',
       sortable: false,
-      clickable: true,
-      render: (_, row) =>
-        row.id ? (
-          <button
-            type="button"
-            className="rbt-btn btn-sm btn-border-gradient"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/admin/dashboard/questions/${row.id}/edit`);
-            }}
-            title={t('common.edit') ?? 'Düzenle'}
-          >
-            <i className="feather-edit me-1" />
-            {t('common.edit') ?? 'Düzenle'}
-          </button>
-        ) : null,
+      actions: [
+        {
+          label: (
+            <>
+              <i className="feather-edit me-1" />
+              {t('common.edit') ?? 'Düzenle'}
+            </>
+          ),
+          onClick: (item) => item.id && router.push(`/admin/dashboard/questions/${item.id}/edit`),
+        },
+      ],
     },
   ];
 
@@ -159,8 +156,7 @@ export default function QuestionsPage() {
 
       <div className="mb-4">
         <label className="form-label">{t('menu.questionGroups') ?? 'Soru grubu'}</label>
-        <select
-          className="form-select"
+        <Select
           value={selectedGroupId ?? ''}
           onChange={(e) => setSelectedGroupId(e.target.value || null)}
         >
@@ -173,7 +169,7 @@ export default function QuestionsPage() {
               {g.code ?? g.id} {g.examName ? `(${g.examName})` : ''}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       {!selectedGroupId && (
@@ -193,7 +189,7 @@ export default function QuestionsPage() {
             </div>
           )}
           {!questionsLoading && !questionsError && (
-            <DataTable
+            <DynamicTable
               data={questions}
               columns={columns}
               pageSize={20}

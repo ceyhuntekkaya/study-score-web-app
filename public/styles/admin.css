@@ -1,3 +1,59 @@
+/* Admin: Quicksand font - only for /admin */
+@font-face {
+  font-family: 'Quicksand';
+  src: url('../assets/fonts/Quicksand-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quicksand';
+  src: url('../assets/fonts/Quicksand-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quicksand';
+  src: url('../assets/fonts/Quicksand-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quicksand';
+  src: url('../assets/fonts/Quicksand-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quicksand';
+  src: url('../assets/fonts/Quicksand-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Apply Quicksand everywhere inside admin dashboard
+   Override CSS variables so var(--font-primary) etc. resolve to Quicksand */
+.rbt-admin-wrapper {
+  --font-primary: 'Quicksand', sans-serif;
+  --font-secondary: 'Quicksand', sans-serif;
+  font-family: 'Quicksand', sans-serif !important;
+}
+.rbt-admin-wrapper *,
+.rbt-admin-wrapper.rbt-main-wrapper *,
+.rbt-admin-wrapper .rbt-dashboard-area,
+.rbt-admin-wrapper .rbt-dashboard-content,
+.rbt-admin-wrapper .content {
+  font-family: 'Quicksand', sans-serif !important;
+}
+/* Override .rbt-font-primary when inside admin */
+.rbt-admin-wrapper .rbt-font-primary {
+  font-family: 'Quicksand', sans-serif !important;
+}
+
 /* CourseCurriculum.css */
 
 /* Table hover effects */

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import type { BaseQuestionProps } from './types';
 import { getMediaServeUrl } from '@/lib/fileUtils';
+import { Select } from '@/components/ui/Select';
 import QuestionBody from './QuestionBody';
 import QuestionAIChatButton from './QuestionAIChatButton';
 import QuestionSettingsSummary from './QuestionSettingsSummary';
@@ -196,20 +197,14 @@ export default function MatchingQuestion({
                         →
                       </div>
                       <div className="item-select" style={{ minWidth: '200px' }}>
-                        <select
+                        <Select
                           id={`match-${questionId}-${leftItem.id}`}
                           value={matchedRightId}
                           onChange={(e) => handleMatchChange(leftItem.id, e.target.value)}
                           disabled={isPreview}
                           style={{
-                            width: '100%',
-                            padding: '10px',
                             border: `2px solid ${isMatched ? '#4d79ff' : '#e0e0e0'}`,
-                            borderRadius: '6px',
-                            fontSize: '14px',
                             backgroundColor: isMatched ? '#f0f4ff' : '#ffffff',
-                            cursor: 'pointer',
-                            outline: 'none',
                           }}
                         >
                           <option value="">-- Select --</option>
@@ -230,7 +225,7 @@ export default function MatchingQuestion({
                               </option>
                             );
                           })}
-                        </select>
+                        </Select>
                       </div>
                     </div>
                   </div>

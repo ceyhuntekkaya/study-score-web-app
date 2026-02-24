@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types';
 import { useTranslation } from '@/i18n';
+import { Select } from '@/components/ui/Select';
 
 /**
  * Register Page
@@ -271,25 +272,16 @@ export default function RegisterPage() {
                         <label style={{ display: 'block', marginBottom: '10px', fontWeight: '500', color: 'var(--color-heading)' }}>
                           Account Type (for testing):
                         </label>
-                        <select
+                        <Select
                           value={selectedRole}
                           onChange={(e) => setSelectedRole(e.target.value as UserRole)}
-                          style={{
-                            width: '100%',
-                            padding: '12px',
-                            borderRadius: '4px',
-                            border: '2px solid var(--color-border)',
-                            fontSize: '16px',
-                            cursor: 'pointer',
-                            backgroundColor: 'transparent',
-                          }}
                         >
                           <option value="learner">Learner</option>
                           <option value="tutor">Tutor</option>
                           <option value="manager">Manager</option>
                           <option value="admin">Admin</option>
                           <option value="writer">Writer</option>
-                        </select>
+                        </Select>
                       </div>
                     </div>
 

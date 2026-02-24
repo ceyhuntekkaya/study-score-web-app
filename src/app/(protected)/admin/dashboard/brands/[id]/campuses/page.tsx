@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useGetAllCampuss } from '@/generated/api/campus-rest-controller/campus-rest-controller';
 import { useGetBrandById } from '@/generated/api/brand-rest-controller/brand-rest-controller';
 import { Campus } from '@/generated/api/openAPIDefinition.schemas';
-import DataTable, { Column } from '@/components/admin/DataTable';
+import DynamicTable from '@/components/ui/DynamicTable';
+import { Column } from '@/types/ui/table';
 import { useTranslation } from '@/i18n';
 import { useMemo } from 'react';
 
@@ -29,12 +30,12 @@ export default function BrandCampusesPage() {
   const columns: Column<Campus>[] = [
     {
       key: 'name',
-      label: t('admin.entity.campusName'),
+      header: t('admin.entity.campusName'),
       sortable: true,
     },
     {
       key: 'status',
-      label: t('admin.entity.status'),
+      header: t('admin.entity.status'),
       sortable: true,
       render: (value) => {
         const status = value as string;
@@ -49,7 +50,7 @@ export default function BrandCampusesPage() {
     },
     {
       key: 'createdAt',
-      label: t('admin.entity.createdAt'),
+      header: t('admin.entity.createdAt'),
       sortable: true,
       render: (value) => {
         if (!value) return '-';
@@ -58,44 +59,29 @@ export default function BrandCampusesPage() {
       },
     },
     {
-      key: 'edit',
-      label: t('common.edit'),
-      sortable: false,
-      clickable: true,
-      render: (value, row) => {
-        return (
-          <button
-            className="rbt-btn btn-sm btn-border-gradient"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/admin/dashboard/campuses/${row.id}/edit`);
-            }}
-          >
-            <i className="feather-edit me-1"></i>
-            {t('common.edit') || 'Düzenle'}
-          </button>
-        );
-      },
-    },
-    {
       key: 'actions',
-      label: t('common.actions'),
+      header: t('common.actions'),
       sortable: false,
-      clickable: true,
-      render: (value, row) => {
-        return (
-          <button
-            className="rbt-btn btn-sm btn-border-gradient"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/admin/dashboard/campuses/${row.id}/institutions`);
-            }}
-          >
-            <i className="feather-list me-1"></i>
-            {t('admin.entity.institutions')}
-          </button>
-        );
-      },
+      actions: [
+        {
+          label: (
+            <>
+              <i className="feather-edit me-1"></i>
+              {t('common.edit') || 'Düzenle'}
+            </>
+          ),
+          onClick: (item) => item.id && router.push(`/admin/dashboard/campuses/${item.id}/edit`),
+        },
+        {
+          label: (
+            <>
+              <i className="feather-list me-1"></i>
+              {t('admin.entity.institutions')}
+            </>
+          ),
+          onClick: (item) => item.id && router.push(`/admin/dashboard/campuses/${item.id}/institutions`),
+        },
+      ],
     },
   ];
 
@@ -134,7 +120,7 @@ export default function BrandCampusesPage() {
           </span>
         </Link>
       </div>
-      <DataTable
+      <DynamicTable
         data={campuses}
         columns={columns}
         pageSize={20}

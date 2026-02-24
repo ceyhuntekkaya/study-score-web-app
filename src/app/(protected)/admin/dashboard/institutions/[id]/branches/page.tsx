@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useGetAllBranchs } from '@/generated/api/branch-rest-controller/branch-rest-controller';
 import { useGetInstitutionById } from '@/generated/api/institution-rest-controller/institution-rest-controller';
 import { Branch } from '@/generated/api/openAPIDefinition.schemas';
-import DataTable, { Column } from '@/components/admin/DataTable';
+import DynamicTable from '@/components/ui/DynamicTable';
+import { Column } from '@/types/ui/table';
 import { useTranslation } from '@/i18n';
 import { useMemo } from 'react';
 
@@ -29,12 +30,12 @@ export default function InstitutionBranchesPage() {
   const columns: Column<Branch>[] = [
     {
       key: 'name',
-      label: t('admin.entity.branchName'),
+      header: t('admin.entity.branchName'),
       sortable: true,
     },
     {
       key: 'grade',
-      label: t('form.label.grade'),
+      header: t('form.label.grade'),
       sortable: true,
       render: (value) => {
         if (!value) return '-';
@@ -43,7 +44,7 @@ export default function InstitutionBranchesPage() {
     },
     {
       key: 'status',
-      label: t('admin.entity.status'),
+      header: t('admin.entity.status'),
       sortable: true,
       render: (value) => {
         const status = value as string;
@@ -58,7 +59,7 @@ export default function InstitutionBranchesPage() {
     },
     {
       key: 'createdAt',
-      label: t('admin.entity.createdAt'),
+      header: t('admin.entity.createdAt'),
       sortable: true,
       render: (value) => {
         if (!value) return '-';
@@ -67,24 +68,20 @@ export default function InstitutionBranchesPage() {
       },
     },
     {
-      key: 'edit',
-      label: t('common.edit'),
+      key: 'actions',
+      header: t('common.actions'),
       sortable: false,
-      clickable: true,
-      render: (value, row) => {
-        return (
-          <button
-            className="rbt-btn btn-sm btn-border-gradient"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/admin/dashboard/branches/${row.id}/edit`);
-            }}
-          >
-            <i className="feather-edit me-1"></i>
-            {t('common.edit') || 'Düzenle'}
-          </button>
-        );
-      },
+      actions: [
+        {
+          label: (
+            <>
+              <i className="feather-edit me-1"></i>
+              {t('common.edit') || 'Düzenle'}
+            </>
+          ),
+          onClick: (item) => item.id && router.push(`/admin/dashboard/branches/${item.id}/edit`),
+        },
+      ],
     },
   ];
 
@@ -123,7 +120,7 @@ export default function InstitutionBranchesPage() {
           </span>
         </Link>
       </div>
-      <DataTable
+      <DynamicTable
         data={branches}
         columns={columns}
         pageSize={20}

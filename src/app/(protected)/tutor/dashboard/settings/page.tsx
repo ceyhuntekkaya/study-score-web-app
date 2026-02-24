@@ -4,6 +4,7 @@ import { useState, FormEvent } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { getPrimaryPhone } from '@/lib/contact';
+import { Select } from '@/components/ui/Select';
 
 /**
  * Tutor Settings Page
@@ -222,10 +223,9 @@ export default function TutorSettingsPage() {
             <div className="col-lg-6 col-md-6 col-sm-6 col-12">
               <div className="filter-select rbt-modern-select">
                 <label htmlFor="displayname">Display name publicly as</label>
-                <select
+                <Select
                   id="displayname"
                   name="displayName"
-                  className="w-100"
                   value={profileData.displayName}
                   onChange={handleProfileChange}
                 >
@@ -234,7 +234,7 @@ export default function TutorSettingsPage() {
                   <option>Due</option>
                   <option>Due John</option>
                   <option>johndue</option>
-                </select>
+                </Select>
               </div>
             </div>
             <div className="col-12">

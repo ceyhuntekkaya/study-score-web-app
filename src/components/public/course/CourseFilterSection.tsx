@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Select } from '@/components/ui/Select';
 
 interface CourseFilterSectionProps {
   onFilterChange?: (filters: FilterState) => void;
@@ -54,7 +55,7 @@ export default function CourseFilterSection({ onFilterChange }: CourseFilterSect
         <div className="filter-select-option">
           <div className="filter-select rbt-modern-select">
             <span className="select-label d-block">Short By</span>
-            <select
+            <Select
               value={filters.sortBy}
               onChange={(e) => handleFilterChange('sortBy', e.target.value)}
             >
@@ -64,14 +65,14 @@ export default function CourseFilterSection({ onFilterChange }: CourseFilterSect
               <option>Trending</option>
               <option>Price: low to high</option>
               <option>Price: high to low</option>
-            </select>
+            </Select>
           </div>
         </div>
 
         <div className="filter-select-option">
           <div className="filter-select rbt-modern-select">
             <span className="select-label d-block">Short By Author</span>
-            <select
+            <Select
               multiple
               value={filters.author}
               onChange={(e) => {
@@ -84,28 +85,28 @@ export default function CourseFilterSection({ onFilterChange }: CourseFilterSect
                   {author}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
 
         <div className="filter-select-option">
           <div className="filter-select rbt-modern-select">
             <span className="select-label d-block">Short By Offer</span>
-            <select
+            <Select
               value={filters.offer}
               onChange={(e) => handleFilterChange('offer', e.target.value)}
             >
               <option>Free</option>
               <option>Paid</option>
               <option>Premium</option>
-            </select>
+            </Select>
           </div>
         </div>
 
         <div className="filter-select-option">
           <div className="filter-select rbt-modern-select">
             <span className="select-label d-block">Short By Category</span>
-            <select
+            <Select
               value={filters.category}
               onChange={(e) => handleFilterChange('category', e.target.value)}
             >
@@ -114,7 +115,7 @@ export default function CourseFilterSection({ onFilterChange }: CourseFilterSect
                   {category}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
 

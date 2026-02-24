@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useGetAllCourses } from '@/generated/api/course-rest-controller/course-rest-controller';
 import { Course } from '@/generated/api/openAPIDefinition.schemas';
-import DataTable, { Column } from '@/components/admin/DataTable';
+import DynamicTable from '@/components/ui/DynamicTable';
+import { Column } from '@/types/ui/table';
 import { useTranslation } from '@/i18n';
 
 export default function CoursesPage() {
@@ -15,17 +16,17 @@ export default function CoursesPage() {
   const columns: Column<Course>[] = [
     {
       key: 'name',
-      label: t('menu.courses') || 'Kurs Adı',
+      header: t('menu.courses') || 'Kurs Adı',
       sortable: true,
     },
     {
       key: 'code',
-      label: 'Kod',
+      header: 'Kod',
       sortable: true,
     },
     {
       key: 'category',
-      label: 'Kategori',
+      header: 'Kategori',
       sortable: true,
       render: (value) => {
         if (!value) return '-';
@@ -35,17 +36,17 @@ export default function CoursesPage() {
     },
     {
       key: 'level',
-      label: 'Seviye',
+      header: 'Seviye',
       sortable: true,
     },
     {
       key: 'language',
-      label: 'Dil',
+      header: 'Dil',
       sortable: true,
     },
     {
       key: 'status',
-      label: 'Durum',
+      header: 'Durum',
       sortable: true,
       render: (value) => {
         const status = value as string;
@@ -60,7 +61,7 @@ export default function CoursesPage() {
     },
     {
       key: 'createdAt',
-      label: 'Oluşturulma Tarihi',
+      header: 'Oluşturulma',
       sortable: true,
       render: (value) => {
         if (!value) return '-';
@@ -69,24 +70,20 @@ export default function CoursesPage() {
       },
     },
     {
-      key: 'edit',
-      label: 'Düzenle',
+      key: 'actions',
+      header: 'İşlemler',
       sortable: false,
-      clickable: true,
-      render: (value, row) => {
-        return (
-          <button
-            className="rbt-btn btn-sm btn-border-gradient"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/admin/dashboard/courses/${row.id}/edit`);
-            }}
-          >
-            <i className="feather-edit me-1"></i>
-            {t('common.edit') || 'Düzenle'}
-          </button>
-        );
-      },
+      actions: [
+        {
+          label: (
+            <>
+              <i className="feather-edit me-1"></i>
+              {t('common.edit') || 'Düzenle'}
+            </>
+          ),
+          onClick: (item) => item.id && router.push(`/admin/dashboard/courses/${item.id}/edit`),
+        },
+      ],
     },
   ];
 
@@ -124,7 +121,7 @@ export default function CoursesPage() {
           </span>
         </Link>
       </div>
-      <DataTable
+      <DynamicTable
         data={courses || []}
         columns={columns}
         pageSize={20}

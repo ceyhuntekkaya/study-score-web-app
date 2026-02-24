@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useGetAllActiveExams } from '@/generated/api/exam-controller/exam-controller';
 import type { Exam } from '@/generated/api/openAPIDefinition.schemas';
-import DataTable, { Column } from '@/components/admin/DataTable';
+import DynamicTable from '@/components/ui/DynamicTable';
+import { Column } from '@/types/ui/table';
 import { useTranslation } from '@/i18n';
 
 export default function ExamsPage() {
@@ -17,32 +18,32 @@ export default function ExamsPage() {
   const columns: Column<Exam>[] = [
     {
       key: 'name',
-      label: t('menu.exams') || 'Sınav Adı',
+      header: t('menu.exams') || 'Sınav Adı',
       sortable: true,
     },
     {
       key: 'code',
-      label: 'Kod',
+      header: 'Kod',
       sortable: true,
     },
     {
       key: 'category',
-      label: t('admin.exam.category') || 'Kategori',
+      header: t('admin.exam.category') || 'Kategori',
       sortable: true,
     },
     {
       key: 'examType',
-      label: t('admin.exam.examType') || 'Sınav Tipi',
+      header: t('admin.exam.examType') || 'Sınav Tipi',
       sortable: true,
     },
     {
       key: 'examLevel',
-      label: t('admin.exam.examLevel') || 'Seviye',
+      header: t('admin.exam.examLevel') || 'Seviye',
       sortable: true,
     },
     {
       key: 'examParts',
-      label: t('admin.exam.parts') || 'Bölümler',
+      header: t('admin.exam.parts') || 'Bölümler',
       sortable: false,
       render: (_value, row) => {
         const parts = row.examParts;
@@ -52,12 +53,12 @@ export default function ExamsPage() {
     },
     {
       key: 'status',
-      label: t('common.status') || 'Durum',
+      header: t('common.status') || 'Durum',
       sortable: true,
     },
     {
       key: 'createdAt',
-      label: t('common.createdAt') || 'Oluşturulma Tarihi',
+      header: t('common.createdAt') || 'Oluşturulma',
       sortable: true,
       render: (value) => {
         if (!value) return '-';
@@ -67,37 +68,28 @@ export default function ExamsPage() {
     },
     {
       key: 'actions',
-      label: t('common.actions') || 'İşlemler',
+      header: t('common.actions') || 'İşlemler',
       sortable: false,
-      clickable: true,
-      render: (value, row) => {
-        return (
-          <div className="d-flex gap-2">
-            <button
-              className="rbt-btn btn-sm btn-border-gradient"
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(`/admin/dashboard/exams/${row.id}/edit`);
-              }}
-              title={t('common.edit') || 'Düzenle'}
-            >
+      actions: [
+        {
+          label: (
+            <>
               <i className="feather-edit me-1"></i>
               {t('common.edit') || 'Düzenle'}
-            </button>
-            <button
-              className="rbt-btn btn-sm btn-border"
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(`/admin/dashboard/exams/${row.id}/question-groups`);
-              }}
-              title={t('admin.exam.questionGroups') || 'Soru Grupları'}
-            >
+            </>
+          ),
+          onClick: (item) => item.id && router.push(`/admin/dashboard/exams/${item.id}/edit`),
+        },
+        {
+          label: (
+            <>
               <i className="feather-list me-1"></i>
               {t('admin.exam.questionGroups') || 'Soru Grupları'}
-            </button>
-          </div>
-        );
-      },
+            </>
+          ),
+          onClick: (item) => item.id && router.push(`/admin/dashboard/exams/${item.id}/question-groups`),
+        },
+      ],
     },
   ];
 
@@ -135,7 +127,7 @@ export default function ExamsPage() {
           </span>
         </Link>
       </div>
-      <DataTable
+      <DynamicTable
         data={examList}
         columns={columns}
         pageSize={20}

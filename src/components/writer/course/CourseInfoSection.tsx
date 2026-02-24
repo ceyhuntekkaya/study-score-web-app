@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { Select } from '@/components/ui/Select';
 import { CourseFormData } from './types';
 
 interface CourseInfoSectionProps {
@@ -154,8 +155,7 @@ export default function CourseInfoSection({
                           <div className="course-field mb--20">
                             <label htmlFor="field-4">Difficulty Level</label>
                             <div className="rbt-modern-select bg-transparent height-45 mb--10">
-                              <select
-                                className="w-100"
+                              <Select
                                 id="field-4"
                                 name="difficultyLevel"
                                 value={formData.difficultyLevel}
@@ -166,7 +166,7 @@ export default function CourseInfoSection({
                                 <option>Beginner</option>
                                 <option>Advance</option>
                                 <option>Expert</option>
-                              </select>
+                              </Select>
                             </div>
                             <small>
                               <i className="feather-info"></i> Course difficulty level
@@ -396,14 +396,8 @@ export default function CourseInfoSection({
             <div className="course-field mb--20">
               <h6>Choose Categories</h6>
               <div className="rbt-modern-select bg-transparent height-45 w-100 mb--10">
-                <select
-                  className="w-100"
+                <Select
                   multiple
-                  data-live-search="true"
-                  title="Search Course Category. ex. Design, Development, Business"
-                  data-size="7"
-                  data-actions-box="true"
-                  data-selected-text-format="count > 2"
                   value={formData.categories}
                   onChange={(e) => {
                     const selected = Array.from(e.target.selectedOptions, option => option.value);
@@ -421,7 +415,7 @@ export default function CourseInfoSection({
                   <option value="jQuery">jQuery</option>
                   <option value="Vue Js">Vue Js</option>
                   <option value="Angular">Angular</option>
-                </select>
+                </Select>
               </div>
             </div>
 

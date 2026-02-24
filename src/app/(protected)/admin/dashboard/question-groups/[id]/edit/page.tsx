@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTranslation } from '@/i18n';
@@ -13,6 +13,8 @@ import {
   useUpdateQuestion,
   getQuestion,
 } from '@/generated/api/question-controller/question-controller';
+import { Column } from '@/types/ui/table';
+import DynamicTable from '@/components/ui/DynamicTable';
 import QuestionGroupForm from '@/components/admin/QuestionGroupForm';
 import QuestionForm from '@/components/admin/QuestionForm';
 import HeaderRenderer from '@/components/learner/exam/HeaderRenderer';
@@ -340,6 +342,83 @@ function QuestionGroupQuestionsPanel({
     }
   };
 
+  const standaloneQuestionColumns: Column<QuestionRow>[] = [
+    { key: 'orderNumber', header: t('admin.lesson.orderNumber') ?? 'Sıra', sortable: true, render: (v) => (v ?? '—') as ReactNode },
+    { key: 'name', header: t('admin.exam.questionName') ?? 'Soru adı', sortable: true, render: (v) => (v ?? '—') as ReactNode },
+    {
+      key: 'questionType',
+      header: t('admin.exam.questionType') ?? 'Tip',
+      render: (v) => <span className="badge bg-secondary">{(v ?? '—') as ReactNode}</span>,
+    },
+    { key: 'maximumScore', header: t('admin.exam.maxScore') ?? 'Puan', sortable: true, render: (v) => (v ?? '—') as ReactNode },
+    {
+      key: 'difficulty',
+      header: t('admin.exam.difficulty') ?? 'Zorluk',
+      render: (v) => (v ? <span className="badge bg-info">{v as ReactNode}</span> : '—'),
+    },
+    {
+      key: 'actions',
+      header: t('common.actions') ?? 'İşlemler',
+      render: (_, row) => (
+        <div className="d-flex align-items-center justify-content-end gap-2">
+          <button
+            type="button"
+            onClick={() => handleAddQuestionToGroup(row.id ?? '')}
+            disabled={updateQuestion.isPending}
+          >
+            <i className="feather-plus me-1" />
+            {t('admin.exam.addToGroup') ?? 'Gruba ekle'}
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  const groupQuestionColumns: Column<QuestionRow>[] = [
+    { key: 'orderNumber', header: t('admin.lesson.orderNumber') ?? 'Sıra', sortable: true, render: (v) => (v ?? '—') as ReactNode },
+    { key: 'name', header: t('admin.exam.questionName') ?? 'Soru adı', sortable: true, render: (v) => (v ?? '—') as ReactNode },
+    {
+      key: 'questionType',
+      header: t('admin.exam.questionType') ?? 'Tip',
+      render: (v) => <span className="badge bg-secondary">{(v ?? '—') as ReactNode}</span>,
+    },
+    { key: 'maximumScore', header: t('admin.exam.maxScore') ?? 'Puan', sortable: true, render: (v) => (v ?? '—') as ReactNode },
+    {
+      key: 'difficulty',
+      header: t('admin.exam.difficulty') ?? 'Zorluk',
+      render: (v) => (v ? <span className="badge bg-info">{v as ReactNode}</span> : '—'),
+    },
+    {
+      key: 'actions',
+      header: t('common.actions') ?? 'İşlemler',
+      render: (_, row) => {
+        const qId = row.id ?? '';
+        return (
+          <div className="d-flex align-items-center justify-content-end gap-2 flex-nowrap">
+            <button
+              type="button"
+              className="rbt-btn btn-sm btn-border-gradient me-1"
+              onClick={() => handleEdit(qId)}
+            >
+              <i className="feather-edit me-1" />
+              {t('common.edit')}
+            </button>
+            <button
+              type="button"
+              className="rbt-btn btn-sm btn-outline-danger"
+              onClick={() => handleRemoveFromGroup(qId)}
+              disabled={updateQuestion.isPending}
+              title={t('admin.exam.removeFromGroup') ?? 'Gruptan çıkar'}
+            >
+              <i className="feather-minus-circle me-1" />
+              {t('admin.exam.removeFromGroup') ?? 'Gruptan çıkar'}
+            </button>
+          </div>
+        );
+      },
+    },
+  ];
+
   if (isLoading) {
     return (
       <div className="text-center py-4">
@@ -382,47 +461,12 @@ function QuestionGroupQuestionsPanel({
             <p className="text-muted mb-0">{t('admin.exam.noStandaloneQuestions') ?? 'Bağımsız soru yok.'}</p>
           ) : (
             <div className="table-responsive">
-              <table className="table table-hover table-sm">
-                <thead>
-                  <tr>
-                    <th>{t('admin.lesson.orderNumber') ?? 'Sıra'}</th>
-                    <th>{t('admin.exam.questionName') ?? 'Soru adı'}</th>
-                    <th>{t('admin.exam.questionType') ?? 'Tip'}</th>
-                    <th>{t('admin.exam.maxScore') ?? 'Puan'}</th>
-                    <th>{t('admin.exam.difficulty') ?? 'Zorluk'}</th>
-                    <th className="text-end">{t('common.actions') ?? 'İşlemler'}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {standaloneList.map((q) => {
-                    const qId = q.id ?? '';
-                    return (
-                      <tr key={qId}>
-                        <td>{q.orderNumber ?? '—'}</td>
-                        <td>{q.name ?? '—'}</td>
-                        <td>
-                          <span className="badge bg-secondary">{q.questionType ?? '—'}</span>
-                        </td>
-                        <td>{q.maximumScore ?? '—'}</td>
-                        <td>
-                          {q.difficulty && <span className="badge bg-info">{q.difficulty}</span>}
-                        </td>
-                        <td className="text-end">
-                          <button
-                            type="button"
-                            className="rbt-btn btn-sm btn-border-gradient"
-                            onClick={() => handleAddQuestionToGroup(qId)}
-                            disabled={updateQuestion.isPending}
-                          >
-                            <i className="feather-plus me-1" />
-                            {t('admin.exam.addToGroup') ?? 'Gruba ekle'}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <DynamicTable<QuestionRow>
+                data={standaloneList}
+                columns={standaloneQuestionColumns}
+                pageSize={20}
+                searchable
+              />
             </div>
           )}
         </div>
@@ -445,56 +489,12 @@ function QuestionGroupQuestionsPanel({
         </p>
       ) : (
         <div className="table-responsive">
-          <table className="table table-hover">
-            <thead>
-              <tr>
-                <th>{t('admin.lesson.orderNumber') ?? 'Sıra'}</th>
-                <th>{t('admin.exam.questionName') ?? 'Soru adı'}</th>
-                <th>{t('admin.exam.questionType') ?? 'Tip'}</th>
-                <th>{t('admin.exam.maxScore') ?? 'Puan'}</th>
-                <th>{t('admin.exam.difficulty') ?? 'Zorluk'}</th>
-                <th className="text-end">{t('common.actions') ?? 'İşlemler'}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {questions.map((q) => {
-                const qId = q.id ?? '';
-                return (
-                  <tr key={qId}>
-                    <td>{q.orderNumber ?? '—'}</td>
-                    <td>{q.name ?? '—'}</td>
-                    <td>
-                      <span className="badge bg-secondary">{q.questionType ?? '—'}</span>
-                    </td>
-                    <td>{q.maximumScore ?? '—'}</td>
-                    <td>
-                      {q.difficulty && <span className="badge bg-info">{q.difficulty}</span>}
-                    </td>
-                    <td className="text-end">
-                      <button
-                        type="button"
-                        className="rbt-btn btn-sm btn-border-gradient me-1"
-                        onClick={() => handleEdit(qId)}
-                      >
-                        <i className="feather-edit me-1" />
-                        {t('common.edit')}
-                      </button>
-                      <button
-                        type="button"
-                        className="rbt-btn btn-sm btn-outline-danger"
-                        onClick={() => handleRemoveFromGroup(qId)}
-                        disabled={updateQuestion.isPending}
-                        title={t('admin.exam.removeFromGroup') ?? 'Gruptan çıkar'}
-                      >
-                        <i className="feather-minus-circle me-1" />
-                        {t('admin.exam.removeFromGroup') ?? 'Gruptan çıkar'}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <DynamicTable<QuestionRow>
+            data={questions}
+            columns={groupQuestionColumns}
+            pageSize={20}
+            searchable
+          />
         </div>
       )}
 

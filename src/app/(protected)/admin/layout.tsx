@@ -10,7 +10,7 @@ import AdminDashboardHeader from '@/components/admin/dashboard/AdminDashboardHea
  */
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rbt-main-wrapper">
+    <div className="rbt-main-wrapper rbt-admin-wrapper">
       {/* Header with menu in center */}
       <AdminDashboardHeader />
 

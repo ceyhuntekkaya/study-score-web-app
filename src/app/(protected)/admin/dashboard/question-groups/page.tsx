@@ -1,10 +1,12 @@
 'use client';
 
+import { type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useListQuestionGroups } from '@/generated/api/question-group-controller/question-group-controller';
 import type { QuestionGroup } from '@/generated/api/openAPIDefinition.schemas';
-import DataTable, { Column } from '@/components/admin/DataTable';
+import DynamicTable from '@/components/ui/DynamicTable';
+import { Column } from '@/types/ui/table';
 import { useTranslation } from '@/i18n';
 
 /** Liste endpoint'i bazen examId/examName döndürebilir. */
@@ -29,49 +31,49 @@ export default function QuestionGroupsPage() {
   const columns: Column<QuestionGroupRow>[] = [
     {
       key: 'code',
-      label: t('admin.exam.groupCode') || 'Kod',
+      header: t('admin.exam.groupCode') || 'Kod',
       sortable: true,
     },
     {
       key: 'category',
-      label: t('admin.exam.category') || 'Kategori',
+      header: t('admin.exam.category') || 'Kategori',
       sortable: true,
     },
     {
       key: 'examName',
-      label: t('menu.exams') || 'Sınav',
+      header: t('menu.exams') || 'Sınav',
       sortable: true,
-      render: (value, row) => value ?? row.examId ?? '—',
+      render: (value, row): ReactNode => (value != null ? String(value) : (row.examId ?? '—')),
     },
     {
       key: 'maximumScore',
-      label: t('admin.exam.maxScore') || 'Maks. Puan',
+      header: t('admin.exam.maxScore') || 'Maks. Puan',
       sortable: true,
-      render: (value) => (value != null ? String(value) : '—'),
+      render: (value): ReactNode => (value != null ? String(value) : '—'),
     },
     {
       key: 'difficultyLevel',
-      label: t('admin.exam.difficulty') || 'Zorluk',
+      header: t('admin.exam.difficulty') || 'Zorluk',
       sortable: true,
-      render: (value) => (value != null ? String(value) : '—'),
+      render: (value): ReactNode => (value != null ? String(value) : '—'),
     },
     {
       key: 'courseSection',
-      label: t('admin.exam.courseSection') || 'Kurs Bölümü',
+      header: t('admin.exam.courseSection') || 'Kurs Bölümü',
       sortable: true,
-      render: (value) => value ?? '—',
+      render: (value): ReactNode => (value ?? '—') as ReactNode,
     },
     {
       key: 'usagePart',
-      label: t('admin.exam.usagePart') || 'Kullanım',
+      header: t('admin.exam.usagePart') || 'Kullanım',
       sortable: true,
-      render: (value) => value ?? '—',
+      render: (value): ReactNode => (value ?? '—') as ReactNode,
     },
     {
       key: 'createdAt',
-      label: t('admin.entity.createdAt') || 'Oluşturulma',
+      header: t('admin.entity.createdAt') || 'Oluşturulma',
       sortable: true,
-      render: (value) => {
+      render: (value): ReactNode => {
         if (!value) return '—';
         try {
           return new Date(value as string).toLocaleDateString('tr-TR');
@@ -82,25 +84,19 @@ export default function QuestionGroupsPage() {
     },
     {
       key: 'actions',
-      label: t('common.actions') || 'İşlemler',
+      header: t('common.actions') || 'İşlemler',
       sortable: false,
-      clickable: true,
-      render: (_, row) => (
-        <div className="d-flex gap-2">
-          <button
-            type="button"
-            className="rbt-btn btn-sm btn-border-gradient"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (row.id) router.push(`/admin/dashboard/question-groups/${row.id}/edit`);
-            }}
-            title={t('common.edit') || 'Düzenle'}
-          >
-            <i className="feather-edit me-1" />
-            {t('common.edit') || 'Düzenle'}
-          </button>
-        </div>
-      ),
+      actions: [
+        {
+          label: (
+            <>
+              <i className="feather-edit me-1" />
+              {t('common.edit') || 'Düzenle'}
+            </>
+          ),
+          onClick: (item) => item.id && router.push(`/admin/dashboard/question-groups/${item.id}/edit`),
+        },
+      ],
     },
   ];
 
@@ -139,7 +135,7 @@ export default function QuestionGroupsPage() {
           </span>
         </Link>
       </div>
-      <DataTable
+      <DynamicTable
         data={list}
         columns={columns}
         pageSize={20}

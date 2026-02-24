@@ -51,7 +51,7 @@ export default function BrandsPage() {
     },
     {
       key: 'createdAt',
-      header: 'Oluşturulma Tarihi',
+      header: 'Oluşturulma',
       sortable: true,
       render: (value) => {
         if (!value) return '-';
@@ -74,7 +74,6 @@ export default function BrandsPage() {
           onClick: (item) => {
             router.push(`/admin/dashboard/brands/${item.id}/edit`);
           },
-          className: 'rbt-btn btn-sm btn-border-gradient me-2',
         },
         {
           label: (
@@ -86,7 +85,6 @@ export default function BrandsPage() {
           onClick: (item) => {
             router.push(`/admin/dashboard/brands/${item.id}/campuses`);
           },
-          className: 'rbt-btn btn-sm btn-border-gradient',
         },
       ],
     },

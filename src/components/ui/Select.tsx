@@ -8,126 +8,113 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
   iconPosition?: "left" | "right";
 }
 
+/** Input ile birebir aynı stil (font, yükseklik, border, gölge) - tek fark sağda ok için padding */
+const getSelectBaseStyle = (
+  error?: boolean,
+  icon?: string,
+  iconPosition?: "left" | "right"
+): React.CSSProperties => ({
+  all: "unset" as React.CSSProperties["all"],
+  boxSizing: "border-box",
+  width: "100%",
+  display: "block",
+  paddingTop: "8px",
+  paddingBottom: "8px",
+  paddingLeft: icon && iconPosition === "left" ? "40px" : "16px",
+  paddingRight: "32px",
+  marginTop: "8px",
+  marginRight: "0",
+  marginBottom: "0",
+  marginLeft: "0",
+  fontSize: "12px",
+  lineHeight: "16px",
+  fontWeight: 700,
+  fontFamily: "inherit",
+  color: "#092e5e",
+  backgroundColor: "#FFFFFF",
+  border: "0.0625rem solid",
+  borderStyle: "solid",
+  borderWidth: "0.0625rem",
+  borderColor: error ? "#ef4444" : "#d1d5db",
+  borderRadius: "6px",
+  boxShadow: "0 2px 5px rgba(140, 152, 164, 0.2)",
+  transition: "all 0.2s ease",
+  outline: "none",
+  outlineWidth: "0",
+  outlineStyle: "none",
+  WebkitFontSmoothing: "antialiased",
+  MozOsxFontSmoothing: "grayscale",
+  textRendering: "optimizeLegibility",
+  appearance: "none",
+  WebkitAppearance: "none",
+  MozAppearance: "none",
+  backgroundImage: "none",
+  cursor: "pointer",
+});
+
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   (
-    { className = "", error, style, icon, iconPosition = "left", children, ...props },
+    {
+      className = "",
+      error,
+      style,
+      icon,
+      iconPosition = "left",
+      children,
+      ...props
+    },
     ref
   ) => {
-    const baseStyle: React.CSSProperties = {
-      // Reset all inherited styles
-      all: "unset" as React.CSSProperties["all"],
-      boxSizing: "border-box",
-
-      // w-full - width: 100%
-      width: "100%",
-      display: "block",
-
-      // Görseldeki padding: 8px 16px
-      paddingTop: "8px",
-      paddingBottom: "8px",
-      paddingLeft: icon && iconPosition === "left" ? "40px" : "16px",
-      paddingRight: icon && iconPosition === "right" ? "40px" : "32px", // Extra space for dropdown arrow
-
-      // Görseldeki margin: 8px 0px 0px
-      marginTop: "8px",
-      marginRight: "0",
-      marginBottom: "0",
-      marginLeft: "0",
-
-      // text-xs - font-size: 12px
-      fontSize: "12px",
-      lineHeight: "16px",
-
-      // font-bold - font-weight: 700
-      fontWeight: 700,
-
-      // font-family: inherit
-      fontFamily: "inherit",
-
-      // color: #092e5e (select text color)
-      color: "#092e5e",
-
-      // Background: #FFFFFF
-      backgroundColor: "#FFFFFF",
-
-      // border: .0625rem solid #e5e7eb (1px solid #e5e7eb)
-      // border-gray-300 - border-color: #d1d5db
-      border: "0.0625rem solid",
-      borderStyle: "solid",
-      borderWidth: "0.0625rem",
-      borderColor: error ? "#ef4444" : "#d1d5db", // border-gray-300: #d1d5db, error: red
-
-      // rounded-md - border-radius: 6px
-      borderRadius: "6px",
-
-      // shadow-sm: box-shadow: 0 2px 5px rgba(140, 152, 164, .2)
-      boxShadow: "0 2px 5px rgba(140, 152, 164, 0.2)",
-
-      // Transition - all .2s ease
-      transition: "all 0.2s ease",
-
-      // focus:outline-none
-      outline: "none",
-      outlineWidth: "0",
-      outlineStyle: "none",
-
-      // Text rendering
-      WebkitFontSmoothing: "antialiased",
-      MozOsxFontSmoothing: "grayscale",
-      textRendering: "optimizeLegibility",
-
-      // Appearance
-      appearance: "none",
-      WebkitAppearance: "none",
-      MozAppearance: "none",
-
-      // Cursor
-      cursor: "pointer",
-
-      ...style,
-    };
+    const isMultiple = props.multiple;
+    const baseStyle = getSelectBaseStyle(error, icon, iconPosition);
 
     const wrapperStyle: React.CSSProperties = {
       position: "relative",
       width: "100%",
       display: "block",
-    };
-
-    const iconStyle: React.CSSProperties = {
-      position: "absolute",
-      top: "50%",
-      transform: "translateY(-50%)",
-      color: "#9ca3af",
-      pointerEvents: "none",
-      ...(iconPosition === "left" ? { left: "12px" } : { right: "12px" }),
+      minHeight: "32px",
     };
 
     const arrowStyle: React.CSSProperties = {
       position: "absolute",
-      top: "50%",
-      right: "12px",
-      transform: "translateY(-50%)",
+      top: "0",
+      right: "10px",
+      bottom: "0",
+      left: "auto",
+      width: "12px",
+      margin: "auto 0",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
       color: "#9ca3af",
       pointerEvents: "none",
-      fontSize: "16px",
-      lineHeight: "1",
     };
 
-    const isMultiple = props.multiple;
-    
     const selectElement = (
       <>
         <select
           className={className}
-          style={baseStyle}
+          style={{ ...baseStyle, ...style }}
           ref={ref}
           {...props}
         >
           {children}
         </select>
-        {/* Dropdown arrow - only show for single select */}
         {!isMultiple && (
-          <i className="feather-chevron-down" style={arrowStyle}></i>
+          <span style={arrowStyle} aria-hidden>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 6l4 4 4-4" />
+            </svg>
+          </span>
         )}
       </>
     );
@@ -135,7 +122,19 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     if (icon) {
       return (
         <div style={wrapperStyle}>
-          <i className={icon} style={iconStyle}></i>
+          <span
+            className={icon}
+            style={{
+              position: "absolute",
+              top: "50%",
+              transform: "translateY(-50%)",
+              left: "12px",
+              color: "#9ca3af",
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+            aria-hidden
+          />
           {selectElement}
         </div>
       );

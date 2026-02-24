@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { CourseFormData } from './types';
 
 interface CourseIntroVideoSectionProps {
@@ -41,8 +42,7 @@ export default function CourseIntroVideoSection({
         <div className="accordion-body card-body rbt-course-field-wrapper rbt-default-form">
           <div className="course-field mb--20">
             <div className="rbt-modern-select bg-transparent height-45 mb--10">
-              <select
-                className="w-100"
+              <Select
                 id="field-5"
                 name="videoSource"
                 value={formData.videoSource}
@@ -52,7 +52,7 @@ export default function CourseIntroVideoSection({
                 <option value="youtube">Youtube</option>
                 <option value="vimeo">Vimeo</option>
                 <option value="local">Local</option>
-              </select>
+              </Select>
             </div>
           </div>
 

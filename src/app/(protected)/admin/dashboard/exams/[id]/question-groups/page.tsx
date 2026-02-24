@@ -7,8 +7,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from '@/i18n';
 import { useGetExamItems, getGetExamItemsQueryKey } from '@/generated/api/exam-controller/exam-controller';
 import { useGetQuestionsByGroup } from '@/generated/api/question-controller/question-controller';
-import type { QuestionGroup, Question } from '@/generated/api/openAPIDefinition.schemas';
-import DataTable, { Column } from '@/components/admin/DataTable';
+import { Column } from '@/types/ui/table';
+import DynamicTable from '@/components/ui/DynamicTable';
 import QuestionGroupForm from '@/components/admin/QuestionGroupForm';
 import QuestionForm from '@/components/admin/QuestionForm';
 
@@ -100,28 +100,28 @@ export default function QuestionGroupsPage() {
     setSelectedGroupId(null);
   };
 
-  const columns: Column<QuestionGroup>[] = [
+  type GroupRow = { id?: string; code?: string; maximumScore?: number; examItemId?: string };
+  const groupColumns: Column<GroupRow>[] = [
     {
       key: 'code',
-      label: t('admin.exam.groupCode') || 'Grup Kodu',
+      header: t('admin.exam.groupCode') || 'Grup Kodu',
       sortable: true,
     },
     {
       key: 'maximumScore',
-      label: t('admin.exam.maxScore') || 'Maksimum Puan',
+      header: t('admin.exam.maxScore') || 'Maksimum Puan',
       sortable: true,
-      render: (value) => value || '-',
+      render: (value) => value ?? '-',
     },
     {
       key: 'actions',
-      label: t('common.actions') || 'İşlemler',
-      sortable: false,
-      clickable: true,
-      render: (value, row) => {
-        const groupId = row.id || (row as any).questionGroupId;
+      header: t('common.actions') || 'İşlemler',
+      render: (_, row) => {
+        const groupId = row.id ?? (row as any).questionGroupId;
         return (
-          <div className="d-flex gap-2">
+          <div className="d-flex align-items-center gap-3 flex-nowrap">
             <button
+              type="button"
               className="rbt-btn btn-sm btn-border-gradient"
               onClick={(e) => {
                 e.stopPropagation();
@@ -132,6 +132,7 @@ export default function QuestionGroupsPage() {
               {t('common.edit')}
             </button>
             <button
+              type="button"
               className="rbt-btn btn-sm btn-border"
               onClick={(e) => {
                 e.stopPropagation();
@@ -203,11 +204,11 @@ export default function QuestionGroupsPage() {
         )}
 
         <div className="rbt-shadow-box">
-          <DataTable
+          <DynamicTable<GroupRow>
             data={groups}
-            columns={columns}
+            columns={groupColumns}
             pageSize={20}
-            searchable={true}
+            searchable
           />
 
           {/* Expanded Questions for each group */}
@@ -252,6 +253,33 @@ function QuestionGroupQuestions({
 
   const questionList = (questions as any) || [];
 
+  type QuestionListRow = { id?: string; questionId?: string; name?: string; questionType?: string; maximumScore?: number; difficulty?: string };
+  const questionColumns: Column<QuestionListRow>[] = [
+    { key: 'name', header: t('admin.exam.questionName'), sortable: true, render: (v) => v ?? '-' },
+    {
+      key: 'questionType',
+      header: t('admin.exam.type'),
+      sortable: true,
+      render: (v) => <span className="badge bg-secondary">{v ?? '-'}</span>,
+    },
+    { key: 'maximumScore', header: t('admin.exam.score'), sortable: true, render: (v) => v ?? '-' },
+    {
+      key: 'difficulty',
+      header: t('admin.exam.difficulty'),
+      render: (v) => (v ? <span className="badge bg-info">{v}</span> : '-'),
+    },
+    {
+      key: 'actions',
+      header: t('common.actions'),
+      actions: [
+        {
+          label: t('common.edit'),
+          onClick: (row) => onEditQuestion(row.id ?? row.questionId ?? ''),
+        },
+      ],
+    },
+  ];
+
   if (isLoading) {
     return (
       <div className="mt--30 border-top pt--30">
@@ -281,49 +309,12 @@ function QuestionGroupQuestions({
         </p>
       ) : (
         <div className="table-responsive">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>{t('admin.exam.questionName')}</th>
-                <th>{t('admin.exam.type')}</th>
-                <th>{t('admin.exam.score')}</th>
-                <th>{t('admin.exam.difficulty')}</th>
-                <th>{t('common.actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {questionList.map((question: Question) => {
-                const qId = question.id || (question as any).questionId;
-                return (
-                  <tr key={qId}>
-                    <td>{question.name || '-'}</td>
-                    <td>
-                      <span className="badge bg-secondary">
-                        {question.questionType || '-'}
-                      </span>
-                    </td>
-                    <td>{question.maximumScore || '-'}</td>
-                    <td>
-                      {question.difficulty && (
-                        <span className="badge bg-info">
-                          {question.difficulty}
-                        </span>
-                      )}
-                    </td>
-                    <td>
-                      <button
-                        className="rbt-btn btn-sm btn-border-gradient"
-                        onClick={() => onEditQuestion(qId)}
-                      >
-                        <i className="feather-edit me-1"></i>
-                        {t('common.edit')}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <DynamicTable<QuestionListRow>
+            data={questionList}
+            columns={questionColumns}
+            pageSize={20}
+            searchable
+          />
         </div>
       )}
     </div>

@@ -37,7 +37,7 @@ const translations: Record<Language, Translations> = {
     'common.close': 'Close',
     'common.actions': 'Actions',
     'common.status': 'Status',
-    'common.createdAt': 'Created At',
+    'common.createdAt': 'Created',
     'common.uploading': 'Uploading...',
     
     // File upload
@@ -191,7 +191,7 @@ const translations: Record<Language, Translations> = {
     'admin.exam.timeLimitMinutes': 'Time Limit (Minutes)',
     'admin.exam.passingScorePercentage': 'Passing Score (%)',
     'admin.exam.maxAttempts': 'Max Attempts',
-    'admin.exam.examLevel': 'Exam Level',
+    'admin.exam.examLevel': 'Level',
     'admin.exam.parts': 'Parts',
     'admin.exam.availableFrom': 'Available From',
     'admin.exam.availableUntil': 'Available Until',
@@ -249,7 +249,7 @@ const translations: Record<Language, Translations> = {
     'admin.exam.addQuestion': 'Add Question',
     'admin.exam.selectQuestion': 'Select question',
     'admin.exam.addSelectedQuestion': 'Add selected',
-    'admin.exam.removeFromGroup': 'Remove from group',
+    'admin.exam.removeFromGroup': 'Remove',
     'admin.exam.questionGroupPreview': 'Student preview',
     'admin.exam.materials': 'Materials',
     'admin.exam.points': 'points',
@@ -578,7 +578,7 @@ const translations: Record<Language, Translations> = {
     'common.close': 'Kapat',
     'common.actions': 'İşlemler',
     'common.status': 'Durum',
-    'common.createdAt': 'Oluşturulma Tarihi',
+    'common.createdAt': 'Oluşturulma',
     
     // Admin - Course Management
     'admin.course.edit': 'Kurs Düzenle',
@@ -964,7 +964,7 @@ const translations: Record<Language, Translations> = {
     'admin.entity.campusName': 'Kampüs Adı',
     'admin.entity.institutionName': 'Kurum Adı',
     'admin.entity.branchName': 'Branch Adı',
-    'admin.entity.createdAt': 'Oluşturulma Tarihi',
+    'admin.entity.createdAt': 'Oluşturulma',
     'admin.entity.branchList': 'Branch Listesi',
     'admin.entity.institutions': 'Kurumlar',
     'admin.entity.campuses': 'Kampüsler',

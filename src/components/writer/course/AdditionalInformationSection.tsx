@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/ui/Select';
 import { CourseFormData } from './types';
 
 interface AdditionalInformationSectionProps {
@@ -56,14 +57,8 @@ export default function AdditionalInformationSection({
             <div className="course-field mb--15">
               <label htmlFor="language">Language</label>
               <div className="rbt-modern-select bg-transparent height-50 mb--10">
-                <select
-                  className="w-100"
+                <Select
                   multiple
-                  data-live-search="true"
-                  title="English"
-                  data-size="7"
-                  data-actions-box="true"
-                  data-selected-text-format="count > 2"
                   id="language"
                   value={formData.language}
                   onChange={(e) => {
@@ -80,7 +75,7 @@ export default function AdditionalInformationSection({
                   <option value="Hindi">Hindi</option>
                   <option value="Frence">Frence</option>
                   <option value="Garmani">Garmani</option>
-                </select>
+                </Select>
               </div>
             </div>
           </div>
