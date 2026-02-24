@@ -1,18 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useCallback } from "react";
 import { useTranslation } from "@/i18n";
 import {
   useGetCourseLessonPartMaterialByCourseLessonId,
   useDeleteActivity3,
+  useCreateCoursePartMaterial,
 } from "@/generated/api/course-lesson-part-material-rest-controller/course-lesson-part-material-rest-controller";
-import { CourseLessonPartMaterial, CourseLessonPartMaterialDetailDTO } from "@/generated/api/openAPIDefinition.schemas";
+import {
+  CourseLessonPartMaterial,
+  CourseLessonPartMaterialDetailDTO,
+  CourseLessonPartMaterialDetailDTOMediaType,
+  CourseLessonPartQuizItemDetailDTOType,
+} from "@/generated/api/openAPIDefinition.schemas";
 import DynamicTable from "@/components/ui/DynamicTable";
 import { Column } from "@/types/ui/table";
 import MaterialForm from "./MaterialForm";
 import MaterialRenderer from "@/components/learner/content/MaterialRenderer";
 import { Button } from "@/components/ui/Button";
+import ModalPanel from "@/components/ui/ModalPanel";
+import QuestionForm from "./QuestionForm";
+import QuestionGroupForm from "./QuestionGroupForm";
+import QuestionList from "./QuestionList";
 
 interface MaterialsTableProps {
   partId: string;
@@ -21,8 +30,11 @@ interface MaterialsTableProps {
 
 export default function MaterialsTable({ partId, onClose }: MaterialsTableProps) {
   const { t } = useTranslation();
-  const router = useRouter();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddQuestionModal, setShowAddQuestionModal] = useState(false);
+  const [showAddQuestionGroupModal, setShowAddQuestionGroupModal] = useState(false);
+  const [addQuestionGroupStep, setAddQuestionGroupStep] = useState<"group" | "questions">("group");
+  const [createdGroupIdForQuestions, setCreatedGroupIdForQuestions] = useState<string | null>(null);
   const [editingMaterial, setEditingMaterial] = useState<CourseLessonPartMaterial | null>(null);
   const [previewData, setPreviewData] = useState<CourseLessonPartMaterialDetailDTO | null>(null);
 
@@ -35,6 +47,33 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
   const deleteMaterialMutation = useDeleteActivity3({
     mutation: { onSuccess: () => refetch() },
   });
+  const createMaterialMutation = useCreateCoursePartMaterial({
+    mutation: { onSuccess: () => refetch() },
+  });
+
+  /** Part'a tek quiz item içeren material oluşturur (soru veya soru grubu). */
+  const createMaterialWithQuizItem = useCallback(
+    async (questionId?: string, questionGroupId?: string) => {
+      if (!questionId && !questionGroupId) return;
+      const quizMaterialName = t("admin.material.question");
+      const payload: CourseLessonPartMaterialDetailDTO = {
+        courseLessonPartId: partId,
+        name: quizMaterialName,
+        mediaType: CourseLessonPartMaterialDetailDTOMediaType.OTHER,
+        duration: 0,
+        description: "",
+        orderNumber: 0,
+        content: "",
+        quizItems: [
+          questionId
+            ? { type: CourseLessonPartQuizItemDetailDTOType.QUESTION, question: { id: questionId } }
+            : { type: CourseLessonPartQuizItemDetailDTOType.QUESTION_GROUP, questionGroup: { id: questionGroupId! } },
+        ],
+      };
+      await createMaterialMutation.mutateAsync({ data: payload });
+    },
+    [partId, t, createMaterialMutation]
+  );
 
   const handleAddClick = () => {
     setShowAddForm(true);
@@ -145,24 +184,18 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
       sortable: false,
       actions: [
         {
-          label: (
-            <>
-              <i className="feather-edit me-1"></i>
-              {t("common.edit") || "Düzenle"}
-            </>
-          ),
+          label: <i className="feather-edit" aria-hidden />,
           onClick: (item) => handleEditClick(item),
-          className: "rbt-btn btn-sm btn-border-gradient",
+          iconOnly: true,
+          title: t("common.edit") || "Düzenle",
+          className: "text-primary",
         },
         {
-          label: (
-            <>
-              <i className="feather-trash-2 me-1"></i>
-              {t("common.delete") || "Sil"}
-            </>
-          ),
+          label: <i className="feather-trash-2" aria-hidden />,
           onClick: (item) => handleDeleteClick(item as CourseLessonPartMaterial),
-          className: "rbt-btn btn-sm btn-danger",
+          iconOnly: true,
+          title: t("common.delete") || "Sil",
+          className: "text-danger",
         },
       ],
     },
@@ -188,7 +221,7 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
     <div>
       <div className="d-flex justify-content-between align-items-center mb-3">
        
-        <div className="d-flex gap-2">
+        <div className="d-flex gap-2 flex-wrap">
           <Button
             type="button"
             variant="primary"
@@ -196,7 +229,29 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
             onClick={handleAddClick}
           >
             <i className="feather-plus me-1"></i>
-            {t("common.add") || "Ekle"}
+            {t("admin.material.addMaterial") || "Add Material"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="md"
+            onClick={() => setShowAddQuestionModal(true)}
+          >
+            <i className="feather-plus me-1"></i>
+            {t("admin.material.addQuestion") || "Add Question"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="md"
+            onClick={() => {
+            setAddQuestionGroupStep("group");
+            setCreatedGroupIdForQuestions(null);
+            setShowAddQuestionGroupModal(true);
+          }}
+          >
+            <i className="feather-plus me-1"></i>
+            {t("admin.material.addQuestionGroup") || "Add Question Group"}
           </Button>
           {onClose && (
             <Button
@@ -268,6 +323,89 @@ export default function MaterialsTable({ partId, onClose }: MaterialsTableProps)
           )}
         </div>
       )}
+
+      <ModalPanel
+        isOpen={showAddQuestionModal}
+        onClose={() => setShowAddQuestionModal(false)}
+        title={t("admin.material.addQuestion") || "Add Question"}
+        size="large"
+      >
+        <QuestionForm
+          onSuccess={async (questionId) => {
+            if (questionId) {
+              await createMaterialWithQuizItem(questionId, undefined);
+              setShowAddQuestionModal(false);
+            }
+          }}
+          onCancel={() => setShowAddQuestionModal(false)}
+        />
+      </ModalPanel>
+
+      <ModalPanel
+        isOpen={showAddQuestionGroupModal}
+        onClose={() => {
+          setShowAddQuestionGroupModal(false);
+          setAddQuestionGroupStep("group");
+          setCreatedGroupIdForQuestions(null);
+        }}
+        title={
+          addQuestionGroupStep === "group"
+            ? (t("admin.material.addQuestionGroup") || "Add Question Group")
+            : (t("admin.material.addQuestionsToGroup") || "Add questions to group")
+        }
+        size="large"
+      >
+        {addQuestionGroupStep === "group" ? (
+          <QuestionGroupForm
+            onSuccess={(groupId) => {
+              setCreatedGroupIdForQuestions(groupId);
+              setAddQuestionGroupStep("questions");
+            }}
+            onCancel={() => {
+              setShowAddQuestionGroupModal(false);
+              setAddQuestionGroupStep("group");
+              setCreatedGroupIdForQuestions(null);
+            }}
+          />
+        ) : createdGroupIdForQuestions ? (
+          <div>
+            <div className="mb-3">
+              <p className="text-muted small mb-0">
+                {t("admin.material.addQuestionsToGroupHint") ||
+                  "Add one or more questions to this group, then add the group to the part."}
+              </p>
+            </div>
+            <QuestionList questionGroupId={createdGroupIdForQuestions} />
+            <div className="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+              <Button
+                type="button"
+                variant="outline"
+                size="md"
+                onClick={() => {
+                  setShowAddQuestionGroupModal(false);
+                  setAddQuestionGroupStep("group");
+                  setCreatedGroupIdForQuestions(null);
+                }}
+              >
+                {t("common.cancel") || "Cancel"}
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                size="md"
+                onClick={async () => {
+                  await createMaterialWithQuizItem(undefined, createdGroupIdForQuestions);
+                  setShowAddQuestionGroupModal(false);
+                  setAddQuestionGroupStep("group");
+                  setCreatedGroupIdForQuestions(null);
+                }}
+              >
+                {t("admin.material.addGroupToPart") || "Add group to part"}
+              </Button>
+            </div>
+          </div>
+        ) : null}
+      </ModalPanel>
     </div>
   );
 }

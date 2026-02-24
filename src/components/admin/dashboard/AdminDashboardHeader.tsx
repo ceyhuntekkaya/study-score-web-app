@@ -51,6 +51,7 @@ export default function AdminDashboardHeader() {
                       alt="Study Score Logo"
                       width={150}
                       height={40}
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                   </Link>
                 </div>

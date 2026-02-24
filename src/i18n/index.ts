@@ -126,6 +126,12 @@ const translations: Record<Language, Translations> = {
     'admin.material.fileUpload': 'Upload file',
     'admin.material.fileUploaded': 'File uploaded',
     'admin.material.doneClose': 'Done (close)',
+    'admin.material.addMaterial': 'Add Material',
+    'admin.material.addQuestion': 'Add Question',
+    'admin.material.addQuestionGroup': 'Add Question Group',
+    'admin.material.addQuestionsToGroup': 'Add questions to group',
+    'admin.material.addQuestionsToGroupHint': 'Add one or more questions to this group, then add the group to the part.',
+    'admin.material.addGroupToPart': 'Add group to part',
 
     // Admin - Entity Management
     'admin.entity.edit': 'Edit',
@@ -650,6 +656,12 @@ const translations: Record<Language, Translations> = {
     'admin.material.fileUpload': 'Dosya yükle',
     'admin.material.fileUploaded': 'Dosya yüklendi',
     'admin.material.doneClose': 'Tamam (kapat)',
+    'admin.material.addMaterial': 'Materyal Ekle',
+    'admin.material.addQuestion': 'Soru Ekle',
+    'admin.material.addQuestionGroup': 'Soru Grubu Ekle',
+    'admin.material.addQuestionsToGroup': 'Gruba soru ekle',
+    'admin.material.addQuestionsToGroupHint': 'Bu gruba bir veya daha fazla soru ekleyin, ardından grubu part\'a ekleyin.',
+    'admin.material.addGroupToPart': "Grubu part'a ekle",
 
     // Admin - Entity Management
     'admin.entity.edit': 'Düzenle',

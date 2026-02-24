@@ -37,7 +37,8 @@ const EMPTY_HEADER: QuestionHeaderRequest = {
 interface QuestionFormProps {
   questionGroupId?: string;
   questionId?: string;
-  onSuccess?: () => void;
+  /** Called after save. In create mode, receives the created question id. */
+  onSuccess?: (questionId?: string) => void;
   onCancel?: () => void;
 }
 
@@ -193,10 +194,12 @@ export default function QuestionForm({
       };
       if (isEditMode && questionId) {
         await updateQuestion.mutateAsync({ questionId, data: payload });
+        onSuccess?.();
       } else {
-        await createQuestion.mutateAsync({ data: payload });
+        const created = await createQuestion.mutateAsync({ data: payload });
+        const createdId = (created as { id?: string })?.id;
+        onSuccess?.(createdId);
       }
-      onSuccess?.();
     } catch (error) {
       console.error("Error saving question:", error);
     }

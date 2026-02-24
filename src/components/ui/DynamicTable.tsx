@@ -265,30 +265,36 @@ const DynamicTable = <T extends RecordType>({
   const renderCell = (column: Column<T>, item: T) => {
     if (column.key === "actions" && column.actions) {
       return (
-        <div className="d-flex align-items-center gap-2 flex-wrap">
-          {column.actions.map((action, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                action.onClick(item);
-              }}
-              className={
-                action.className || "rbt-btn btn-sm btn-border-gradient"
-              }
-              title={typeof action.label === "string" ? action.label : ""}
-            >
-              {action.icon ? (
-                <>
-                  <action.icon className="feather me-1" size={16} />
-                  {action.label}
-                </>
-              ) : (
-                action.label
-              )}
-            </button>
-          ))}
+        <div className="d-flex align-items-center gap-3 flex-nowrap">
+          {column.actions.map((action, idx) => {
+            const isIconOnly = action.iconOnly;
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  action.onClick(item);
+                }}
+                className={
+                  isIconOnly
+                    ? `p-0 border-0 bg-transparent ${action.className ?? ""}`.trim()
+                    : action.className || "rbt-btn btn-sm btn-border-gradient"
+                }
+                title={action.title ?? (typeof action.label === "string" ? action.label : "")}
+                style={isIconOnly ? { minWidth: 0, lineHeight: 1, cursor: "pointer" } : undefined}
+              >
+                {action.icon ? (
+                  <>
+                    <action.icon className="feather me-1" size={16} />
+                    {action.label}
+                  </>
+                ) : (
+                  action.label
+                )}
+              </button>
+            );
+          })}
         </div>
       );
     }

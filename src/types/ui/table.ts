@@ -15,6 +15,10 @@ export interface Column<T> {
         label?: React.ReactNode;
         onClick: (item: T) => void;
         className?: string;
+        /** Sadece ikon gösterir; border/padding olmadan yan yana dizilir */
+        iconOnly?: boolean;
+        /** İkon buton için tooltip (erişilebilirlik) */
+        title?: string;
     }>;
 }
 

@@ -937,6 +937,17 @@ export const CourseLessonPartMaterialBlockType = {
   QUIZ: "QUIZ",
 } as const;
 
+export type CourseLessonPartMaterialMaterialType =
+  (typeof CourseLessonPartMaterialMaterialType)[keyof typeof CourseLessonPartMaterialMaterialType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CourseLessonPartMaterialMaterialType = {
+  CONTENT: "CONTENT",
+  QUIZ: "QUIZ",
+  PRACTICE: "PRACTICE",
+  EXAMPLE: "EXAMPLE",
+} as const;
+
 export interface CourseLessonPartMaterial {
   id?: string;
   createdAt?: string;
@@ -948,6 +959,7 @@ export interface CourseLessonPartMaterial {
   content?: string;
   mediaType?: CourseLessonPartMaterialMediaType;
   blockType?: CourseLessonPartMaterialBlockType;
+  materialType?: CourseLessonPartMaterialMaterialType;
   orderNumber?: number;
   duration?: number;
   uploadedFile?: UploadedFile;
@@ -980,6 +992,17 @@ export const CourseLessonPartMaterialDetailDTOBlockType = {
   QUIZ: "QUIZ",
 } as const;
 
+export type CourseLessonPartMaterialDetailDTOMaterialType =
+  (typeof CourseLessonPartMaterialDetailDTOMaterialType)[keyof typeof CourseLessonPartMaterialDetailDTOMaterialType];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CourseLessonPartMaterialDetailDTOMaterialType = {
+  CONTENT: "CONTENT",
+  QUIZ: "QUIZ",
+  PRACTICE: "PRACTICE",
+  EXAMPLE: "EXAMPLE",
+} as const;
+
 export interface CourseLessonPartMaterialDetailDTO {
   id?: string;
   name?: string;
@@ -987,6 +1010,7 @@ export interface CourseLessonPartMaterialDetailDTO {
   content?: string;
   mediaType?: CourseLessonPartMaterialDetailDTOMediaType;
   blockType?: CourseLessonPartMaterialDetailDTOBlockType;
+  materialType?: CourseLessonPartMaterialDetailDTOMaterialType;
   orderNumber?: number;
   duration?: number;
   uploadedFileId?: string;

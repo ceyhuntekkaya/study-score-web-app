@@ -667,7 +667,15 @@ export default function LessonSidebar() {
                                         </span>
                                       </div>
                                       <div className="course-content-right">
-                                        <span className={isActive || isCompleted ? 'rbt-check' : 'rbt-check unread'}>
+                                        <span
+                                          className={
+                                            isActive
+                                              ? 'rbt-check'
+                                              : isCompleted
+                                                ? 'rbt-check rbt-check-completed'
+                                                : 'rbt-check unread'
+                                          }
+                                        >
                                           <i className={isActive || isCompleted ? 'feather-check' : 'feather-circle'}></i>
                                         </span>
                                       </div>

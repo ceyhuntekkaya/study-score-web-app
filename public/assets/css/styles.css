@@ -18024,6 +18024,11 @@ span.transparent-button:hover i {
   width: auto;
   height: auto;
 }
+/* Tamamlanan ders: yeşil yuvarlak (seçili değilken) */
+.rbt-accordion-style.for-right-content .rbt-course-main-content .course-content-right span.rbt-check.rbt-check-completed i {
+  background: #28a745;
+  color: #fff;
+}
 .rbt-accordion-style.for-right-content .rbt-course-main-content li a {
   align-items: flex-start;
   justify-content: space-between;

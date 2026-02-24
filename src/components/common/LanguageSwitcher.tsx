@@ -58,6 +58,7 @@ export default function LanguageSwitcher() {
             alt={currentLanguage.name}
             width={20}
             height={20}
+            style={{ width: 'auto', height: 'auto' }}
           />
           <span className="menu-item">{currentLanguage.name}</span>
           <i className="right-icon feather-chevron-down"></i>
@@ -78,6 +79,7 @@ export default function LanguageSwitcher() {
                   alt={lang.name}
                   width={20}
                   height={20}
+                  style={{ width: 'auto', height: 'auto' }}
                 />
                 <span className="menu-item">{lang.name}</span>
               </a>
