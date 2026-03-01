@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 
 interface Lesson {
   id: string;
@@ -69,7 +68,7 @@ export default function CourseContentSection({ sections }: CourseContentSectionP
                     <ul className="rbt-course-main-content liststyle">
                       {section.lessons.map((lesson) => (
                         <li key={lesson.id}>
-                          <Link href="/lesson">
+                          <div className="d-flex justify-content-between align-items-center w-100 pe-2" style={{ cursor: 'default', pointerEvents: 'none' }}>
                             <div className="course-content-left">
                               <i className={lesson.type === 'video' ? 'feather-play-circle' : 'feather-file-text'}></i>{' '}
                               <span className="text">{lesson.title}</span>
@@ -92,7 +91,7 @@ export default function CourseContentSection({ sections }: CourseContentSectionP
                                 </>
                               )}
                             </div>
-                          </Link>
+                          </div>
                         </li>
                       ))}
                     </ul>

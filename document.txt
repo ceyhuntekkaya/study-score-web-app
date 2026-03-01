@@ -6,7 +6,7 @@ Password	ced1a49c9fa1!diyo@
 
 
 ssh root@185.72.9.147
-ssh -o ServerAliveInterval=60 root@185.34.101.167
+ssh -p 2222 -o ServerAliveInterval=60 root@185.34.101.167
 
 ------------------------------------
 IP Adresi	185.224.1.26
@@ -18,7 +18,7 @@ Str421900
 
 https://luvvoice.com - ses dönüştürme
 
-ssh -o ServerAliveInterval=60 root@185.224.1.26
+ssh -p 2222 -o ServerAliveInterval=60 root@185.224.1.26
 
 ssh root@185.72.9.3
 

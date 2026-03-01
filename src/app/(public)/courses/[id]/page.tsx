@@ -1,7 +1,7 @@
 'use client';
 
-import { use } from 'react';
-import Image from 'next/image';
+import { use, useMemo } from 'react';
+import Link from 'next/link';
 import CourseDetailsBanner from '@/components/public/course-details/CourseDetailsBanner';
 import CourseDetailsNavigation from '@/components/public/course-details/CourseDetailsNavigation';
 import CourseOverviewSection from '@/components/public/course-details/CourseOverviewSection';
@@ -11,222 +11,284 @@ import CourseInstructorSection from '@/components/public/course-details/CourseIn
 import CourseReviewSection from '@/components/public/course-details/CourseReviewSection';
 import CourseSidebar from '@/components/public/course-details/CourseSidebar';
 import CourseCard from '@/components/public/course/CourseCard';
+import { useGetCourseWithAllDetails, useGetAllCourses } from '@/generated/api/course-rest-controller/course-rest-controller';
+import type { CourseLessonDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
+
+/** API may return nested childLessons (not in schema); support both flat and nested. */
+type LessonWithChildren = CourseLessonDetailDTO & { childLessons?: LessonWithChildren[] };
+import type { Course as ApiCourse } from '@/generated/api/openAPIDefinition.schemas';
+import { getMediaServeUrl } from '@/lib/fileUtils';
+
+/** Get children of a lesson: from nested childLessons or from flat list by parentLessonId. */
+function getChildLessons(
+  parent: LessonWithChildren,
+  allFlat: LessonWithChildren[],
+): LessonWithChildren[] {
+  if (parent.childLessons && parent.childLessons.length > 0) {
+    return parent.childLessons.sort((a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0));
+  }
+  const pid = parent.id ?? '';
+  return allFlat
+    .filter((l) => l.parentLessonId === pid)
+    .sort((a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0));
+}
+
+/** Build course content sections from API lessons (UNIT -> TOPIC -> LESSON -> parts). Supports both nested childLessons and flat parentLessonId. */
+function buildSectionsFromLessons(lessons: CourseLessonDetailDTO[] | undefined): {
+  id: string;
+  title: string;
+  duration: string;
+  lessons: { id: string; title: string; duration?: string; type: 'video' | 'text'; isPreview?: boolean; isLocked?: boolean }[];
+}[] {
+  if (!lessons?.length) return [];
+
+  const all = lessons as LessonWithChildren[];
+
+  // Root units: no parent or parentLessonId empty
+  let units = all
+    .filter((l) => l.lessonLevel === 'UNIT' && !l.parentLessonId)
+    .sort((a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0));
+
+  // Fallback: if no UNIT at root, treat any root items as sections (e.g. API returns only TOPIC/LESSON at top level)
+  if (units.length === 0) {
+    units = all
+      .filter((l) => !l.parentLessonId)
+      .sort((a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0));
+  }
+
+  return units.map((unit) => {
+    const unitId = unit.id ?? 'unit';
+    const topics = getChildLessons(unit, all).filter((l) => l.lessonLevel === 'TOPIC');
+
+    const sectionLessons: { id: string; title: string; duration?: string; type: 'video' | 'text'; isPreview?: boolean; isLocked?: boolean }[] = [];
+
+    for (const topic of topics) {
+      const topicLessons = getChildLessons(topic, all).filter((l) => l.lessonLevel === 'LESSON');
+
+      for (const les of topicLessons) {
+        sectionLessons.push({
+          id: les.id ?? `les-${sectionLessons.length}`,
+          title: les.name ?? 'Lesson',
+          type: 'text',
+          isLocked: true,
+        });
+        const parts = (les.lessonParts ?? []).sort((a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0));
+        for (const part of parts) {
+          sectionLessons.push({
+            id: part.id ?? `p-${sectionLessons.length}`,
+            title: part.name ?? 'Part',
+            type: 'text',
+            isLocked: true,
+          });
+        }
+      }
+    }
+
+    // If no TOPIC/LESSON hierarchy, show UNIT's own lessonParts or single placeholder
+    if (sectionLessons.length === 0 && unit.lessonParts?.length) {
+      for (const part of unit.lessonParts.sort((a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0))) {
+        sectionLessons.push({
+          id: part.id ?? `p-${sectionLessons.length}`,
+          title: part.name ?? 'Part',
+          type: 'text',
+          isLocked: true,
+        });
+      }
+    }
+    if (sectionLessons.length === 0) {
+      sectionLessons.push({
+        id: unitId,
+        title: unit.name ?? 'Content',
+        type: 'text',
+        isLocked: true,
+      });
+    }
+
+    const partCount = sectionLessons.length;
+    return {
+      id: unitId,
+      title: unit.name ?? 'Section',
+      duration: partCount ? `${partCount} item${partCount !== 1 ? 's' : ''}` : '—',
+      lessons: sectionLessons,
+    };
+  });
+}
+
+/** Map API Course to card format (for related courses). */
+function mapApiCourseToCard(apiCourse: ApiCourse): {
+  id: string;
+  image: string;
+  title: string;
+  description: string;
+  lessons: number;
+  students: number;
+  rating: number;
+  reviews: number;
+  author: { name: string; avatar: string; profileLink: string };
+  category: string;
+  currentPrice: string;
+  oldPrice?: string;
+  discount?: string;
+  href: string;
+} {
+  const id = apiCourse.id ?? '';
+  const imageUrl = apiCourse.imageUrl ? getMediaServeUrl(apiCourse.imageUrl) : '';
+  return {
+    id,
+    image: imageUrl || '/assets/images/course/course-online-01.jpg',
+    title: apiCourse.name ?? 'Untitled Course',
+    description: apiCourse.description ?? '',
+    lessons: 0,
+    students: 0,
+    rating: 5,
+    reviews: 0,
+    author: {
+      name: apiCourse.createdBy?.name ?? 'Study Score',
+      avatar: '/assets/images/client/avatar-02.png',
+      profileLink: '#',
+    },
+    category: apiCourse.category ?? apiCourse.level ?? 'Course',
+    currentPrice: 'Free',
+    href: `/courses/${id}`,
+  };
+}
 
 /**
  * Course Details Page
- * Template content converted to React components
+ * Data loaded from API (getCourseWithAllDetails). Design unchanged.
  */
 export default function CourseDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
 
-  // Dummy course data - will be replaced with API call
-  const course = {
-    id,
-    title: 'Study Score AI Premium: The Ultimate Adaptive Exam Prep',
-    description: 'Stop guessing, start improving. Your personal AI Tutor analyzes your unique learning style to create a dynamic roadmap for IELTS, TOEFL, SAT, and more.',
-    rating: 4.9,
-    totalRatings: 12540,
-    totalStudents: 45000,
-    author: {
-      name: 'Study Score Team',
-      avatar: '/assets/images/client/avatar-02.png', // Logo olabilir
-      profileLink: '/profile',
-    },
-    category: 'Exam Preparation',
-    lastUpdated: '01/2026',
-    language: 'English',
-    isCertified: true,
-    isBestseller: true,
-    thumbnail: '/assets/images/course/course-01.jpg', // Ürün görseli
-    currentPrice: '$49.99',
-    oldPrice: '$199.99',
-    discountDays: 5,
-    videoPreview: {
-      thumbnail: '/assets/images/others/video-01.jpg',
-      videoUrl: 'https://www.youtube.com/watch?v=nA1Aqp0sPQo', // Tanıtım videosu linki
-    },
-    learningPoints: [
-      'Get a personalized study roadmap generated by AI based on your initial diagnostic test.',
-      'Receive instant, microscopic feedback on Writing essays and Speaking tasks.',
-      'Master exam strategies for IELTS, TOEFL, and SAT with adaptive difficulty levels.',
-      'Identify and fix your "hidden" weak points that standard courses miss.',
-      'Practice with realistic exam simulations that mimic actual test conditions.',
-      'Track your progress with real-time data analytics and score predictions.',
-      'Learn efficiently by skipping topics you already know (Auto-Learning).',
-      'Access your private AI tutor 24/7, anywhere, anytime.',
-    ],
-    extendedDescription: 'Forget the "one-size-fits-all" approach of traditional classrooms. Study Score AI is the Tesla of exam preparation. Our fine-tuned AI models understand the specific rubrics of international exams (IELTS, TOEFL, SAT) better than any human tutor. Whether you are stuck at a specific band score or just starting, our "Smart Tutor" engine constantly adapts the curriculum to your performance. It’s not just about studying harder; it’s about studying smarter with data-driven precision.',
-    sections: [
-      {
-        id: 'intro',
-        title: 'Phase 1: Diagnostic & Strategy',
-        duration: '2hr 15min',
-        lessons: [
-          {
-            id: '1',
-            title: 'Welcome to the AI Era of Learning',
-            duration: '10 min',
-            type: 'video' as const,
-            isPreview: true,
-          },
-          {
-            id: '2',
-            title: 'Initial AI Diagnostic Test',
-            duration: '60 min',
-            type: 'video' as const, // Burası 'quiz' type olabilir sistem destekliyorsa
-            isPreview: false,
-          },
-          {
-            id: '3',
-            title: 'Your Personalized Roadmap Reveal',
-            type: 'text' as const,
-            isLocked: true,
-          },
-        ],
-      },
-      {
-        id: 'fundamentals',
-        title: 'Phase 2: Adaptive Modules (Weakness Focus)',
-        duration: 'Adaptive Duration',
-        lessons: [
-          {
-            id: '4',
-            title: 'Micro-Skill: Advanced Coherence in Writing',
-            type: 'video' as const,
-            isLocked: true,
-          },
-          {
-            id: '5',
-            title: 'Simulation: Speaking Part 2 with AI Feedback',
-            type: 'text' as const, // Uygulama modülü
-            isLocked: true,
-          },
-        ],
-      },
-    ],
-    requirements: [
-      'A goal to succeed in IELTS, TOEFL, SAT, or similar international exams.',
-      'Basic English proficiency (A2 level or higher recommended).',
-      'A computer or tablet with internet access.',
-      'A microphone for Speaking simulations.',
-    ],
-    detailsDescription: [
-      'Full access to the Multi-Modal Assessment Engine (Writing, Speaking, Listening, Reading).',
-      'Unlimited essay grading with detailed corrections on grammar, vocabulary, and flow.',
-      'Real-time pronunciation and fluency analysis for speaking tasks.',
-      'Access to our database of 10,000+ adaptive questions.',
-    ],
-    instructor: {
-      name: 'Dr. Murat Koçar',
-      avatar: '/assets/images/testimonial/testimonial-7.jpg',
-      profileLink: '/author',
-      title: 'Founder & AI Visionary',
+  const { data: courseDetails, isLoading, error } = useGetCourseWithAllDetails(id, {
+    query: { enabled: !!id },
+  });
+  const { data: allCourses } = useGetAllCourses();
+
+  const course = useMemo(() => {
+    if (!courseDetails) return null;
+
+    const name = courseDetails.name ?? 'Untitled Course';
+    const description = courseDetails.description ?? '';
+    const category = courseDetails.category ?? courseDetails.level ?? 'Course';
+    const imageUrl = courseDetails.imageUrl ? getMediaServeUrl(courseDetails.imageUrl) : '';
+
+    const sections = buildSectionsFromLessons(courseDetails.lessons);
+
+    const courseFeatures = [
+      { label: 'Category', value: category },
+      { label: 'Level', value: courseDetails.level ?? '—' },
+      { label: 'Language', value: courseDetails.language ?? 'English' },
+      { label: 'Curriculum', value: courseDetails.curriculumName ?? '—' },
+      { label: 'Code', value: courseDetails.code ?? '—' },
+    ].filter((f) => f.value && f.value !== '—');
+
+    const relatedList = (allCourses ?? []).filter((c) => c.id && c.id !== id);
+    const relatedCourses = relatedList.slice(0, 2).map(mapApiCourseToCard);
+
+    return {
+      id: courseDetails.id ?? id,
+      title: name,
+      description,
       rating: 4.9,
-      totalReviews: 1205,
-      totalStudents: 45000,
-      totalCourses: 1,
-      bio: 'Dr. Tekkaya is the visionary behind Study Score AI. With a passion for democratizing elite education, he leads the team developing the world\'s most advanced "Smart Tutor" technology.',
-      socialLinks: {
-        facebook: 'https://www.facebook.com/',
-        twitter: 'https://www.twitter.com',
-        instagram: 'https://www.instagram.com/',
-        linkedin: 'https://www.linkedin.com/',
+      totalRatings: 0,
+      totalStudents: 0,
+      author: {
+        name: 'Study Score',
+        avatar: '/assets/images/client/avatar-02.png',
+        profileLink: '#',
       },
-    },
-    ratingBreakdown: [
-      { stars: 5, percentage: 85 },
-      { stars: 4, percentage: 10 },
-      { stars: 3, percentage: 3 },
-      { stars: 2, percentage: 1 },
-      { stars: 1, percentage: 1 },
-    ],
-    featuredReviews: [
-      {
-        id: '1',
-        author: {
-          name: 'Zeynep Yilmaz',
-          avatar: '/assets/images/testimonial/testimonial-3.jpg',
-          profileLink: '/profile',
-        },
-        rating: 5,
-        comment: 'I was stuck at 6.5 in IELTS writing for months. The AI pointed out exactly why I was losing points on "Task Response". I got an 8.0 in just 3 weeks!',
-      },
-      {
-        id: '2',
-        author: {
-          name: 'Michael Chen',
-          avatar: '/assets/images/testimonial/testimonial-8.jpg',
-          profileLink: '/profile',
-        },
-        rating: 5,
-        comment: 'The SAT math simulations are harder than the real thing, which made the actual exam feel easy. The adaptive learning path saved me so much time.',
-      },
-    ],
-    courseFeatures: [
-      { label: 'Access', value: 'Lifetime / Subscription' },
-      { label: 'AI Tutor', value: '24/7 Available' },
-      { label: 'Exams', value: 'IELTS, TOEFL, SAT+' },
-      { label: 'Skill Level', value: 'Adaptive' },
-      { label: 'Language', value: 'English' },
-      { label: 'Simulations', value: 'Unlimited' },
-      { label: 'Certificate', value: 'Completion' },
-      { label: 'Score Guarantee', value: 'Yes*' },
-    ],
-    relatedCourses: [
-      {
-        id: '1',
-        image: '/assets/images/course/course-online-01.jpg',
-        title: 'IELTS Speaking Masterclass: AI Edition',
-        description: 'Focus solely on maximizing your speaking score with instant AI feedback.',
-        lessons: 20,
-        students: 1200,
-        rating: 4.8,
-        reviews: 350,
-        author: {
-          name: 'Study Score AI',
-          avatar: '/assets/images/client/avatar-02.png',
-          profileLink: '/profile',
-        },
-        category: 'Speaking Prep',
-        currentPrice: '$29.99',
-        oldPrice: '$59.99',
-        discount: '-50%',
-      },
-      {
-        id: '2',
-        image: '/assets/images/course/course-online-02.jpg',
-        title: 'SAT Digital: Math & Logic Booster',
-        description: 'An intensive adaptive course for the math section of the new Digital SAT.',
-        lessons: 15,
-        students: 850,
+      category,
+      lastUpdated: courseDetails.createdAt ? new Date(courseDetails.createdAt).toLocaleDateString() : undefined,
+      language: courseDetails.language ?? 'English',
+      isCertified: true,
+      isBestseller: false,
+      thumbnail: imageUrl || '/assets/images/course/course-01.jpg',
+      currentPrice: 'Free',
+      oldPrice: undefined,
+      discountDays: undefined,
+      videoPreview: undefined,
+      learningPoints: description
+        ? [description.slice(0, 120) + (description.length > 120 ? '...' : '')]
+        : ['Course content from curriculum.'],
+      extendedDescription: description,
+      sections: sections.length > 0 ? sections : [{ id: 'overview', title: 'Course content', duration: '—', lessons: [] }],
+      requirements: ['Internet access.', 'Basic proficiency recommended.'],
+      detailsDescription: description ? [description] : ['No additional description.'],
+      instructor: {
+        name: 'Study Score Team',
+        avatar: '/assets/images/testimonial/testimonial-7.jpg',
+        profileLink: '#',
+        title: 'Instructor',
         rating: 4.9,
-        reviews: 210,
-        author: {
-          name: 'Study Score AI',
-          avatar: '/assets/images/client/avatar-02.png',
-          profileLink: '/profile',
-        },
-        category: 'Math Prep',
-        currentPrice: '$29.99',
-        oldPrice: '$59.99',
-        showAddToCart: true,
+        totalReviews: 0,
+        totalStudents: 0,
+        totalCourses: 1,
+        bio: 'Study Score offers adaptive exam preparation with AI-powered feedback.',
+        socialLinks: {},
       },
-    ],
-  };
+      ratingBreakdown: [
+        { stars: 5, percentage: 100 },
+        { stars: 4, percentage: 0 },
+        { stars: 3, percentage: 0 },
+        { stars: 2, percentage: 0 },
+        { stars: 1, percentage: 0 },
+      ],
+      featuredReviews: [] as { id: string; author: { name: string; avatar: string; profileLink: string }; rating: number; comment: string }[],
+      courseFeatures: courseFeatures.length > 0 ? courseFeatures : [{ label: 'Access', value: 'Free' }],
+      relatedCourses,
+    };
+  }, [courseDetails, id, allCourses]);
 
   const handleAddToCart = () => {
-    console.log('Add to cart:', course.id);
-    // TODO: Implement add to cart
+    if (course) console.log('Add to cart:', course.id);
   };
 
   const handleBuyNow = () => {
-    console.log('Buy now:', course.id);
-    // TODO: Implement buy now
+    if (course) console.log('Buy now:', course.id);
   };
+
+  if (isLoading) {
+    return (
+      <div className="rbt-course-details-area ptb--60">
+        <div className="container text-center py-5">
+          <p className="text-muted">Loading course...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rbt-course-details-area ptb--60">
+        <div className="container text-center py-5">
+          <p className="text-danger">
+            Error loading course. Please try again.
+            {error instanceof Error && ` (${error.message})`}
+          </p>
+          <Link href="/courses" className="rbt-btn btn-md mt-3">
+            Back to courses
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="rbt-course-details-area ptb--60">
+        <div className="container text-center py-5">
+          <p className="text-muted">Course not found.</p>
+          <Link href="/courses" className="rbt-btn btn-md mt-3">
+            Back to courses
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
-      {/* Course Details Banner */}
       <CourseDetailsBanner
         title={course.title}
         description={course.description}
@@ -244,12 +306,10 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
       <div className="rbt-course-details-area ptb--60">
         <div className="container">
           <div className="row g-5">
-            {/* Main Content */}
             <div className="col-lg-8">
               <div className="course-details-content">
-                {/* Course Thumbnail */}
                 <div className="rbt-course-feature-box rbt-shadow-box thuumbnail">
-                  <Image
+                  <img
                     className="w-100"
                     src={course.thumbnail}
                     alt={course.title}
@@ -259,29 +319,23 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                   />
                 </div>
 
-                {/* Sticky Navigation */}
                 <CourseDetailsNavigation />
 
-                {/* Overview Section */}
                 <CourseOverviewSection
                   description={course.description}
                   learningPoints={course.learningPoints}
                   extendedDescription={course.extendedDescription}
                 />
 
-                {/* Course Content Section */}
                 <CourseContentSection sections={course.sections} />
 
-                {/* Details Section */}
                 <CourseDetailsInfoSection
                   requirements={course.requirements}
                   description={course.detailsDescription}
                 />
 
-                {/* Instructor Section */}
                 <CourseInstructorSection instructor={course.instructor} />
 
-                {/* Review Section */}
                 <CourseReviewSection
                   averageRating={course.rating}
                   totalRatings={course.totalRatings}
@@ -289,37 +343,37 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
                   featuredReviews={course.featuredReviews}
                 />
 
-                {/* Related Courses */}
-                <div className="related-course mt--60">
-                  <div className="row g-5 align-items-end mb--40">
-                    <div className="col-lg-8 col-md-8 col-12">
-                      <div className="section-title">
-                        <span className="subtitle bg-pink-opacity">Top Course</span>
-                        <h4 className="title">
-                          More Course By <strong className="color-primary">{course.author.name}</strong>
-                        </h4>
+                {course.relatedCourses.length > 0 && (
+                  <div className="related-course mt--60">
+                    <div className="row g-5 align-items-end mb--40">
+                      <div className="col-lg-8 col-md-8 col-12">
+                        <div className="section-title">
+                          <span className="subtitle bg-pink-opacity">Top Course</span>
+                          <h4 className="title">
+                            More courses
+                          </h4>
+                        </div>
+                      </div>
+                      <div className="col-lg-4 col-md-4 col-12">
+                        <div className="read-more-btn text-start text-md-end">
+                          <Link className="rbt-btn rbt-switch-btn btn-border btn-sm" href="/courses">
+                            View All Courses
+                          </Link>
+                        </div>
                       </div>
                     </div>
-                    <div className="col-lg-4 col-md-4 col-12">
-                      <div className="read-more-btn text-start text-md-end">
-                        <a className="rbt-btn rbt-switch-btn btn-border btn-sm" href="/courses">
-                          <span data-text="View All Course">View All Course</span>
-                        </a>
-                      </div>
+                    <div className="row g-5">
+                      {course.relatedCourses.map((relatedCourse) => (
+                        <div key={relatedCourse.id} className="col-lg-6 col-md-6 col-sm-6 col-12">
+                          <CourseCard {...relatedCourse} />
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  <div className="row g-5">
-                    {course.relatedCourses.map((relatedCourse) => (
-                      <div key={relatedCourse.id} className="col-lg-6 col-md-6 col-sm-6 col-12">
-                        <CourseCard {...relatedCourse} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
-            {/* Sidebar */}
             <CourseSidebar
               currentPrice={course.currentPrice}
               oldPrice={course.oldPrice}
@@ -335,4 +389,3 @@ export default function CourseDetailsPage({ params }: { params: Promise<{ id: st
     </>
   );
 }
-
