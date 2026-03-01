@@ -298,6 +298,7 @@ export default function LessonContent() {
                     onPdfLoad={handlePdfLoad}
                     onPdfDownload={handlePdfDownload}
                     onLinkClick={handleLinkClick}
+                    showAIChat={true}
                   />
                 ))}
 

@@ -187,6 +187,7 @@ function SingleQuestionItem({
   savedUserAnswer,
   onAnswerChange,
   onSaveAnswer,
+  showAIChat = false,
 }: {
   question: Record<string, unknown>;
   index: number;
@@ -195,6 +196,7 @@ function SingleQuestionItem({
   savedUserAnswer?: unknown;
   onAnswerChange?: (questionId: string, answerData: unknown) => void;
   onSaveAnswer?: (questionId: string, answerData: unknown) => void | Promise<void>;
+  showAIChat?: boolean;
 }) {
   const { t } = useTranslation();
   const forRenderer = useMemo(
@@ -253,6 +255,7 @@ function SingleQuestionItem({
             ? (answerData) => onSaveAnswer?.(qId, answerData)
             : undefined
         }
+        showAIChat={showAIChat}
       />
     </div>
   );
@@ -268,12 +271,14 @@ function QuestionGroupItem({
   responseByQuestionId,
   onAnswerChange,
   onSaveAnswer,
+  showAIChat = false,
 }: {
   groupData: Record<string, unknown>;
   questions: Array<Record<string, unknown>>;
   responseByQuestionId: Map<string, unknown>;
   onAnswerChange?: (questionId: string, answerData: unknown) => void;
   onSaveAnswer?: (questionId: string, answerData: unknown) => void | Promise<void>;
+  showAIChat?: boolean;
 }) {
   const { t } = useTranslation();
   const groupName = (groupData.name as string) || (groupData.code as string) || '—';
@@ -342,6 +347,7 @@ function QuestionGroupItem({
               savedUserAnswer={responseByQuestionId.get(getEffectiveQuestionId(q, questionIndex))}
               onAnswerChange={onAnswerChange}
               onSaveAnswer={onSaveAnswer}
+              showAIChat={showAIChat}
             />
           ))
         )}
@@ -354,6 +360,8 @@ export interface QuizItemsRendererProps {
   quizItems: CourseLessonPartQuizItemDetailDTO[];
   /** Ders materyali ID – cevap kaydı için (COURSE_LESSON_PART_MATERIAL context). */
   courseLessonPartMaterialId?: string;
+  /** true ise her sorunun altında AIChat gösterilir (öğrenme amaçlı). Varsayılan: false. */
+  showAIChat?: boolean;
 }
 
 /** response.answerData veya userAnswer objesini soru bileşenine veririz */
@@ -369,6 +377,7 @@ function getUserAnswerFromResponse(res: { answerData?: unknown }) {
 export default function QuizItemsRenderer({
   quizItems,
   courseLessonPartMaterialId,
+  showAIChat = false,
 }: QuizItemsRendererProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -456,6 +465,7 @@ export default function QuizItemsRenderer({
                 responseByQuestionId={responseByQuestionId}
                 onAnswerChange={handleAnswerChange}
                 onSaveAnswer={handleSaveAnswer}
+                showAIChat={showAIChat}
               />
             );
           }
@@ -471,6 +481,7 @@ export default function QuizItemsRenderer({
                 savedUserAnswer={responseByQuestionId.get(getEffectiveQuestionId(q, idx))}
                 onAnswerChange={handleAnswerChange}
                 onSaveAnswer={handleSaveAnswer}
+                showAIChat={showAIChat}
               />
             );
           }

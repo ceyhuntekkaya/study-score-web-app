@@ -11,6 +11,8 @@ interface MaterialRendererProps {
   onPdfLoad?: (materialId: string) => void;
   onPdfDownload?: (materialId: string) => void;
   onLinkClick?: (materialId: string) => void;
+  /** true ise quiz sorularının altında AIChat gösterilir (öğrenme amaçlı). Varsayılan: false. */
+  showAIChat?: boolean;
 }
 
 export default function MaterialRenderer({
@@ -19,6 +21,7 @@ export default function MaterialRenderer({
   onPdfLoad,
   onPdfDownload,
   onLinkClick,
+  showAIChat = false,
 }: MaterialRendererProps) {
   const mediaType = material.mediaType;
   const content = material.content || '';
@@ -29,6 +32,7 @@ export default function MaterialRenderer({
       <QuizItemsRenderer
         quizItems={material.quizItems}
         courseLessonPartMaterialId={material.id}
+        showAIChat={showAIChat}
       />
     );
   }
