@@ -58,7 +58,8 @@ export default function CourseCard({
       <div className="rbt-card variation-01 rbt-hover">
         <div className="rbt-card-img">
           <Link href={href || "/course-details"}>
-            <Image
+            {/* img used for API-served URLs (e.g. getMediaServeUrl); same as CategorySection on home */}
+            <img
               src={image}
               alt={title}
               width={400}

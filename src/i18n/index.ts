@@ -573,6 +573,13 @@ const translations: Record<Language, Translations> = {
     'menu.blog': 'Blog',
     'menu.questionGroups': 'Question Groups',
     'menu.questions': 'Questions',
+    'exam.currentExam': 'Current Exam',
+    'exam.schedule': 'Schedule',
+    'exam.results': 'Results',
+    'exam.archive': 'Archive',
+    'exam.examCenter': 'Exam Center',
+    'exam.progress': 'Progress',
+    'exam.quickLinks': 'Quick Links',
     
     // Header Menu Items
     'menu.myDashboard': 'My Dashboard',
@@ -1160,6 +1167,13 @@ const translations: Record<Language, Translations> = {
     'menu.blog': 'Blog',
     'menu.questionGroups': 'Soru Grupları',
     'menu.questions': 'Sorular',
+    'exam.currentExam': 'Mevcut Sınav',
+    'exam.schedule': 'Takvim',
+    'exam.results': 'Sonuçlar',
+    'exam.archive': 'Arşiv',
+    'exam.examCenter': 'Sınav Merkezi',
+    'exam.progress': 'İlerleme',
+    'exam.quickLinks': 'Hızlı Bağlantılar',
     
     // Header Menu Items
     'menu.myDashboard': 'Kontrol Panelim',

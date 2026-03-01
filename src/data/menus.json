@@ -23,7 +23,7 @@
             {
               "icon": "feather-file-text",
               "labelKey": "menu.exams",
-              "href": "/learner/dashboard/wishlist"
+              "href": "/learner/exam"
             },
             {
               "icon": "feather-star",
