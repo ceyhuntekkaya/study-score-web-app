@@ -18,13 +18,15 @@ import VideoResponseQuestion from './VideoResponseQuestion';
 import EssayQuestion from './EssayQuestion';
 import AIChat from '@/components/learner/content/AIChat';
 
-/** Soru renderer için: ORVAL Question tabanlı + ekran alanları (questionText, userAnswer, mode, aiReady). */
+/** Soru renderer için: ORVAL Question tabanlı + ekran alanları (questionText, fullText, userAnswer, mode, aiReady). */
 type Question = Pick<ApiQuestion, 'id'> & {
   /** Soru tipi; API'de QuestionQuestionType, farklı kaynaklarda string gelebilir. */
   questionType: string;
   questionId?: string;
   /** Soru metni; API'de fullText olarak da gelebilir. */
   questionText: string;
+  /** Sorunun tam metni (AIChat context için; yoksa questionText kullanılır). */
+  fullText?: string;
   /** API'de string (JSON); önizleme/formda object de gelebilir. */
   templateData?: unknown;
   /** Öğrenci cevabı – daha önce cevaplandıysa buradan geçirilir */
@@ -44,7 +46,7 @@ interface QuestionRendererProps {
   /** true ise sorunun altında AIChat gösterilir (öğrenme amaçlı). Varsayılan: false. */
   showAIChat?: boolean;
   /** AIChat için opsiyonel props (showAIChat true iken kullanılır). */
-  aiChatMode?: 'learning' | 'analysis' | 'practice';
+  aiChatMode?: 'learning' | 'analysis' | 'practice' | 'solve';
   aiChatCourseCategory?: string;
   aiChatLessonPartName?: string;
 }
@@ -58,12 +60,12 @@ export default function QuestionRenderer({
   onAnswerChange,
   onSaveAnswer,
   questionId,
-  showAIChat = true,
-  aiChatMode = 'learning',
+  showAIChat = false,
+  aiChatMode = 'solve',
   aiChatCourseCategory,
   aiChatLessonPartName,
 }: QuestionRendererProps) {
-  const { questionType, questionText, templateData, userAnswer, mode = 'APPLICATION', aiReady = false } = question;
+  const { questionType, questionText, fullText, templateData, userAnswer, mode = 'APPLICATION', aiReady = false } = question;
   const uniqueQuestionId = questionId || question.questionId || (question as any).id || 'question';
   const [aiChatOpen, setAiChatOpen] = useState(false);
 
@@ -76,7 +78,7 @@ export default function QuestionRenderer({
           {aiChatOpen && (
             <div className="mb-3">
               <AIChat
-                activeText={questionText}
+                activeText={activeTextForAi}
                 mode={aiChatMode}
                 courseCategory={aiChatCourseCategory}
                 lessonPartName={aiChatLessonPartName}
@@ -116,6 +118,26 @@ export default function QuestionRenderer({
     (parsedUserAnswer as { answerData?: unknown }).answerData != null
       ? (parsedUserAnswer as { answerData: unknown }).answerData
       : parsedUserAnswer;
+
+  // AIChat context: soru metni + varsa öğrenci cevabı
+  const activeTextForAi = (() => {
+    let text = fullText ?? questionText;
+    if (normalizedInitialAnswer != null) {
+      const hasContent =
+        typeof normalizedInitialAnswer === 'string'
+          ? normalizedInitialAnswer.trim() !== ''
+          : typeof normalizedInitialAnswer === 'object' &&
+            Object.keys(normalizedInitialAnswer as object).length > 0;
+      if (hasContent) {
+        const answerStr =
+          typeof normalizedInitialAnswer === 'string'
+            ? normalizedInitialAnswer
+            : JSON.stringify(normalizedInitialAnswer, null, 2);
+        text += '\n\nSTUDENT ANSWER:\n' + answerStr;
+      }
+    }
+    return text;
+  })();
 
   const commonProps = {
     mode,

@@ -25,7 +25,7 @@ type Message = {
 interface AIChatProps {
   activeText?: string;
   lessonPartName?: string;
-  mode?: 'learning' | 'analysis' | 'practice'; // YENİ: Mod parametresi
+  mode?: 'learning' | 'analysis' | 'practice' | 'solve';
   courseCategory?: string; // YENİ: Course category (IELTS, TOEFL, SAT_ENGLISH, SAT_MATH, GENERAL_ENGLISH)
 }
 

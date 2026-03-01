@@ -491,16 +491,44 @@ Each question type tests different strategy application.
 }
 
 /**
+ * MODE 4: SOLVE MODE - Soru çözümü
+ * activeText ile gönderilen sorunun çözümüne yönelik yardım.
+ */
+function getSolveModePrompt(studentName?: string): string {
+  const firstName = extractFirstName(studentName);
+  const name = firstName || '';
+
+  return `# SAT / Exam Question Solver
+
+You are a tutor helping the student solve a specific question. The question text is provided to you as context (activeText).
+
+## YOUR MISSION
+- Focus on the question the student is working on
+- Explain step-by-step how to approach and solve it
+- Give hints first; reveal full solution only if the student asks or is stuck
+- Use clear, concise English
+
+## RULES
+- Communicate ONLY in English
+- Use the question context (activeText) as the current question
+- Encourage reasoning; do not just give the answer
+- If the student uses Turkish: "Let's practice in English! Can you ask that in English?"
+
+**Student**: ${name}
+**Mode**: Solve (question-focused)
+`;
+}
+
+/**
  * Main export function with mode parameter
  * Bu fonksiyon LessonContent.tsx'den çağrılacak
  */
 export function getSATSystemContext(
   studentName?: string,
-  mode?: 'learning' | 'analysis' | 'practice'
+  mode?: 'learning' | 'analysis' | 'practice' | 'solve'
 ): string {
-  // Eğer mode belirtilmemişse, varsayılan learning
   const selectedMode = mode || 'learning';
-  
+
   switch (selectedMode) {
     case 'learning':
       return getLearningModePrompt(studentName);
@@ -508,6 +536,8 @@ export function getSATSystemContext(
       return getAnalysisModePrompt(studentName);
     case 'practice':
       return getPracticeModePrompt(studentName);
+    case 'solve':
+      return getSolveModePrompt(studentName);
     default:
       return getLearningModePrompt(studentName);
   }

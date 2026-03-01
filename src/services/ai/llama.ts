@@ -19,7 +19,7 @@ export class LlamaService {
   private conversationHistory: Array<{ role: string; content: string }>;
   private lessonContext: string = '';
   private studentName: string = '';
-  private currentMode: 'learning' | 'analysis' | 'practice' = 'learning';
+  private currentMode: 'learning' | 'analysis' | 'practice' | 'solve' = 'learning';
   private courseCategory: string = 'IELTS'; // Default: IELTS
 
   constructor(modelName: string = DEFAULT_MODEL, courseCategory: string = 'IELTS') {
@@ -44,7 +44,7 @@ export class LlamaService {
    */
   private getSystemContext(
     studentName?: string,
-    mode?: 'learning' | 'analysis' | 'practice'
+    mode?: 'learning' | 'analysis' | 'practice' | 'solve'
   ): string {
     if (this.courseCategory === 'SAT_ENGLISH') {
       return getSATSystemContext(studentName, mode);
@@ -278,10 +278,10 @@ export class LlamaService {
   }
 
   /**
-   * YENİ: AI modunu set eder (learning, analysis, practice)
+   * YENİ: AI modunu set eder (learning, analysis, practice, solve)
    * @param mode AI çalışma modu
    */
-  setMode(mode: 'learning' | 'analysis' | 'practice'): void {
+  setMode(mode: 'learning' | 'analysis' | 'practice' | 'solve'): void {
     this.currentMode = mode;
     
     // System context'i yeni mod ile güncelle
@@ -415,7 +415,7 @@ export function setStudentName(name: string): void {
 /**
  * YENİ: AI modunu set et
  */
-export function setAIMode(mode: 'learning' | 'analysis' | 'practice'): void {
+export function setAIMode(mode: 'learning' | 'analysis' | 'practice' | 'solve'): void {
   return llamaService.setMode(mode);
 }
 

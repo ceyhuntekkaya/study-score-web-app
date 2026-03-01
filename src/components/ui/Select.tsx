@@ -32,7 +32,6 @@ const getSelectBaseStyle = (
   fontFamily: "inherit",
   color: "#092e5e",
   backgroundColor: "#FFFFFF",
-  border: "0.0625rem solid",
   borderStyle: "solid",
   borderWidth: "0.0625rem",
   borderColor: error ? "#ef4444" : "#d1d5db",

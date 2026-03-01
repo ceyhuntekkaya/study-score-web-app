@@ -135,6 +135,7 @@ function toQuestionForRenderer(
 ): {
   questionType: string;
   questionText: string;
+  fullText?: string;
   templateData: unknown;
   userAnswer?: unknown;
   id?: string;
@@ -172,6 +173,7 @@ function toQuestionForRenderer(
   return {
     questionType,
     questionText,
+    fullText: (q.fullText as string) || undefined,
     templateData,
     userAnswer: normalizedAnswer,
     id: (q.id as string) ?? (q.questionId as string),
