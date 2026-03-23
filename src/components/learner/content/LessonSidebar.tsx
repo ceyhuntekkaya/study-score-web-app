@@ -1,18 +1,149 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useContent } from '@/contexts/ContentContext';
-import { useGetCourseWithAllDetails } from '@/generated/api/course-rest-controller/course-rest-controller';
-import { useGetCourseProgress } from '@/generated/api/learner-activity-rest-controller/learner-activity-rest-controller';
-import type { CourseLessonDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
-import { LessonSection, LessonItem } from '@/lib/menus';
+import { useState, useEffect, useMemo, Fragment } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useContent } from "@/contexts/ContentContext";
+import { useGetCourseWithAllDetails } from "@/generated/api/course-rest-controller/course-rest-controller";
+import { useGetCourseProgress } from "@/generated/api/learner-activity-rest-controller/learner-activity-rest-controller";
+import type { CourseLessonDetailDTO } from "@/generated/api/openAPIDefinition.schemas";
+import { LessonSection, LessonItem } from "@/lib/menus";
 
 // Extended type to include childLessons (may come from API but not in type definition)
 interface CourseLessonDetailDTOWithChildren extends CourseLessonDetailDTO {
   childLessons?: CourseLessonDetailDTOWithChildren[];
 }
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Sub-components
+// ──────────────────────────────────────────────────────────────────────────────
+
+type ProgressColor = "orange" | "blue";
+
+/** SVG pie chart shown in the RIGHT TRACK column for unit / topic header rows */
+function SsProgressCircle({
+  completed,
+  total,
+  color = "orange",
+}: {
+  completed: number;
+  total: number;
+  color?: ProgressColor;
+}) {
+  const pct = total > 0 ? completed / total : 0;
+  const cx = 14;
+  const cy = 14;
+  const r = 11;
+  const fillColor = color === "orange" ? "#f97316" : "#3b82f6";
+
+  // 0% — empty grey circle
+  if (pct === 0) {
+    return (
+      <svg
+        className="ss-progress-circle"
+        viewBox="0 0 28 28"
+        width="28"
+        height="28"
+      >
+        <circle
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="white"
+          stroke="#d1d5db"
+          strokeWidth="2"
+        />
+      </svg>
+    );
+  }
+
+  // 100% — green filled with checkmark
+  if (pct >= 1) {
+    return (
+      <svg
+        className="ss-progress-circle"
+        viewBox="0 0 28 28"
+        width="28"
+        height="28"
+      >
+        <circle
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="#22c55e"
+          stroke="#22c55e"
+          strokeWidth="2"
+        />
+        <polyline
+          points="9,14 12,17.5 19,10"
+          fill="none"
+          stroke="white"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+
+  // Partial — pie chart wedge
+  const angle = pct * 360;
+  const rad = (a: number) => ((a - 90) * Math.PI) / 180;
+  const x1 = cx + r * Math.cos(rad(0));
+  const y1 = cy + r * Math.sin(rad(0));
+  const x2 = cx + r * Math.cos(rad(angle));
+  const y2 = cy + r * Math.sin(rad(angle));
+  const largeArc = angle > 180 ? 1 : 0;
+  const piePath = `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} Z`;
+
+  return (
+    <svg
+      className="ss-progress-circle"
+      viewBox="0 0 28 28"
+      width="28"
+      height="28"
+    >
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="white"
+        stroke="#d1d5db"
+        strokeWidth="2"
+      />
+      <path d={piePath} fill={fillColor} />
+    </svg>
+  );
+}
+
+/** Small filled/empty circle in the RIGHT TRACK column for lesson rows */
+function SsStatusCircle({
+  completed,
+  active,
+}: {
+  completed: boolean;
+  active: boolean;
+}) {
+  if (completed || active) {
+    return (
+      <span className="ss-status-circle ss-status-circle--done">
+        <svg viewBox="0 0 14 14" width="10" height="10" fill="none">
+          <polyline
+            points="2.5,7 5.5,10 11.5,4"
+            stroke="white"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+    );
+  }
+  return <span className="ss-status-circle" />;
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
 
 /**
  * Lesson Sidebar Component
@@ -22,39 +153,35 @@ interface CourseLessonDetailDTOWithChildren extends CourseLessonDetailDTO {
 export default function LessonSidebar() {
   const pathname = usePathname();
   const { sidebarOpen } = useContent();
-  const [searchQuery, setSearchQuery] = useState('');
-  
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Parse courseId and lessonId from pathname
   // Path format: /learner/content/[courseId] or /learner/content/[courseId]/[lessonId]
-  const pathParts = pathname?.split('/').filter(Boolean) || [];
+  const pathParts = pathname?.split("/").filter(Boolean) || [];
   const courseId = pathParts[2]; // learner, content, [courseId]
   const lessonId = pathParts[3]; // [lessonId] if exists
 
   // API call to fetch course with all details
   const { data: courseDetails, isLoading } = useGetCourseWithAllDetails(
-    courseId || '',
+    courseId || "",
     {
       query: {
         enabled: !!courseId, // Only fetch if we have a courseId
       },
-    }
+    },
   );
 
   // API call to fetch course progress
-  const { data: courseProgress } = useGetCourseProgress(
-    courseId || '',
-    {
-      query: {
-        enabled: !!courseId, // Only fetch if we have a courseId
-      },
-    }
-  );
+  const { data: courseProgress } = useGetCourseProgress(courseId || "", {
+    query: {
+      enabled: !!courseId, // Only fetch if we have a courseId
+    },
+  });
 
-  
   // Accordion state'i localStorage'dan restore et veya default değer kullan
   const [openSections, setOpenSections] = useState<Set<string>>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('lesson-accordion-state');
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("lesson-accordion-state");
       if (saved) {
         try {
           return new Set(JSON.parse(saved));
@@ -68,8 +195,8 @@ export default function LessonSidebar() {
 
   // Nested accordion state for TOPICs
   const [openTopics, setOpenTopics] = useState<Set<string>>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('lesson-topics-state');
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("lesson-topics-state");
       if (saved) {
         try {
           return new Set(JSON.parse(saved));
@@ -83,20 +210,28 @@ export default function LessonSidebar() {
 
   // Accordion state değiştiğinde localStorage'a kaydet
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('lesson-accordion-state', JSON.stringify(Array.from(openSections)));
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "lesson-accordion-state",
+        JSON.stringify(Array.from(openSections)),
+      );
     }
   }, [openSections]);
 
   // Topics state değiştiğinde localStorage'a kaydet
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('lesson-topics-state', JSON.stringify(Array.from(openTopics)));
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "lesson-topics-state",
+        JSON.stringify(Array.from(openTopics)),
+      );
     }
   }, [openTopics]);
 
   // Helper function to recursively get all child lessons
-  const getChildLessons = (lesson: CourseLessonDetailDTOWithChildren): CourseLessonDetailDTOWithChildren[] => {
+  const getChildLessons = (
+    lesson: CourseLessonDetailDTOWithChildren,
+  ): CourseLessonDetailDTOWithChildren[] => {
     // First check if childLessons array exists (from API)
     if (lesson.childLessons && lesson.childLessons.length > 0) {
       return lesson.childLessons as CourseLessonDetailDTOWithChildren[];
@@ -106,14 +241,17 @@ export default function LessonSidebar() {
   };
 
   // Helper function to recursively count all LESSONs in a tree
-  const countLessonsInTree = (lesson: CourseLessonDetailDTOWithChildren, allLessons: CourseLessonDetailDTOWithChildren[]): number => {
+  const countLessonsInTree = (
+    lesson: CourseLessonDetailDTOWithChildren,
+    allLessons: CourseLessonDetailDTOWithChildren[],
+  ): number => {
     let count = 0;
-    
+
     // If this is a LESSON, count it
-    if (lesson.lessonLevel === 'LESSON') {
+    if (lesson.lessonLevel === "LESSON") {
       count = 1;
     }
-    
+
     // Get children (from childLessons array or by parentLessonId)
     const children = getChildLessons(lesson);
     if (children.length > 0) {
@@ -122,12 +260,14 @@ export default function LessonSidebar() {
       });
     } else {
       // Fallback: find children by parentLessonId
-      const childrenById = allLessons.filter((l) => l.parentLessonId === lesson.id);
+      const childrenById = allLessons.filter(
+        (l) => l.parentLessonId === lesson.id,
+      );
       childrenById.forEach((child) => {
         count += countLessonsInTree(child, allLessons);
       });
     }
-    
+
     return count;
   };
 
@@ -144,7 +284,7 @@ export default function LessonSidebar() {
       if (!lesson.id) return;
 
       // If this is a LESSON level, process its parts
-      if (lesson.lessonLevel === 'LESSON' && lesson.lessonParts && lesson.id) {
+      if (lesson.lessonLevel === "LESSON" && lesson.lessonParts && lesson.id) {
         const lessonId = lesson.id; // TypeScript guard
         lesson.lessonParts.forEach((part) => {
           if (part.id && lessonId) {
@@ -163,8 +303,10 @@ export default function LessonSidebar() {
       const allLessons = (courseDetails?.lessons || [])
         .filter((l): l is CourseLessonDetailDTO => !!l)
         .map((l) => l as CourseLessonDetailDTOWithChildren);
-      
-      const childrenById = allLessons.filter((l) => l.parentLessonId === lesson.id);
+
+      const childrenById = allLessons.filter(
+        (l) => l.parentLessonId === lesson.id,
+      );
       childrenById.forEach((child) => {
         processLesson(child);
       });
@@ -189,7 +331,7 @@ export default function LessonSidebar() {
 
     // Get part progresses from courseProgress
     const partProgresses = (courseProgress as any)?.partProgresses || [];
-    
+
     // Build map: partId -> completionStatus
     const partProgressMap = new Map<string, string>();
     partProgresses.forEach((pp: any) => {
@@ -199,26 +341,30 @@ export default function LessonSidebar() {
     });
 
     // Recursive function to find all LESSON level items
-    const findAllLessons = (lesson: CourseLessonDetailDTOWithChildren): CourseLessonDetailDTOWithChildren[] => {
+    const findAllLessons = (
+      lesson: CourseLessonDetailDTOWithChildren,
+    ): CourseLessonDetailDTOWithChildren[] => {
       const lessons: CourseLessonDetailDTOWithChildren[] = [];
-      
-      if (lesson.lessonLevel === 'LESSON') {
+
+      if (lesson.lessonLevel === "LESSON") {
         lessons.push(lesson);
       }
-      
+
       // Get children from childLessons array or by parentLessonId
       const children = getChildLessons(lesson);
       children.forEach((child) => {
         lessons.push(...findAllLessons(child));
       });
-      
+
       return lessons;
     };
 
     // Find all LESSON level items recursively
     const allLessons: CourseLessonDetailDTOWithChildren[] = [];
     courseDetails.lessons.forEach((lesson) => {
-      allLessons.push(...findAllLessons(lesson as CourseLessonDetailDTOWithChildren));
+      allLessons.push(
+        ...findAllLessons(lesson as CourseLessonDetailDTOWithChildren),
+      );
     });
 
     // Check each LESSON
@@ -229,7 +375,7 @@ export default function LessonSidebar() {
 
       // Get all parts in this lesson from courseDetails
       const parts = lesson.lessonParts || [];
-      
+
       if (parts.length === 0) {
         lessonCompletionMap.set(lesson.id, false);
         return;
@@ -239,7 +385,7 @@ export default function LessonSidebar() {
       const allPartsCompleted = parts.every((part) => {
         if (!part.id) return false;
         const status = partProgressMap.get(part.id);
-        return status === 'COMPLETED';
+        return status === "COMPLETED";
       });
 
       lessonCompletionMap.set(lesson.id, allPartsCompleted);
@@ -264,17 +410,19 @@ export default function LessonSidebar() {
 
     // Get all UNITs
     const units = allLessons.filter(
-      (lesson) => lesson.lessonLevel === 'UNIT' && !lesson.parentLessonId
+      (lesson) => lesson.lessonLevel === "UNIT" && !lesson.parentLessonId,
     );
 
     units.forEach((unit) => {
       if (!unit.id) return;
 
       // Get all LESSONs in this UNIT (recursively)
-      const getAllLessonsInUnit = (lesson: CourseLessonDetailDTOWithChildren): CourseLessonDetailDTOWithChildren[] => {
+      const getAllLessonsInUnit = (
+        lesson: CourseLessonDetailDTOWithChildren,
+      ): CourseLessonDetailDTOWithChildren[] => {
         const lessons: CourseLessonDetailDTOWithChildren[] = [];
-        
-        if (lesson.lessonLevel === 'LESSON') {
+
+        if (lesson.lessonLevel === "LESSON") {
           lessons.push(lesson);
         }
 
@@ -284,7 +432,9 @@ export default function LessonSidebar() {
             lessons.push(...getAllLessonsInUnit(child));
           });
         } else {
-          const childrenById = allLessons.filter((l) => l.parentLessonId === lesson.id);
+          const childrenById = allLessons.filter(
+            (l) => l.parentLessonId === lesson.id,
+          );
           childrenById.forEach((child) => {
             lessons.push(...getAllLessonsInUnit(child));
           });
@@ -294,7 +444,9 @@ export default function LessonSidebar() {
       };
 
       const unitLessons = getAllLessonsInUnit(unit);
-      const lessonLevelLessons = unitLessons.filter((l) => l.lessonLevel === 'LESSON');
+      const lessonLevelLessons = unitLessons.filter(
+        (l) => l.lessonLevel === "LESSON",
+      );
 
       if (lessonLevelLessons.length === 0) {
         unitCompletionMap.set(unit.id, false);
@@ -328,40 +480,42 @@ export default function LessonSidebar() {
 
     // Get UNIT level lessons (top level, no parent)
     const units = allLessons.filter(
-      (lesson) => lesson.lessonLevel === 'UNIT' && !lesson.parentLessonId
+      (lesson) => lesson.lessonLevel === "UNIT" && !lesson.parentLessonId,
     );
 
     // Build sections from UNITs
     const sectionsList: LessonSection[] = units.map((unit, unitIndex) => {
       // Get children of this UNIT (from childLessons or by parentLessonId)
       const unitChildren = getChildLessons(unit);
-      
+
       // If childLessons exists, use it; otherwise fallback to parentLessonId
       let topics: CourseLessonDetailDTOWithChildren[] = [];
       let directLessons: CourseLessonDetailDTOWithChildren[] = [];
-      
+
       if (unitChildren.length > 0) {
         // Use childLessons array
         topics = unitChildren
-          .filter((child) => child.lessonLevel === 'TOPIC')
+          .filter((child) => child.lessonLevel === "TOPIC")
           .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
-        
+
         directLessons = unitChildren
-          .filter((child) => child.lessonLevel === 'LESSON')
+          .filter((child) => child.lessonLevel === "LESSON")
           .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
       } else {
         // Fallback: use parentLessonId relationship
         topics = allLessons
           .filter(
             (lesson) =>
-              lesson.lessonLevel === 'TOPIC' && lesson.parentLessonId === unit.id
+              lesson.lessonLevel === "TOPIC" &&
+              lesson.parentLessonId === unit.id,
           )
           .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
 
         directLessons = allLessons
           .filter(
             (lesson) =>
-              lesson.lessonLevel === 'LESSON' && lesson.parentLessonId === unit.id
+              lesson.lessonLevel === "LESSON" &&
+              lesson.parentLessonId === unit.id,
           )
           .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
       }
@@ -370,10 +524,12 @@ export default function LessonSidebar() {
       const totalLessonsCount = countLessonsInTree(unit, allLessons);
 
       // Calculate completed count
-      const getAllLessonsInUnit = (lesson: CourseLessonDetailDTOWithChildren): CourseLessonDetailDTOWithChildren[] => {
+      const getAllLessonsInUnit = (
+        lesson: CourseLessonDetailDTOWithChildren,
+      ): CourseLessonDetailDTOWithChildren[] => {
         const lessons: CourseLessonDetailDTOWithChildren[] = [];
-        
-        if (lesson.lessonLevel === 'LESSON') {
+
+        if (lesson.lessonLevel === "LESSON") {
           lessons.push(lesson);
         }
 
@@ -383,7 +539,9 @@ export default function LessonSidebar() {
             lessons.push(...getAllLessonsInUnit(child));
           });
         } else {
-          const childrenById = allLessons.filter((l) => l.parentLessonId === lesson.id);
+          const childrenById = allLessons.filter(
+            (l) => l.parentLessonId === lesson.id,
+          );
           childrenById.forEach((child) => {
             lessons.push(...getAllLessonsInUnit(child));
           });
@@ -393,7 +551,9 @@ export default function LessonSidebar() {
       };
 
       const unitLessons = getAllLessonsInUnit(unit);
-      const lessonLevelLessons = unitLessons.filter((l) => l.lessonLevel === 'LESSON');
+      const lessonLevelLessons = unitLessons.filter(
+        (l) => l.lessonLevel === "LESSON",
+      );
       const completedCount = lessonLevelLessons.filter((lesson) => {
         if (!lesson.id) return false;
         return isLessonCompleted.get(lesson.id) === true;
@@ -440,35 +600,37 @@ export default function LessonSidebar() {
           topics?: CourseLessonDetailDTOWithChildren[];
           directLessons?: CourseLessonDetailDTOWithChildren[];
         };
-        
+
         const topics = sectionWithData.topics || [];
         const directLessons = sectionWithData.directLessons || [];
-        
+
         // Check direct lessons
         if (directLessons.some((lesson) => lesson.id === lessonId)) {
           return section.id;
         }
-        
+
         // Check lessons in topics
         for (const topic of topics) {
           const topicWithChildren = topic as CourseLessonDetailDTOWithChildren;
           const topicChildLessons = getChildLessons(topicWithChildren);
-          
+
           let topicLessons: CourseLessonDetailDTOWithChildren[] = [];
           if (topicChildLessons.length > 0) {
-            topicLessons = topicChildLessons.filter((child) => child.lessonLevel === 'LESSON');
+            topicLessons = topicChildLessons.filter(
+              (child) => child.lessonLevel === "LESSON",
+            );
           } else {
             const allLessons = (courseDetails?.lessons || [])
               .filter((lesson): lesson is CourseLessonDetailDTO => !!lesson)
               .map((lesson) => lesson as CourseLessonDetailDTOWithChildren);
-            
+
             topicLessons = allLessons.filter(
               (lesson) =>
-                lesson.lessonLevel === 'LESSON' &&
-                lesson.parentLessonId === topic.id
+                lesson.lessonLevel === "LESSON" &&
+                lesson.parentLessonId === topic.id,
             );
           }
-          
+
           if (topicLessons.some((lesson) => lesson.id === lessonId)) {
             return section.id;
           }
@@ -477,16 +639,65 @@ export default function LessonSidebar() {
       return null;
     };
 
+    // Also find which TOPIC contains the active lesson (for multi-lesson topics)
+    const findTopicForLesson = (): string | null => {
+      for (const section of sections) {
+        const sectionWithData = section as LessonSection & {
+          topics?: CourseLessonDetailDTOWithChildren[];
+        };
+        const topics = sectionWithData.topics || [];
+        for (const topic of topics) {
+          const topicWithChildren = topic as CourseLessonDetailDTOWithChildren;
+          const topicChildLessons = getChildLessons(topicWithChildren);
+          let topicLessons: CourseLessonDetailDTOWithChildren[] = [];
+          if (topicChildLessons.length > 0) {
+            topicLessons = topicChildLessons.filter(
+              (child) => child.lessonLevel === "LESSON",
+            );
+          } else {
+            const allLessons = (courseDetails?.lessons || [])
+              .filter((lesson): lesson is CourseLessonDetailDTO => !!lesson)
+              .map((lesson) => lesson as CourseLessonDetailDTOWithChildren);
+            topicLessons = allLessons.filter(
+              (lesson) =>
+                lesson.lessonLevel === "LESSON" &&
+                lesson.parentLessonId === topic.id,
+            );
+          }
+          // Only for multi-lesson topics (single-lesson topics are rendered flat)
+          if (
+            topicLessons.length > 1 &&
+            topicLessons.some((l) => l.id === lessonId)
+          ) {
+            return topic.id || null;
+          }
+        }
+      }
+      return null;
+    };
+
     const sectionId = findSectionForLesson();
-    
+    const topicId = findTopicForLesson();
+
     // Only open if the section is not already open (to avoid interfering with user interactions)
     if (sectionId) {
       setOpenSections((prev) => {
-        // Only update if the section is not already open
         if (!prev.has(sectionId)) {
           return new Set([sectionId]);
         }
-        return prev; // Keep existing state if already open
+        return prev;
+      });
+    }
+
+    // Auto-open the topic containing the active lesson
+    if (topicId) {
+      setOpenTopics((prev) => {
+        if (!prev.has(topicId)) {
+          const next = new Set(prev);
+          next.add(topicId);
+          return next;
+        }
+        return prev;
       });
     }
   }, [lessonId, sections, courseDetails]); // Removed openSections from dependencies to prevent infinite loop
@@ -496,9 +707,14 @@ export default function LessonSidebar() {
     if (lessonId && openSections.size > 0) {
       // Wait for accordion to fully open and DOM to update
       const timeoutId = setTimeout(() => {
-        const activeLessonElement = document.getElementById(`active-lesson-${lessonId}`);
+        const activeLessonElement = document.getElementById(
+          `active-lesson-${lessonId}`,
+        );
         if (activeLessonElement) {
-          activeLessonElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          activeLessonElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
         }
       }, 500); // Increased timeout to wait for accordion animation
 
@@ -506,196 +722,403 @@ export default function LessonSidebar() {
     }
   }, [lessonId, openSections]);
 
-  const getLessonIcon = (type: string) => {
-    switch (type) {
-      case 'video':
-        return 'feather-play-circle';
-      case 'text':
-        return 'feather-file-text';
-      case 'quiz':
-        return 'feather-help-circle';
-      case 'assignment':
-        return 'feather-file-text';
-      default:
-        return 'feather-file';
+  // Overall course completion percentage (for the bottom progress bar)
+  const overallProgress = useMemo(() => {
+    let total = 0;
+    let done = 0;
+    isLessonCompleted.forEach((val) => {
+      total++;
+      if (val) done++;
+    });
+    return total > 0 ? Math.round((done / total) * 100) : 0;
+  }, [isLessonCompleted]);
+
+  // Get all LESSON-level children of a TOPIC
+  const getTopicLessons = (
+    topic: CourseLessonDetailDTOWithChildren,
+  ): CourseLessonDetailDTOWithChildren[] => {
+    const children = getChildLessons(topic);
+    if (children.length > 0) {
+      return children
+        .filter((c) => c.lessonLevel === "LESSON")
+        .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
     }
+    return (courseDetails?.lessons || [])
+      .filter((l): l is CourseLessonDetailDTO => !!l)
+      .map((l) => l as CourseLessonDetailDTOWithChildren)
+      .filter(
+        (l) => l.lessonLevel === "LESSON" && l.parentLessonId === topic.id,
+      )
+      .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
   };
 
   return (
-    <div className={`rbt-lesson-leftsidebar ${!sidebarOpen ? 'sibebar-none' : ''}`}>
-      <div className="rbt-course-feature-inner rbt-search-activation">
-        <div className="section-title">
-          <h4 className="rbt-title-style-3">Course Content</h4>
+    <div
+      className={`rbt-lesson-leftsidebar ${!sidebarOpen ? "sibebar-none" : ""}`}
+    >
+      {/* Green-bordered outer frame */}
+      <div className="ss-frame">
+        {/* Green logo header */}
+        <div className="ss-logo-header">
+          <Link href="/learner">
+            <Image
+              src="/assets/images/logo/logo.png"
+              alt="StudyScore"
+              width={130}
+              height={40}
+              style={{ objectFit: "contain" }}
+              priority
+            />
+          </Link>
         </div>
 
+        {/* Scrollable content area */}
+        <div className="ss-frame-body">
+          <div className="rbt-course-feature-inner">
+            {isLoading ? (
+              <div className="ss-state-msg">Loading course content...</div>
+            ) : sections.length === 0 ? (
+              <div className="ss-state-msg">No course content available.</div>
+            ) : (
+              /*
+               * Two-column flat layout:
+               *   LEFT  (flex:1)  — all accordion content (headers + lesson links)
+               *   RIGHT (44px)    — progress track: pie charts for units/topics,
+               *                     status circles for lessons, vertical connecting line
+               *
+               * Every "row" is a flex div: [content | track-cell].
+               * Rows are emitted as a flat list so the connecting line flows unbroken.
+               */
+              <div className="ss-sidebar-body">
+                {sections.map((section) => {
+                  const sectionWithData = section as LessonSection & {
+                    unit?: CourseLessonDetailDTOWithChildren;
+                    topics?: CourseLessonDetailDTOWithChildren[];
+                    directLessons?: CourseLessonDetailDTOWithChildren[];
+                  };
+                  const isOpen = openSections.has(section.id);
+                  const topics = sectionWithData.topics || [];
+                  const directLessons = sectionWithData.directLessons || [];
 
-        {isLoading ? (
-          <div className="text-center p--20">
-            <p>Loading course content...</p>
-          </div>
-        ) : sections.length === 0 ? (
-          <div className="text-center p--20">
-            <p>No course content available.</p>
-          </div>
-        ) : (
-          <div className="rbt-accordion-style rbt-accordion-02 for-right-content accordion">
-            <div className="accordion" id="accordionExampleb2">
-              {sections.map((section) => {
-                const sectionWithData = section as LessonSection & {
-                  unit?: CourseLessonDetailDTOWithChildren;
-                  topics?: CourseLessonDetailDTOWithChildren[];
-                  directLessons?: CourseLessonDetailDTOWithChildren[];
-                };
-                const isOpen = openSections.has(section.id);
-                const topics = sectionWithData.topics || [];
-                const directLessons = sectionWithData.directLessons || [];
-                
-                // Check if UNIT is completed
-                const unitId = sectionWithData.unit?.id;
-                const unitIsCompleted = unitId ? isUnitCompleted.get(unitId) === true : false;
-
-                return (
-                  <div key={section.id} className="accordion-item card">
-                    <h2 className="accordion-header card-header" id={`heading-${section.id}`}>
-                      <button
-                        className={`accordion-button ${isOpen ? '' : 'collapsed'}`}
-                        type="button"
-                        onClick={() => {
-                          if (isOpen) {
-                            // If already open, close it
-                            setOpenSections(new Set());
-                          } else {
-                            // If closed, open only this one (close others)
-                            setOpenSections(new Set([section.id]));
+                  return (
+                    <Fragment key={section.id}>
+                      {/* ── UNIT header row ────────────────────────────────── */}
+                      <div className="ss-row ss-unit-row">
+                        <button
+                          className={`ss-unit-content${isOpen ? " ss-unit-content--open" : ""}`}
+                          type="button"
+                          onClick={() =>
+                            setOpenSections(
+                              isOpen ? new Set() : new Set([section.id]),
+                            )
                           }
-                        }}
-                        aria-expanded={isOpen}
-                        style={{
-                          color: unitIsCompleted ? '#28a745' : 'inherit'
-                        }}
-                      >
-                        {section.title} <span className="rbt-badge-5 ml--10">{section.completedCount}/{section.totalCount}</span>
-                      </button>
-                    </h2>
-                    <div
-                      id={`collapse-${section.id}`}
-                      className={`accordion-collapse collapse ${isOpen ? 'show' : ''}`}
-                      aria-labelledby={`heading-${section.id}`}
-                    >
-                      <div className="accordion-body card-body">
-                        {/* Collect all LESSONs from this UNIT (direct + from all TOPICs) */}
-                        {(() => {
-                          // Get all LESSONs from TOPICs
-                          const allTopicLessons: CourseLessonDetailDTOWithChildren[] = [];
-                          
-                          topics.forEach((topic) => {
-                            const topicWithChildren = topic as CourseLessonDetailDTOWithChildren;
-                            const topicChildLessons = getChildLessons(topicWithChildren);
-                            
-                            let topicLessons: CourseLessonDetailDTOWithChildren[] = [];
-                            if (topicChildLessons.length > 0) {
-                              // Use childLessons array
-                              topicLessons = topicChildLessons
-                                .filter((child) => child.lessonLevel === 'LESSON')
-                                .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
-                            } else {
-                              // Fallback: use parentLessonId relationship
-                              const allLessons = (courseDetails?.lessons || [])
-                                .filter((lesson): lesson is CourseLessonDetailDTO => !!lesson)
-                                .map((lesson) => lesson as CourseLessonDetailDTOWithChildren);
-                              
-                              topicLessons = allLessons
-                                .filter(
-                                  (lesson) =>
-                                    lesson.lessonLevel === 'LESSON' &&
-                                    lesson.parentLessonId === topic.id
-                                )
-                                .sort((a, b) => (a.orderNumber || 0) - (b.orderNumber || 0));
-                            }
-                            
-                            allTopicLessons.push(...topicLessons);
-                          });
-                          
-                          // Combine direct lessons and topic lessons, sort by orderNumber
-                          const allLessonsInUnit = [...directLessons, ...allTopicLessons].sort(
-                            (a, b) => (a.orderNumber || 0) - (b.orderNumber || 0)
+                          aria-expanded={isOpen}
+                        >
+                          <span className="ss-unit-label">{section.title}</span>
+                          <span className="ss-unit-meta">
+                            <span className="ss-count">
+                              {section.completedCount}/{section.totalCount}
+                            </span>
+                            <span className="ss-toggle">
+                              {isOpen ? "−" : "+"}
+                            </span>
+                          </span>
+                        </button>
+                        {/* RIGHT TRACK: orange pie for unit */}
+                        <div
+                          className={`ss-track-cell ss-track-first${!isOpen ? " ss-track-closed" : ""}`}
+                        >
+                          <SsProgressCircle
+                            completed={section.completedCount}
+                            total={section.totalCount}
+                            color="orange"
+                          />
+                        </div>
+                      </div>
+
+                      {/* ── OPEN: direct lessons + topic sub-accordions ────── */}
+                      {isOpen &&
+                        (() => {
+                          // Build flat list of all visible rows to find the last one
+                          type RowItem = {
+                            type:
+                              | "direct"
+                              | "singleTopic"
+                              | "topicHeader"
+                              | "topicLesson";
+                            key: string;
+                          };
+                          const visibleRows: RowItem[] = [];
+                          directLessons.forEach((l) =>
+                            visibleRows.push({
+                              type: "direct",
+                              key: l.id || "",
+                            }),
                           );
-                          
-                          if (allLessonsInUnit.length === 0) {
-                            return (
-                              <div className="text-center p--10">
-                                <p className="text-muted">No lessons available in this unit.</p>
-                              </div>
-                            );
-                          }
-                          
+                          topics.forEach((topic) => {
+                            const tLessons = getTopicLessons(topic);
+                            if (tLessons.length <= 1) {
+                              visibleRows.push({
+                                type: "singleTopic",
+                                key: topic.id || "",
+                              });
+                            } else {
+                              visibleRows.push({
+                                type: "topicHeader",
+                                key: topic.id || "",
+                              });
+                              if (openTopics.has(topic.id || "")) {
+                                tLessons.forEach((l) =>
+                                  visibleRows.push({
+                                    type: "topicLesson",
+                                    key: `${topic.id}-${l.id}`,
+                                  }),
+                                );
+                              }
+                            }
+                          });
+                          const lastRowKey =
+                            visibleRows.length > 0
+                              ? visibleRows[visibleRows.length - 1].key
+                              : "";
+
                           return (
-                            <ul className="rbt-course-main-content liststyle">
-                              {allLessonsInUnit.map((lesson) => {
-                                // Strict comparison for active state
-                                const isActive = !!lessonId && !!lesson.id && lesson.id === lessonId;
-                                // Check if lesson is completed
-                                const isCompleted = lesson.id ? isLessonCompleted.get(lesson.id) === true : false;
-                                
+                            <>
+                              {/* Direct lessons */}
+                              {directLessons.map((lesson) => {
+                                const isActive =
+                                  !!lessonId && lesson.id === lessonId;
+                                const isCompleted = !!(
+                                  lesson.id && isLessonCompleted.get(lesson.id)
+                                );
+                                const isLast = (lesson.id || "") === lastRowKey;
                                 return (
-                                  <li
-                                    key={lesson.id}
-                                    id={isActive ? `active-lesson-${lesson.id}` : undefined}
-                                    className={isActive ? 'active' : ''}
-                                  >
+                                  <div key={lesson.id} className="ss-row">
                                     <Link
                                       href={`/learner/content/${courseId}/${lesson.id}`}
-                                      className={isActive ? 'active' : ''}
-                                      onClick={() => {
-                                        const sectionId = section.id;
-                                        if (!openSections.has(sectionId)) {
-                                          const newOpenSections = new Set(openSections);
-                                          newOpenSections.add(sectionId);
-                                          setOpenSections(newOpenSections);
-                                        }
-                                      }}
+                                      className={`ss-lesson-content${isActive ? " ss-lesson-content--active" : ""}`}
+                                      id={
+                                        isActive
+                                          ? `active-lesson-${lesson.id}`
+                                          : undefined
+                                      }
                                     >
-                                      <div className="course-content-left">
-                                        <i className={getLessonIcon('video')}></i>
-                                        <span 
-                                          className="text" 
-                                          style={{ 
-                                            color: isCompleted ? '#28a745' : 'inherit' 
-                                          }}
+                                      <span
+                                        className="ss-play-btn-icon"
+                                        aria-hidden="true"
+                                      >
+                                        <svg
+                                          viewBox="0 0 10 12"
+                                          width="8"
+                                          height="9"
+                                          fill="white"
                                         >
-                                          {lesson.name || 'Untitled Lesson'}
-                                        </span>
-                                      </div>
-                                      <div className="course-content-right">
-                                        <span
-                                          className={
-                                            isActive
-                                              ? 'rbt-check'
-                                              : isCompleted
-                                                ? 'rbt-check rbt-check-completed'
-                                                : 'rbt-check unread'
-                                          }
-                                        >
-                                          <i className={isActive || isCompleted ? 'feather-check' : 'feather-circle'}></i>
-                                        </span>
-                                      </div>
+                                          <polygon points="0,0 10,6 0,12" />
+                                        </svg>
+                                      </span>
+                                      <span className="ss-lesson-title">
+                                        {lesson.name || "Untitled Lesson"}
+                                      </span>
                                     </Link>
-                                  </li>
+                                    {/* RIGHT TRACK: status circle */}
+                                    <div
+                                      className={`ss-track-cell${isLast ? " ss-track-last" : ""}`}
+                                    >
+                                      <SsStatusCircle
+                                        completed={isCompleted}
+                                        active={isActive}
+                                      />
+                                    </div>
+                                  </div>
                                 );
                               })}
-                            </ul>
+
+                              {/* Topics */}
+                              {topics.map((topic) => {
+                                const tid = topic.id || "";
+                                const topicLessons = getTopicLessons(topic);
+                                const doneInTopic = topicLessons.filter(
+                                  (l) => l.id && isLessonCompleted.get(l.id),
+                                ).length;
+
+                                /* ── Single-lesson topic → render as flat lesson row ── */
+                                if (topicLessons.length <= 1) {
+                                  const lesson = topicLessons[0];
+                                  if (!lesson) return null;
+                                  const isActive =
+                                    !!lessonId && lesson.id === lessonId;
+                                  const isCompleted = !!(
+                                    lesson.id &&
+                                    isLessonCompleted.get(lesson.id)
+                                  );
+                                  const isLast = tid === lastRowKey;
+                                  return (
+                                    <div key={topic.id} className="ss-row">
+                                      <Link
+                                        href={`/learner/content/${courseId}/${lesson.id}`}
+                                        className={`ss-lesson-content${isActive ? " ss-lesson-content--active" : ""}`}
+                                        id={
+                                          isActive
+                                            ? `active-lesson-${lesson.id}`
+                                            : undefined
+                                        }
+                                      >
+                                        <span
+                                          className="ss-play-btn-icon"
+                                          aria-hidden="true"
+                                        >
+                                          <svg
+                                            viewBox="0 0 10 12"
+                                            width="8"
+                                            height="9"
+                                            fill="white"
+                                          >
+                                            <polygon points="0,0 10,6 0,12" />
+                                          </svg>
+                                        </span>
+                                        <span className="ss-lesson-title">
+                                          {topic.name ||
+                                            lesson.name ||
+                                            "Untitled Lesson"}
+                                        </span>
+                                      </Link>
+                                      {/* RIGHT TRACK: status circle */}
+                                      <div
+                                        className={`ss-track-cell${isLast ? " ss-track-last" : ""}`}
+                                      >
+                                        <SsStatusCircle
+                                          completed={isCompleted}
+                                          active={isActive}
+                                        />
+                                      </div>
+                                    </div>
+                                  );
+                                }
+
+                                /* ── Multi-lesson topic → collapsible ── */
+                                const topicOpen = openTopics.has(tid);
+
+                                return (
+                                  <Fragment key={topic.id}>
+                                    {/* ── TOPIC header row ────────────────────── */}
+                                    <div className="ss-row ss-topic-row">
+                                      <button
+                                        className="ss-topic-content"
+                                        type="button"
+                                        onClick={() => {
+                                          setOpenTopics((prev) => {
+                                            const next = new Set(prev);
+                                            if (next.has(tid)) next.delete(tid);
+                                            else next.add(tid);
+                                            return next;
+                                          });
+                                        }}
+                                      >
+                                        <span className="ss-topic-label">
+                                          {topic.name}
+                                        </span>
+                                        <span className="ss-unit-meta">
+                                          <span className="ss-count">
+                                            {doneInTopic}/{topicLessons.length}
+                                          </span>
+                                          <span className="ss-toggle">
+                                            {topicOpen ? "−" : "+"}
+                                          </span>
+                                        </span>
+                                      </button>
+                                      {/* RIGHT TRACK: blue pie for topic */}
+                                      <div
+                                        className={`ss-track-cell${tid === lastRowKey ? " ss-track-last" : ""}`}
+                                      >
+                                        <SsProgressCircle
+                                          completed={doneInTopic}
+                                          total={topicLessons.length}
+                                          color="blue"
+                                        />
+                                      </div>
+                                    </div>
+
+                                    {/* ── Topic lessons ───────────────────────── */}
+                                    {topicOpen &&
+                                      topicLessons.map((lesson) => {
+                                        const isActive =
+                                          !!lessonId && lesson.id === lessonId;
+                                        const isCompleted = !!(
+                                          lesson.id &&
+                                          isLessonCompleted.get(lesson.id)
+                                        );
+                                        const isLast =
+                                          `${tid}-${lesson.id}` === lastRowKey;
+                                        return (
+                                          <div
+                                            key={lesson.id}
+                                            className="ss-row ss-lesson-indented"
+                                          >
+                                            <Link
+                                              href={`/learner/content/${courseId}/${lesson.id}`}
+                                              className={`ss-lesson-content${isActive ? " ss-lesson-content--active" : ""}`}
+                                              id={
+                                                isActive
+                                                  ? `active-lesson-${lesson.id}`
+                                                  : undefined
+                                              }
+                                            >
+                                              <span
+                                                className="ss-play-btn-icon"
+                                                aria-hidden="true"
+                                              >
+                                                <svg
+                                                  viewBox="0 0 10 12"
+                                                  width="8"
+                                                  height="9"
+                                                  fill="white"
+                                                >
+                                                  <polygon points="0,0 10,6 0,12" />
+                                                </svg>
+                                              </span>
+                                              <span className="ss-lesson-title">
+                                                {lesson.name ||
+                                                  "Untitled Lesson"}
+                                              </span>
+                                            </Link>
+                                            {/* RIGHT TRACK: status circle */}
+                                            <div
+                                              className={`ss-track-cell${isLast ? " ss-track-last" : ""}`}
+                                            >
+                                              <SsStatusCircle
+                                                completed={isCompleted}
+                                                active={isActive}
+                                              />
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                  </Fragment>
+                                );
+                              })}
+                            </>
                           );
                         })()}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                    </Fragment>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          {/* end rbt-course-feature-inner */}
+
+          {/* Overall progress bar — pinned at bottom of white card */}
+          <div className="ss-progress-footer">
+            <div className="ss-progress-track">
+              <div
+                className="ss-progress-fill"
+                style={{ width: `${overallProgress}%` }}
+              />
             </div>
           </div>
-        )}
+        </div>
+        {/* end ss-frame-body */}
       </div>
     </div>
   );
 }
-

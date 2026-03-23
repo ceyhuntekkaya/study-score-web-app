@@ -334,3 +334,392 @@ a {
 .inline-loading-spinner {
   display: inline-block;
 }
+
+/* ============================================================
+   Study Score Lesson Sidebar  (ss- prefix)
+   Green-bordered frame with logo header, two-column content,
+   right progress track strip, bottom progress bar.
+   ============================================================ */
+
+/* Outer container: sticky sidebar, full viewport height */
+.rbt-lesson-leftsidebar {
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  position: sticky;
+  top: 0;
+  flex: 0 0 320px !important;
+  width: 320px !important;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── GREEN FRAME ──────────────────────────────────────────── */
+.ss-frame {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  background: #75ba2c;
+  margin: 0;
+}
+
+/* ── LOGO HEADER ──────────────────────────────────────────── */
+.ss-logo-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.ss-logo-header a {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+/* ── FRAME BODY (scrollable area) ─────────────────────────── */
+.ss-frame-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 14px;
+  margin: 0 5px 5px 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ss-frame-body .rbt-course-feature-inner {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.ss-frame-body .rbt-course-feature-inner::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* ── Flat row container ───────────────────────────────────── */
+.ss-sidebar-body {
+  /* plain block — rows stack vertically */
+}
+
+/* First unit row: top corners match frame-body border-radius */
+.ss-sidebar-body .ss-row:first-child .ss-unit-content {
+  border-radius: 14px 0 0 0;
+}
+.ss-sidebar-body .ss-row:first-child .ss-track-cell {
+  border-radius: 0 14px 0 0;
+}
+
+/* Every row: [content flex:1] [track 44px], stretch height */
+.ss-row {
+  display: flex;
+  align-items: stretch;
+  animation: ss-fadeSlideIn 0.2s ease-out;
+}
+
+@keyframes ss-fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Unit rows don't animate (always visible) */
+.ss-unit-row {
+  animation: none;
+}
+
+/* ── RIGHT TRACK CELL ─────────────────────────────────────── */
+.ss-track-cell {
+  width: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: #d4edba;
+}
+
+/* Vertical connecting line through center of every track cell */
+.ss-track-cell::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #b8d89e;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+/* Unit header track: line only from center downward (nothing above the pie) */
+.ss-track-first::before {
+  top: 50%;
+}
+
+/* Collapsed: no line at all */
+.ss-track-closed::before {
+  display: none;
+}
+
+/* Last visible item: line only from top to center (no overshoot below) */
+.ss-track-last::before {
+  bottom: 50%;
+}
+
+/* SVG circles sit ON TOP of the connecting line */
+.ss-progress-circle,
+.ss-status-circle {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── UNIT header row ──────────────────────────────────────── */
+.ss-unit-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 11px 8px 11px 14px;
+  background: #f2f7eb;
+  border: none;
+  border-bottom: 1px solid #dde8d0;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.ss-unit-content:hover {
+  background: #e8f0de;
+}
+
+.ss-unit-row .ss-track-cell {
+  background: #d4edba;
+}
+
+.ss-unit-label {
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #1a2e1a;
+  line-height: 1.45;
+  min-width: 0;
+  flex: 1;
+}
+
+.ss-unit-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.ss-count {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.ss-toggle {
+  font-size: 20px;
+  font-weight: 300;
+  color: #75ba2c;
+  line-height: 1;
+  min-width: 16px;
+  text-align: center;
+  user-select: none;
+}
+
+/* ── LESSON row ───────────────────────────────────────────── */
+.ss-lesson-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 12px 9px 14px;
+  margin: 3px 6px 3px 10px;
+  border-radius: 8px;
+  text-decoration: none !important;
+  background: #ffffff;
+  border-bottom: none;
+  color: #374151;
+  transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ss-lesson-content:hover {
+  background: #f5fbf0;
+}
+
+/* Active lesson: green floating pill */
+.ss-lesson-content--active,
+.ss-lesson-content--active:hover {
+  background: #5cb85c !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 4px rgba(92, 184, 92, 0.3);
+}
+
+/* Lesson track cell base */
+.ss-row .ss-track-cell {
+  /* no border — seamless green strip */
+}
+
+/* Red YouTube-style play button */
+.ss-play-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 20px;
+  background: #e53935;
+  border-radius: 5px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ss-lesson-content--active .ss-play-btn-icon {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.ss-lesson-title {
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* ── TOPIC header row ─────────────────────────────────────── */
+.ss-topic-row .ss-unit-meta {
+  gap: 4px;
+}
+
+.ss-topic-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 10px 8px 10px 18px;
+  background: #ffffff;
+  border: none;
+  border-bottom: 1px solid #e8e8e8;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.ss-topic-content:hover {
+  background: #f3f4f6;
+}
+
+.ss-topic-row .ss-track-cell {
+  background: #d4edba;
+}
+
+.ss-topic-label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.4;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Indented topic lessons */
+.ss-lesson-indented .ss-lesson-content {
+  padding-left: 22px;
+}
+
+/* ── Status circles (lessons) ─────────────────────────────── */
+.ss-status-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2.5px solid #bdbdbd;
+  background: #f5f5f5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Completed / active: dark navy blue filled */
+.ss-status-circle--done {
+  background: #1e3a5f;
+  border-color: #1e3a5f;
+}
+
+/* State messages */
+.ss-state-msg {
+  padding: 20px 16px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* ── Bottom overall progress bar (inside frame) ───────────── */
+.ss-progress-footer {
+  padding: 12px 14px 14px;
+  background: #ffffff;
+  flex-shrink: 0;
+  border-radius: 0 0 14px 14px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.ss-progress-track {
+  height: 10px;
+  background: #e0e0e0;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.ss-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f97316, #fb923c);
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+  min-width: 3px;
+}
+
+
+/* Content area: scroll independently */
+.rbt-lesson-content-wrapper .rbt-lesson-rightsidebar {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.rbt-lesson-content-wrapper .rbt-lesson-rightsidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.rbt-lesson-leftsidebar .rbt-course-feature-inner {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
