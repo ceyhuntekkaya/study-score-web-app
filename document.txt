@@ -23,6 +23,11 @@ Str421900
 
 https://luvvoice.com - ses dönüştürme
 
+
+
+
+185.72.9.147 WEB SUNUCU
+
 ssh -p 2222 -o ServerAliveInterval=60 root@185.224.1.26
 
 ssh root@185.72.9.3
@@ -40,10 +45,6 @@ Maintenance database: postgres (veya genixo)
 Username: genixo
 Password: genixo
 
-
-
-DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose build
-docker push ctekkaya/study-score-app:2.0
 
 
 
