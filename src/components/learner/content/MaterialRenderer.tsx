@@ -130,16 +130,12 @@ export default function MaterialRenderer({
 
   // DOCUMENT
   if (mediaType === "DOCUMENT") {
-    return (
-      <div className="material-item material-document">
-        {content && (
-          <div
-            className="document-content"
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
-        )}
-      </div>
-    );
+    return content ? (
+      <div
+        className="material-item material-document"
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    ) : null;
   }
 
   // PDF – sadece indirme butonu (ön izleme yok; bazı tarayıcılar iframe ile PDF desteklemiyor)
@@ -203,45 +199,37 @@ export default function MaterialRenderer({
 
   // TEXT - Must be checked before OTHER to ensure proper rendering
   if (mediaType === "TEXT") {
-    return (
+    return content ? (
+      <div
+        className="material-item material-text"
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    ) : (
       <div className="material-item material-text">
-        {content ? (
-          <div
-            className="text-content"
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
-        ) : (
-          <div className="text-muted">No content</div>
-        )}
+        <div className="text-muted">No content</div>
       </div>
     );
   }
 
   // OTHER
   if (mediaType === "OTHER" || !mediaType) {
-    return (
+    return content ? (
+      <div
+        className="material-item material-text"
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    ) : (
       <div className="material-item material-text">
-        {content ? (
-          <div
-            className="text-content"
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
-        ) : (
-          <div className="text-muted">No content</div>
-        )}
+        <div className="text-muted">No content</div>
       </div>
     );
   }
 
   // Fallback
-  return (
-    <div className="material-item material-unknown">
-      {content && (
-        <div
-          className="unknown-content"
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
-      )}
-    </div>
-  );
+  return content ? (
+    <div
+      className="material-item material-unknown"
+      dangerouslySetInnerHTML={{ __html: content }}
+    />
+  ) : null;
 }

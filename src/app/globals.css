@@ -850,11 +850,12 @@ a {
 .ss-header-tabs {
   display: flex;
   align-items: flex-end;
-  flex: none;
+  flex: 1;
   gap: 6px;
   margin-bottom: -7px;
   position: relative;
   z-index: 1;
+  min-width: 0;
 }
 
 /* Individual tab button */
@@ -924,6 +925,50 @@ a {
   color: #fff !important;
 }
 
+/* AI tab — distinct from content tabs */
+.ss-header-tab--ai {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(139, 194, 87, 0.3);
+  border-bottom: none;
+}
+
+.ss-header-tab--ai i {
+  font-size: 13px;
+}
+
+.ss-header-tab--ai:hover {
+  background: rgba(139, 194, 87, 0.2);
+  color: #fff;
+  border-color: rgba(139, 194, 87, 0.5);
+}
+
+.ss-header-tab--ai.ss-header-tab--active {
+  background: #8bc257;
+  color: #fff;
+  border-color: #8bc257;
+}
+
+.ss-header-tab--ai.ss-header-tab--active:hover {
+  background: #7ab34d;
+}
+
+/* Close icon inside active AI tab */
+.ss-ai-close-icon {
+  font-size: 12px;
+  margin-left: 2px;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.ss-header-tab--ai:hover .ss-ai-close-icon {
+  opacity: 1;
+}
+
 /* Side nav arrows - fixed to viewport center */
 .ss-side-nav {
   position: fixed;
@@ -971,6 +1016,11 @@ a {
   padding: 16px 44px !important;
   margin: 0;
   background: #f8faf6;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* ── CONTENT SKELETON LOADER ─────────────────────────────── */
@@ -1060,6 +1110,7 @@ a {
   top: 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  flex-direction: column;
 }
 
 .rbt-lesson-content-wrapper .rbt-lesson-rightsidebar::-webkit-scrollbar {
@@ -1087,7 +1138,9 @@ a {
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.material-item.material-text {
+.material-item.material-text,
+.material-item.material-document,
+.material-item.material-unknown {
   border: none;
   padding: 0;
   background: transparent;
@@ -1096,6 +1149,13 @@ a {
 .material-item:hover {
   box-shadow: 0 1px 8px rgba(63, 117, 68, 0.06);
   border-color: #d4edba;
+}
+
+.material-item.material-text:hover,
+.material-item.material-document:hover,
+.material-item.material-unknown:hover {
+  box-shadow: none;
+  border-color: transparent;
 }
 
 .material-item:last-child {
@@ -1223,268 +1283,32 @@ a {
   transform: translateY(-1px);
 }
 
-/* ── DOCUMENT CARD ────────────────────────────────────────── */
-.material-document .document-content {
-  line-height: 1.6;
-  color: #2d3748;
-  font-size: 14px;
+/* ── DOCUMENT / TEXT / UNKNOWN CARD ────────────────────────── */
+/* Backend HTML inline style'ları korunsun, beyaz arka plan + radius verilsin */
+.material-item.material-document,
+.material-item.material-text,
+.material-item.material-unknown {
+  background: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 0;
+  max-width: 100%;
+  overflow: hidden;
+  overflow-wrap: break-word;
 }
 
-.material-document .document-content h1,
-.material-document .document-content h2,
-.material-document .document-content h3,
-.material-document .document-content h4 {
-  color: #0a2e60;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+/* Backend HTML'in kendi border'lı dış div'ine de radius ver */
+.material-item.material-document > div,
+.material-item.material-text > div,
+.material-item.material-unknown > div {
+  border-radius: 10px;
 }
 
-.material-document .document-content p {
-  margin-bottom: 0.8em;
-}
-
-.material-document .document-content img {
-  border-radius: 8px;
+.material-item.material-document img,
+.material-item.material-text img,
+.material-item.material-unknown img {
   max-width: 100%;
   height: auto;
-}
-
-/* ── TEXT CARD ─────────────────────────────────────────────── */
-.material-text .text-content {
-  color: #2d3748 !important;
-  font-size: 14px;
-  line-height: 1.7 !important;
-}
-
-.material-text .text-content h1,
-.material-text .text-content h2,
-.material-text .text-content h3,
-.material-text .text-content h4,
-.material-text .text-content h5,
-.material-text .text-content h6 {
-  color: #0a2e60 !important;
-  margin-top: 1.2em;
-  margin-bottom: 0.5em;
-  font-weight: 700;
-}
-
-.material-text .text-content h1 {
-  font-size: 22px;
-}
-
-.material-text .text-content h2 {
-  font-size: 19px;
-}
-
-.material-text .text-content h3 {
-  font-size: 16px;
-}
-
-.material-text .text-content p {
-  margin-bottom: 0.8em;
-  color: #2d3748 !important;
-}
-
-.material-text .text-content img {
-  border-radius: 8px;
-  max-width: 100%;
-  height: auto;
-}
-
-.material-text .text-content a {
-  color: #3f7544 !important;
-  text-decoration: underline;
-  transition: color 0.2s;
-}
-
-.material-text .text-content a:hover {
-  color: #0a2e60 !important;
-}
-
-.material-text .text-content ul,
-.material-text .text-content ol {
-  padding-left: 20px;
-  margin-bottom: 0.8em;
-}
-
-.material-text .text-content li {
-  color: #2d3748 !important;
-  margin-bottom: 6px;
-  line-height: 1.6;
-}
-
-.material-text .text-content strong,
-.material-text .text-content b {
-  color: #0a2e60 !important;
-  font-weight: 600;
-}
-
-.material-text .text-content em,
-.material-text .text-content i {
-  color: #4a5568 !important;
-}
-
-/* ── Text Content Inline Style Overrides (navy/green palette) ── */
-
-/* Tables */
-.material-text .text-content table {
-  width: 100% !important;
-  border-collapse: collapse !important;
-  border-radius: 8px !important;
-  overflow: hidden !important;
-  margin: 16px 0 !important;
-  font-size: 14px !important;
-  box-shadow: 0 1px 4px rgba(10, 46, 96, 0.06) !important;
-}
-
-.material-text .text-content table thead tr {
-  background: #0a2e60 !important;
-  color: #ffffff !important;
-}
-
-.material-text .text-content table thead th,
-.material-text .text-content table thead td {
-  background: #0a2e60 !important;
-  color: #ffffff !important;
-  padding: 10px 14px !important;
-  font-weight: 600 !important;
-  border: none !important;
-  font-size: 13px !important;
-}
-
-/* Tables without thead — first row is the header */
-.material-text .text-content table:not(:has(thead)) > tbody > tr:first-child,
-.material-text .text-content table:not(:has(thead)) > tr:first-child {
-  background: #0a2e60 !important;
-  color: #ffffff !important;
-}
-
-.material-text .text-content table:not(:has(thead)) > tbody > tr:first-child td,
-.material-text .text-content table:not(:has(thead)) > tbody > tr:first-child th,
-.material-text .text-content table:not(:has(thead)) > tr:first-child td,
-.material-text .text-content table:not(:has(thead)) > tr:first-child th {
-  background: #0a2e60 !important;
-  color: #ffffff !important;
-  padding: 10px 14px !important;
-  font-weight: 600 !important;
-  border: none !important;
-  font-size: 13px !important;
-}
-
-.material-text .text-content table tbody td {
-  padding: 10px 14px !important;
-  border-bottom: 1px solid #e2ead8 !important;
-  color: #2d3748 !important;
-  vertical-align: top !important;
-  font-size: 13px !important;
-}
-
-.material-text .text-content table tbody tr:nth-child(even) {
-  background: #f8faf6 !important;
-}
-
-.material-text .text-content table tbody tr:nth-child(odd) {
-  background: #ffffff !important;
-}
-
-.material-text .text-content table tbody tr:hover {
-  background: #eef5e6 !important;
-}
-
-/* ── Gradient banners (hero sections) ── */
-.material-text .text-content div[style*="gradient"] {
-  background: linear-gradient(135deg, #0a2e60 0%, #143d7a 100%) !important;
-  background-image: linear-gradient(135deg, #0a2e60 0%, #143d7a 100%) !important;
-  color: #ffffff !important;
-  border-radius: 10px !important;
-  padding: 28px 32px !important;
-  margin: 16px 0 !important;
-}
-
-.material-text .text-content div[style*="gradient"] * {
-  color: #ffffff !important;
-}
-
-/* ── Colored badges/pills ── */
-.material-text .text-content span[style*="background-color"],
-.material-text .text-content span[style*="background:"],
-.material-text .text-content span[style*="background "],
-.material-text .text-content td span[style*="background"] {
-  background: #8bc257 !important;
-  background-color: #8bc257 !important;
-  color: #ffffff !important;
-  padding: 3px 10px !important;
-  border-radius: 6px !important;
-  font-weight: 600 !important;
-  font-size: 12px !important;
-  display: inline-block !important;
-}
-
-/* ── Horizontal rules & dividers ── */
-.material-text .text-content hr {
-  border-color: #8bc257 !important;
-  border-style: solid !important;
-  border-width: 2px 0 0 0 !important;
-  margin: 16px 0 !important;
-  background: #8bc257 !important;
-  height: 0 !important;
-}
-
-.material-text .text-content h2[style*="border"],
-.material-text .text-content h3[style*="border"] {
-  border-color: #8bc257 !important;
-}
-
-/* ── Blockquotes ── */
-.material-text .text-content blockquote {
-  border-left: 3px solid #8bc257 !important;
-  background: #f4f9ef !important;
-  padding: 14px 18px !important;
-  border-radius: 0 8px 8px 0 !important;
-  color: #2d3748 !important;
-  margin: 12px 0 !important;
-}
-
-/* ── Callout divs with left border ── */
-.material-text .text-content div[style*="border-left"] {
-  border-left-color: #8bc257 !important;
-  border-left-width: 3px !important;
-  border-left-style: solid !important;
-  background: #f4f9ef !important;
-  padding: 14px 18px !important;
-  border-radius: 0 8px 8px 0 !important;
-  margin: 10px 0 !important;
-}
-
-.material-text .text-content div[style*="border-left"] *,
-.material-text .text-content div[style*="border-left"] p,
-.material-text .text-content div[style*="border-left"] span,
-.material-text .text-content div[style*="border-left"] li {
-  color: #2d3748 !important;
-}
-
-.material-text .text-content div[style*="border-left"] strong,
-.material-text .text-content div[style*="border-left"] b,
-.material-text .text-content div[style*="border-left"] h3,
-.material-text .text-content div[style*="border-left"] h4 {
-  color: #0a2e60 !important;
-}
-
-/* ── Generic colored background divs (pastel/solid, not gradient) ── */
-/* Keep original background colors but ensure readable text & consistent shape */
-.material-text .text-content div[style*="background-color"]:not([style*="gradient"]):not([style*="border-left"]) {
-  border-radius: 8px !important;
-  padding: 14px 18px !important;
-  margin: 10px 0 !important;
-}
-
-/* ── Inline-styled borders (colored underlines) ── */
-.material-text .text-content *[style*="border-bottom"] {
-  border-bottom-color: #8bc257 !important;
-}
-
-.material-text .text-content *[style*="border-top"] {
-  border-top-color: #8bc257 !important;
 }
 
 /* ── Materials container ──────────────────────────────────── */
@@ -1525,16 +1349,52 @@ a {
    AI Chat Fullscreen mode (when showAIChat is true in header)
    ============================================================ */
 .ss-ai-chat-fullscreen {
-  height: calc(100vh - 56px);
-  min-height: 500px;
-  max-height: calc(100vh - 56px);
-  position: relative;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  margin: -16px -24px;
-  border-radius: 0;
-  border: none;
+  border: 1px solid #d4edba;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 1px 6px rgba(139, 194, 87, 0.1);
+}
+
+.ss-ai-chat-fullscreen .ss-ai-chat-wrapper {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  max-height: 100%;
+}
+
+.ss-ai-chat-fullscreen .ss-ai-chat-messages {
+  flex: 1;
+  min-height: 0;
+}
+
+/* When fullscreen AI chat is active, prevent parent from scrolling */
+.ss-content-inner:has(.ss-ai-chat-fullscreen) {
+  overflow: hidden !important;
+}
+
+/* AI Chat header bar inside fullscreen */
+.ss-ai-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #0a2e60 0%, #143d7a 100%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+  border-bottom: 2px solid #8bc257;
+  border-radius: 10px 10px 0 0;
+}
+
+.ss-ai-chat-header i {
+  font-size: 16px;
+  color: #8bc257;
 }
 
 /* Practice & Example AI Chat cards */
@@ -1856,10 +1716,6 @@ a {
     left: 0 !important;
   }
 
-  .ss-ai-chat-fullscreen {
-    margin: -12px -14px;
-  }
-
   .material-item {
     padding: 12px;
     border-radius: 8px;
@@ -1877,10 +1733,6 @@ a {
 @media (max-width: 575px) {
   .rbt-lesson-rightsidebar.lesson-video .inner.ss-content-inner {
     padding: 10px 8px !important;
-  }
-
-  .ss-ai-chat-fullscreen {
-    margin: -10px -8px;
   }
 
   .material-item {
@@ -1904,6 +1756,14 @@ a {
 
   .ss-compact-header .lesson-top-left h5 {
     font-size: 12px;
+  }
+
+  .ss-header-tab--ai span {
+    display: none;
+  }
+
+  .ss-header-tab--ai {
+    padding: 8px 12px;
   }
 }
 

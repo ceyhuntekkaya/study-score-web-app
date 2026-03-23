@@ -241,25 +241,31 @@ export default function LessonContent() {
         <div className="lesson-top-left">
           <h5>{headerTitle}</h5>
         </div>
-        {lessonParts.length > 0 && (
-          <div className="ss-header-tabs">
-            {lessonParts.map((part) => {
-              const isActive = selectedPartId === part.id;
-              return (
-                <button
-                  key={part.id}
-                  className={`ss-header-tab${isActive ? " ss-header-tab--active" : ""}`}
-                  onClick={() => {
-                    setSelectedPartId(part.id || null);
-                    setShowAIChat(false);
-                  }}
-                >
-                  {part.name || `Part ${part.orderNumber || ""}`}
-                </button>
-              );
-            })}
-          </div>
-        )}
+        <div className="ss-header-tabs">
+          {lessonParts.map((part) => {
+            const isActive = selectedPartId === part.id && !showAIChat;
+            return (
+              <button
+                key={part.id}
+                className={`ss-header-tab${isActive ? " ss-header-tab--active" : ""}`}
+                onClick={() => {
+                  setSelectedPartId(part.id || null);
+                  setShowAIChat(false);
+                }}
+              >
+                {part.name || `Part ${part.orderNumber || ""}`}
+              </button>
+            );
+          })}
+          <button
+            className={`ss-header-tab ss-header-tab--ai${showAIChat ? " ss-header-tab--active" : ""}`}
+            onClick={() => setShowAIChat(!showAIChat)}
+          >
+            <i className="feather-cpu"></i>
+            <span>Study with AI</span>
+            {showAIChat && <i className="feather-x ss-ai-close-icon"></i>}
+          </button>
+        </div>
         <div className="lesson-top-right">
           <div className="rbt-btn-close">
             <Link
@@ -296,9 +302,13 @@ export default function LessonContent() {
           </div>
         ) : showAIChat ? (
           <div className="ai-chat-container ss-ai-chat-fullscreen">
+            <div className="ss-ai-chat-header">
+              <i className="feather-cpu"></i>
+              <span>AI Study Assistant</span>
+            </div>
             <AIChat
-              activeText={lessonParts[0].description || ""}
-              lessonPartName={lessonParts[0].name}
+              activeText={lessonParts[0]?.description || ""}
+              lessonPartName={lessonParts[0]?.name}
               mode="learning"
               courseCategory={courseDetails?.category}
             />
