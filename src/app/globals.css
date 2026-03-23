@@ -47,9 +47,10 @@ a {
 .rbt-video-player {
   position: relative;
   width: 100%;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
-  height: 0;
+  max-width: 720px;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
+  border-radius: 10px;
 }
 
 .rbt-video-player iframe {
@@ -147,7 +148,72 @@ a {
   }
 }
 
-/* AI Chat Styles */
+/* AI Chat Styles — updated to match green/navy palette */
+
+/* Wrapper - flex column, fills parent */
+.ss-ai-chat-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+/* Messages area - scrollable */
+.ss-ai-chat-messages {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  background: #f8faf6;
+  scroll-behavior: smooth;
+  min-height: 0;
+  max-height: 100%;
+}
+
+/* Empty state */
+.ss-ai-chat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.ss-ai-chat-empty-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8f5d8 0%, #d4edba 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(139, 194, 87, 0.18);
+}
+
+.ss-ai-chat-empty-icon i {
+  font-size: 22px;
+  color: #3f7544;
+}
+
+.ss-ai-chat-empty-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0a2e60;
+  margin-bottom: 6px;
+}
+
+.ss-ai-chat-empty-desc {
+  font-size: 14px;
+  color: #5a6e5a;
+  max-width: 380px;
+  line-height: 1.5;
+}
+
 .ai-chat-message {
   padding: 16px 20px;
   border-radius: 12px;
@@ -158,7 +224,7 @@ a {
 }
 
 .ai-chat-message.user {
-  background: linear-gradient(135deg, #2f57ef 0%, #3b5fe6 100%);
+  background: linear-gradient(135deg, #0a2e60 0%, #143d7a 100%);
   color: #fff;
   margin-left: auto;
   border-bottom-right-radius: 4px;
@@ -166,11 +232,11 @@ a {
 }
 
 .ai-chat-message.assistant {
-  background: rgba(255, 255, 255, 0.95);
-  color: #192335;
-  border: 1px solid rgba(47, 87, 239, 0.1);
+  background: rgba(255, 255, 255, 0.97);
+  color: #1a2e1a;
+  border: 1px solid #e2ead8;
   border-bottom-left-radius: 4px;
-  box-shadow: 0 2px 8px rgba(47, 87, 239, 0.1);
+  box-shadow: 0 2px 8px rgba(63, 117, 68, 0.08);
   max-width: 75%;
 }
 
@@ -187,10 +253,9 @@ a {
 /* AI Chat Form */
 .ai-chat-form-container {
   flex-shrink: 0;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.95);
-  border-top: 1px solid rgba(47, 87, 239, 0.1);
-  backdrop-filter: blur(10px);
+  padding: 12px 16px;
+  background: #ffffff;
+  border-top: 1px solid #e2ead8;
 }
 
 .ai-chat-form {
@@ -202,12 +267,12 @@ a {
 .ai-chat-input {
   flex: 1;
   padding: 12px 16px;
-  border: 2px solid rgba(47, 87, 239, 0.2);
+  border: 2px solid #d4edba;
   border-radius: 8px;
-  font-size: 16px;
-  color: #192335;
-  background-color: rgba(255, 255, 255, 0.95);
-  transition: all 0.3s ease-in-out;
+  font-size: 15px;
+  color: #1a2e1a;
+  background-color: rgba(255, 255, 255, 0.97);
+  transition: all 0.2s ease;
   outline: none;
   font-family: inherit;
   resize: none;
@@ -218,19 +283,19 @@ a {
 }
 
 .ai-chat-input:focus {
-  border-color: #2f57ef;
-  box-shadow: 0 0 0 3px rgba(47, 87, 239, 0.1);
+  border-color: #8bc257;
+  box-shadow: 0 0 0 3px rgba(139, 194, 87, 0.15);
   background-color: #fff;
 }
 
 .ai-chat-input:disabled {
-  background-color: rgba(47, 87, 239, 0.05);
-  color: rgba(25, 35, 53, 0.5);
+  background-color: #f8faf6;
+  color: rgba(26, 46, 26, 0.4);
   cursor: not-allowed;
 }
 
 .ai-chat-input::placeholder {
-  color: rgba(25, 35, 53, 0.6);
+  color: rgba(26, 46, 26, 0.5);
 }
 
 .send-btn {
@@ -238,30 +303,30 @@ a {
   align-items: center;
   justify-content: center;
   padding: 12px;
-  background: linear-gradient(135deg, #2f57ef 0%, #3b5fe6 100%);
+  background: linear-gradient(135deg, #3f7544 0%, #4a8a50 100%);
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 4px 8px rgba(47, 87, 239, 0.2);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 8px rgba(63, 117, 68, 0.2);
   min-width: 48px;
   min-height: 48px;
 }
 
 .send-btn:hover:not(.disabled) {
-  background: linear-gradient(135deg, #1e3fd8 0%, #2a4dd4 100%);
+  background: linear-gradient(135deg, #2e5a33 0%, #3f7544 100%);
   transform: translateY(-1px);
-  box-shadow: 0 6px 12px rgba(47, 87, 239, 0.3);
+  box-shadow: 0 6px 12px rgba(63, 117, 68, 0.3);
 }
 
 .send-btn:active:not(.disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(47, 87, 239, 0.4);
+  box-shadow: 0 2px 6px rgba(63, 117, 68, 0.4);
 }
 
 .send-btn.disabled {
-  background: rgba(47, 87, 239, 0.3);
+  background: rgba(63, 117, 68, 0.3);
   color: rgba(255, 255, 255, 0.5);
   cursor: not-allowed;
   transform: none;
@@ -269,13 +334,62 @@ a {
 }
 
 .send-btn.disabled:hover {
-  background: rgba(47, 87, 239, 0.3);
+  background: rgba(63, 117, 68, 0.3);
   transform: none;
   box-shadow: none;
 }
 
+/* AI Chat container card style */
+.ai-chat-container {
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #d4edba;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(139, 194, 87, 0.1);
+}
+
+/* Typing indicator (3 bouncing dots) */
+.ss-typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 0 2px;
+}
+
+.ss-typing-indicator span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #3f7544;
+  animation: ss-typing-bounce 1.4s infinite ease-in-out both;
+}
+
+.ss-typing-indicator span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.ss-typing-indicator span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.ss-typing-indicator span:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes ss-typing-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.4) translateY(0);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1) translateY(-6px);
+    opacity: 1;
+  }
+}
+
 .markdown-content {
-  line-height: 1.6;
+  line-height: 1.7;
+  color: #2d3748;
 }
 
 .markdown-content h1,
@@ -284,6 +398,7 @@ a {
   margin-top: 1em;
   margin-bottom: 0.5em;
   font-weight: 600;
+  color: #0a2e60;
 }
 
 .markdown-content h1 {
@@ -299,11 +414,12 @@ a {
 }
 
 .markdown-content p {
-  margin-bottom: 1em;
+  margin-bottom: 0.8em;
 }
 
 .markdown-content strong {
   font-weight: 600;
+  color: #1a2e1a;
 }
 
 .markdown-content em {
@@ -311,11 +427,13 @@ a {
 }
 
 .markdown-content code {
-  background-color: #f3f4f6;
+  background-color: #f2f7eb;
   padding: 0.2em 0.4em;
-  border-radius: 3px;
+  border-radius: 4px;
   font-family: 'Courier New', monospace;
   font-size: 0.9em;
+  color: #3f7544;
+  border: 1px solid #e2ead8;
 }
 
 .markdown-content .numbered-item,
@@ -327,7 +445,7 @@ a {
 .markdown-content hr {
   margin: 1em 0;
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid #e2ead8;
 }
 
 /* Inline Loading Spinner */
@@ -806,11 +924,9 @@ a {
   color: #fff !important;
 }
 
-/* ============================================================
-   Side Navigation Arrows (Previous / Next)
-   ============================================================ */
+/* Side nav arrows - fixed to viewport center */
 .ss-side-nav {
-  position: absolute;
+  position: fixed;
   top: 50%;
   transform: translateY(-50%);
   z-index: 999;
@@ -821,21 +937,28 @@ a {
   justify-content: center;
   background: rgba(10, 46, 96, 0.5);
   color: #fff;
-  border: none;
+  border: 1px solid rgba(139, 194, 87, 0.2);
   cursor: pointer;
   font-size: 20px;
-  transition: background 0.2s, opacity 0.2s;
+  transition: background 0.2s, opacity 0.2s, border-color 0.2s;
   opacity: 0.6;
+  backdrop-filter: blur(4px);
 }
 
 .ss-side-nav:hover {
   background: rgba(10, 46, 96, 0.9);
   opacity: 1;
+  border-color: rgba(139, 194, 87, 0.5);
 }
 
 .ss-side-nav--left {
-  left: 0;
+  left: 320px;
   border-radius: 0 6px 6px 0;
+}
+
+/* When sidebar is closed, left arrow goes to viewport left */
+.rbt-lesson-rightsidebar.full-width .ss-side-nav--left {
+  left: 0;
 }
 
 .ss-side-nav--right {
@@ -845,8 +968,87 @@ a {
 
 /* Content inner padding to avoid overlap with side nav arrows */
 .rbt-lesson-rightsidebar.lesson-video .inner.ss-content-inner {
-  padding: 20px 36px !important;
+  padding: 16px 44px !important;
   margin: 0;
+  background: #f8faf6;
+}
+
+/* ── CONTENT SKELETON LOADER ─────────────────────────────── */
+@keyframes ss-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.ss-content-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0;
+  flex: 1;
+}
+
+.ss-skeleton-video {
+  width: 100%;
+  max-width: 720px;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  margin: 0 auto;
+  background: linear-gradient(90deg, #e8ede3 25%, #f2f7eb 50%, #e8ede3 75%);
+  background-size: 800px 100%;
+  animation: ss-shimmer 1.6s infinite ease-in-out;
+}
+
+.ss-skeleton-card {
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e2ead8;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ss-skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #e8ede3 25%, #f2f7eb 50%, #e8ede3 75%);
+  background-size: 800px 100%;
+  animation: ss-shimmer 1.6s infinite ease-in-out;
+}
+
+.ss-skeleton-line--title {
+  width: 35%;
+  height: 18px;
+  margin-bottom: 4px;
+}
+
+.ss-skeleton-line--full {
+  width: 100%;
+}
+
+.ss-skeleton-line--medium {
+  width: 65%;
+}
+
+.ss-skeleton-line--short {
+  width: 25%;
+  height: 16px;
+  margin-bottom: 4px;
+}
+
+.ss-skeleton-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.ss-skeleton-option {
+  height: 46px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #e8ede3 25%, #f2f7eb 50%, #e8ede3 75%);
+  background-size: 800px 100%;
+  animation: ss-shimmer 1.6s infinite ease-in-out;
 }
 
 /* Content area: scroll independently */
@@ -868,5 +1070,840 @@ a {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+}
+
+/* ============================================================
+   Material Items – Card-based design matching sidebar/header
+   Green (#8bc257, #3f7544) + Navy (#0a2e60) palette
+   ============================================================ */
+
+/* Shared card wrapper for all material types */
+.material-item {
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e2ead8;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.material-item.material-text {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+.material-item:hover {
+  box-shadow: 0 1px 8px rgba(63, 117, 68, 0.06);
+  border-color: #d4edba;
+}
+
+.material-item:last-child {
+  margin-bottom: 0;
+}
+
+/* When there's only one material, fill the viewport height */
+.materials-content > .material-item:only-child {
+  min-height: calc(100vh - 140px);
+}
+
+/* ── VIDEO CARD ───────────────────────────────────────────── */
+.material-video {
+  padding: 12px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.material-video .rbt-video-player {
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.material-video .rbt-video-player iframe {
+  border-radius: 8px;
+}
+
+.material-video video {
+  border-radius: 8px;
+  display: block;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ── IMAGE CARD ───────────────────────────────────────────── */
+.material-image {
+  padding: 12px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.material-image .image-wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  line-height: 0;
+}
+
+.material-image .image-wrapper img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0 !important;
+  object-fit: cover;
+}
+
+/* ── AUDIO CARD ───────────────────────────────────────────── */
+.material-audio {
+  border-left: 3px solid #8bc257;
+  padding: 12px 16px;
+}
+
+.material-audio .audio-wrapper {
+  max-width: 100% !important;
+}
+
+/* ── PDF CARD ─────────────────────────────────────────────── */
+.material-pdf {
+  display: flex;
+  align-items: center;
+  border-left: 3px solid #0a2e60;
+  padding: 12px 16px;
+}
+
+.material-pdf .pdf-wrapper .rbt-btn {
+  background: linear-gradient(135deg, #0a2e60 0%, #143d7a 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 8px 16px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.material-pdf .pdf-wrapper .rbt-btn:hover {
+  background: linear-gradient(135deg, #143d7a 0%, #1e4f94 100%) !important;
+  box-shadow: 0 4px 12px rgba(10, 46, 96, 0.25) !important;
+  transform: translateY(-1px);
+}
+
+/* ── LINK CARD ────────────────────────────────────────────── */
+.material-link {
+  border-left: 3px solid #3f7544;
+  padding: 12px 16px;
+}
+
+.material-link .link-wrapper .rbt-btn {
+  background: linear-gradient(135deg, #3f7544 0%, #4a8a50 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 8px 16px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.material-link .link-wrapper .rbt-btn:hover {
+  background: linear-gradient(135deg, #4a8a50 0%, #5a9a60 100%) !important;
+  box-shadow: 0 4px 12px rgba(63, 117, 68, 0.25) !important;
+  transform: translateY(-1px);
+}
+
+/* ── DOCUMENT CARD ────────────────────────────────────────── */
+.material-document .document-content {
+  line-height: 1.6;
+  color: #2d3748;
+  font-size: 14px;
+}
+
+.material-document .document-content h1,
+.material-document .document-content h2,
+.material-document .document-content h3,
+.material-document .document-content h4 {
+  color: #0a2e60;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.material-document .document-content p {
+  margin-bottom: 0.8em;
+}
+
+.material-document .document-content img {
+  border-radius: 8px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── TEXT CARD ─────────────────────────────────────────────── */
+.material-text .text-content {
+  color: #2d3748 !important;
+  font-size: 14px;
+  line-height: 1.7 !important;
+}
+
+.material-text .text-content h1,
+.material-text .text-content h2,
+.material-text .text-content h3,
+.material-text .text-content h4,
+.material-text .text-content h5,
+.material-text .text-content h6 {
+  color: #0a2e60 !important;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  font-weight: 700;
+}
+
+.material-text .text-content h1 {
+  font-size: 22px;
+}
+
+.material-text .text-content h2 {
+  font-size: 19px;
+}
+
+.material-text .text-content h3 {
+  font-size: 16px;
+}
+
+.material-text .text-content p {
+  margin-bottom: 0.8em;
+  color: #2d3748 !important;
+}
+
+.material-text .text-content img {
+  border-radius: 8px;
+  max-width: 100%;
+  height: auto;
+}
+
+.material-text .text-content a {
+  color: #3f7544 !important;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.material-text .text-content a:hover {
+  color: #0a2e60 !important;
+}
+
+.material-text .text-content ul,
+.material-text .text-content ol {
+  padding-left: 20px;
+  margin-bottom: 0.8em;
+}
+
+.material-text .text-content li {
+  color: #2d3748 !important;
+  margin-bottom: 6px;
+  line-height: 1.6;
+}
+
+.material-text .text-content strong,
+.material-text .text-content b {
+  color: #0a2e60 !important;
+  font-weight: 600;
+}
+
+.material-text .text-content em,
+.material-text .text-content i {
+  color: #4a5568 !important;
+}
+
+/* ── Text Content Inline Style Overrides (navy/green palette) ── */
+
+/* Tables */
+.material-text .text-content table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  margin: 16px 0 !important;
+  font-size: 14px !important;
+  box-shadow: 0 1px 4px rgba(10, 46, 96, 0.06) !important;
+}
+
+.material-text .text-content table thead tr {
+  background: #0a2e60 !important;
+  color: #ffffff !important;
+}
+
+.material-text .text-content table thead th,
+.material-text .text-content table thead td {
+  background: #0a2e60 !important;
+  color: #ffffff !important;
+  padding: 10px 14px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  font-size: 13px !important;
+}
+
+/* Tables without thead — first row is the header */
+.material-text .text-content table:not(:has(thead)) > tbody > tr:first-child,
+.material-text .text-content table:not(:has(thead)) > tr:first-child {
+  background: #0a2e60 !important;
+  color: #ffffff !important;
+}
+
+.material-text .text-content table:not(:has(thead)) > tbody > tr:first-child td,
+.material-text .text-content table:not(:has(thead)) > tbody > tr:first-child th,
+.material-text .text-content table:not(:has(thead)) > tr:first-child td,
+.material-text .text-content table:not(:has(thead)) > tr:first-child th {
+  background: #0a2e60 !important;
+  color: #ffffff !important;
+  padding: 10px 14px !important;
+  font-weight: 600 !important;
+  border: none !important;
+  font-size: 13px !important;
+}
+
+.material-text .text-content table tbody td {
+  padding: 10px 14px !important;
+  border-bottom: 1px solid #e2ead8 !important;
+  color: #2d3748 !important;
+  vertical-align: top !important;
+  font-size: 13px !important;
+}
+
+.material-text .text-content table tbody tr:nth-child(even) {
+  background: #f8faf6 !important;
+}
+
+.material-text .text-content table tbody tr:nth-child(odd) {
+  background: #ffffff !important;
+}
+
+.material-text .text-content table tbody tr:hover {
+  background: #eef5e6 !important;
+}
+
+/* ── Gradient banners (hero sections) ── */
+.material-text .text-content div[style*="gradient"] {
+  background: linear-gradient(135deg, #0a2e60 0%, #143d7a 100%) !important;
+  background-image: linear-gradient(135deg, #0a2e60 0%, #143d7a 100%) !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+  padding: 28px 32px !important;
+  margin: 16px 0 !important;
+}
+
+.material-text .text-content div[style*="gradient"] * {
+  color: #ffffff !important;
+}
+
+/* ── Colored badges/pills ── */
+.material-text .text-content span[style*="background-color"],
+.material-text .text-content span[style*="background:"],
+.material-text .text-content span[style*="background "],
+.material-text .text-content td span[style*="background"] {
+  background: #8bc257 !important;
+  background-color: #8bc257 !important;
+  color: #ffffff !important;
+  padding: 3px 10px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  display: inline-block !important;
+}
+
+/* ── Horizontal rules & dividers ── */
+.material-text .text-content hr {
+  border-color: #8bc257 !important;
+  border-style: solid !important;
+  border-width: 2px 0 0 0 !important;
+  margin: 16px 0 !important;
+  background: #8bc257 !important;
+  height: 0 !important;
+}
+
+.material-text .text-content h2[style*="border"],
+.material-text .text-content h3[style*="border"] {
+  border-color: #8bc257 !important;
+}
+
+/* ── Blockquotes ── */
+.material-text .text-content blockquote {
+  border-left: 3px solid #8bc257 !important;
+  background: #f4f9ef !important;
+  padding: 14px 18px !important;
+  border-radius: 0 8px 8px 0 !important;
+  color: #2d3748 !important;
+  margin: 12px 0 !important;
+}
+
+/* ── Callout divs with left border ── */
+.material-text .text-content div[style*="border-left"] {
+  border-left-color: #8bc257 !important;
+  border-left-width: 3px !important;
+  border-left-style: solid !important;
+  background: #f4f9ef !important;
+  padding: 14px 18px !important;
+  border-radius: 0 8px 8px 0 !important;
+  margin: 10px 0 !important;
+}
+
+.material-text .text-content div[style*="border-left"] *,
+.material-text .text-content div[style*="border-left"] p,
+.material-text .text-content div[style*="border-left"] span,
+.material-text .text-content div[style*="border-left"] li {
+  color: #2d3748 !important;
+}
+
+.material-text .text-content div[style*="border-left"] strong,
+.material-text .text-content div[style*="border-left"] b,
+.material-text .text-content div[style*="border-left"] h3,
+.material-text .text-content div[style*="border-left"] h4 {
+  color: #0a2e60 !important;
+}
+
+/* ── Generic colored background divs (pastel/solid, not gradient) ── */
+/* Keep original background colors but ensure readable text & consistent shape */
+.material-text .text-content div[style*="background-color"]:not([style*="gradient"]):not([style*="border-left"]) {
+  border-radius: 8px !important;
+  padding: 14px 18px !important;
+  margin: 10px 0 !important;
+}
+
+/* ── Inline-styled borders (colored underlines) ── */
+.material-text .text-content *[style*="border-bottom"] {
+  border-bottom-color: #8bc257 !important;
+}
+
+.material-text .text-content *[style*="border-top"] {
+  border-top-color: #8bc257 !important;
+}
+
+/* ── Materials container ──────────────────────────────────── */
+.materials-content {
+  padding: 0 !important;
+}
+
+/* ── Empty State ──────────────────────────────────────────── */
+.ss-content-inner > .content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.ss-content-inner > .content .section-title {
+  text-align: center;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2ead8;
+}
+
+.ss-content-inner > .content .section-title h4 {
+  color: #0a2e60;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.ss-content-inner > .content .section-title p {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   AI Chat Fullscreen mode (when showAIChat is true in header)
+   ============================================================ */
+.ss-ai-chat-fullscreen {
+  height: calc(100vh - 56px);
+  min-height: 500px;
+  max-height: calc(100vh - 56px);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: -16px -24px;
+  border-radius: 0;
+  border: none;
+}
+
+/* Practice & Example AI Chat cards */
+.ss-practice-card,
+.ss-example-card {
+  border: 1px solid #d4edba;
+  border-left: 3px solid #8bc257;
+  border-radius: 10px;
+  padding: 0;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 1px 6px rgba(139, 194, 87, 0.1);
+  height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+}
+
+.ss-practice-card .ai-chat-container,
+.ss-example-card .ai-chat-container {
+  border: none;
+  border-radius: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ss-practice-card .ss-ai-chat-wrapper,
+.ss-example-card .ss-ai-chat-wrapper {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+/* ============================================================
+   Quiz / Question area styling harmonized
+   ============================================================ */
+
+/* Quiz container - no extra padding, items stack cleanly */
+.material-quiz {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.material-quiz:hover {
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.quiz-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Single question card */
+.ss-question-card {
+  padding: 14px 16px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e2ead8;
+}
+
+/* Question body text – override inline styles */
+.ss-question-card .question-text .rbt-title-style-2,
+.ss-question-group-card .question-text .rbt-title-style-2 {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: #1a202c !important;
+  line-height: 1.6 !important;
+  text-transform: none !important;
+  opacity: 1 !important;
+  letter-spacing: normal !important;
+}
+
+.ss-question-card .question-text .rbt-title-style-2 strong,
+.ss-question-group-card .question-text .rbt-title-style-2 strong {
+  color: #0a2e60 !important;
+  font-weight: 700 !important;
+}
+
+/* Choice items – override inline styles for readability */
+.ss-question-card .choice-item,
+.ss-question-group-card .choice-item {
+  border-color: #d1ddc6 !important;
+  background-color: #fafcf8 !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.ss-question-card .choice-item:hover,
+.ss-question-group-card .choice-item:hover {
+  border-color: #8bc257 !important;
+  background-color: #f4f9ef !important;
+}
+
+.ss-question-card .choice-item.selected,
+.ss-question-group-card .choice-item.selected {
+  border-color: #3f7544 !important;
+  background-color: #eef5e6 !important;
+}
+
+/* Choice label text – darker & more readable */
+.ss-question-card .choice-content label,
+.ss-question-group-card .choice-content label {
+  color: #1a202c !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+}
+
+/* Radio inputs – green accent */
+.ss-question-card .radio-wrapper input[type="radio"],
+.ss-question-group-card .radio-wrapper input[type="radio"],
+.ss-question-card .radio-wrapper input[type="checkbox"],
+.ss-question-group-card .radio-wrapper input[type="checkbox"] {
+  accent-color: #3f7544 !important;
+}
+
+/* Selection info banner */
+.ss-question-card .selection-info,
+.ss-question-group-card .selection-info {
+  background-color: #eef5e6 !important;
+  color: #3f7544 !important;
+  border: 1px solid #d4edba !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+}
+
+/* Question prompt text */
+.ss-question-card .question-text [style*="color: #666"],
+.ss-question-group-card .question-text [style*="color: #666"] {
+  color: #4a5568 !important;
+}
+
+/* Question header row */
+.ss-question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.ss-question-number {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.ss-question-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #3f7544;
+  background: rgba(139, 194, 87, 0.12);
+  border: 1px solid rgba(139, 194, 87, 0.25);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+/* Question group card */
+.ss-question-group-card {
+  padding: 14px 16px;
+  background: #fafcf8;
+  border-radius: 10px;
+  border: 1px solid #e2ead8;
+  margin-bottom: 10px;
+}
+
+.ss-group-header {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2ead8;
+}
+
+.ss-group-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0a2e60;
+}
+
+.ss-section-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+}
+
+/* Talk to AI button */
+.ss-talk-ai-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 20px;
+  background: #0a2e60;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+.ss-talk-ai-btn:hover {
+  background: #143d7a;
+  transform: translateY(-1px);
+}
+
+.ss-talk-ai-btn:active {
+  transform: translateY(0);
+}
+
+.ss-talk-ai-highlight {
+  color: #ffffff;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 1.15em;
+}
+
+/* Legacy override (if old class still used elsewhere) */
+.rbt-lesson-rightsidebar .rbt-btn.btn-sm.bg-primary-opacity {
+  background: #0a2e60 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 20px;
+  transition: all 0.2s ease;
+}
+
+.rbt-lesson-rightsidebar .rbt-btn.btn-sm.bg-primary-opacity:hover {
+  background: #143d7a !important;
+  color: #ffffff !important;
+}
+
+/* Header renderer cards inside content area */
+.rbt-lesson-rightsidebar .header-item {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e2ead8;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.rbt-lesson-rightsidebar .header-item:last-child {
+  margin-bottom: 0;
+}
+
+.rbt-lesson-rightsidebar .header-item.header-image {
+  padding: 0;
+  overflow: hidden;
+}
+
+.rbt-lesson-rightsidebar .header-item.header-image .image-wrapper {
+  text-align: center;
+}
+
+.rbt-lesson-rightsidebar .header-item.header-image img {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+}
+
+.rbt-lesson-rightsidebar .header-item.header-video {
+  padding: 0;
+  overflow: hidden;
+}
+
+.rbt-lesson-rightsidebar .header-item.header-video .rbt-video-player {
+  max-width: 100%;
+}
+
+.rbt-lesson-rightsidebar .header-item.header-audio {
+  border-left: 3px solid #8bc257;
+}
+
+.rbt-lesson-rightsidebar .header-item.header-text {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.rbt-lesson-rightsidebar .header-item.header-text .text-content {
+  color: #2d3748;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.rbt-lesson-rightsidebar .header-item.header-document .document-content {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #2d3748;
+}
+
+.rbt-lesson-rightsidebar .header-item.header-pdf,
+.rbt-lesson-rightsidebar .header-item.header-link {
+  border-left: 3px solid #0a2e60;
+}
+
+/* ============================================================
+   Responsive adjustments for content area
+   ============================================================ */
+@media (max-width: 991px) {
+  .rbt-lesson-rightsidebar.lesson-video .inner.ss-content-inner {
+    padding: 12px 14px !important;
+  }
+
+  .ss-side-nav--left {
+    left: 0 !important;
+  }
+
+  .ss-ai-chat-fullscreen {
+    margin: -12px -14px;
+  }
+
+  .material-item {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .ss-question-card {
+    padding: 12px 14px;
+  }
+
+  .ss-question-group-card {
+    padding: 12px 14px;
+  }
+}
+
+@media (max-width: 575px) {
+  .rbt-lesson-rightsidebar.lesson-video .inner.ss-content-inner {
+    padding: 10px 8px !important;
+  }
+
+  .ss-ai-chat-fullscreen {
+    margin: -10px -8px;
+  }
+
+  .material-item {
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+
+  .ss-question-card {
+    padding: 10px 12px;
+  }
+
+  .ss-header-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    margin-left: -6px;
+    margin-right: -6px;
+    padding: 0 6px;
+  }
+
+  .ss-compact-header .lesson-top-left h5 {
+    font-size: 12px;
+  }
 }
 

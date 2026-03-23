@@ -33,9 +33,10 @@ export default function LessonContent() {
   const [showAIChat, setShowAIChat] = useState(false);
 
   // API calls
-  const { data: courseDetails } = useGetCourseWithAllDetails(courseId || "", {
-    query: { enabled: !!courseId },
-  });
+  const { data: courseDetails, isLoading: isCourseLoading } =
+    useGetCourseWithAllDetails(courseId || "", {
+      query: { enabled: !!courseId },
+    });
 
   const { data: courseProgress } = useGetCourseProgress(courseId || "", {
     query: { enabled: !!courseId },
@@ -274,19 +275,27 @@ export default function LessonContent() {
 
       {/* Content */}
       <div className="inner ss-content-inner">
-        {showAIChat ? (
-          <div
-            className="ai-chat-container"
-            style={{
-              height: "calc(100vh - 250px)",
-              minHeight: "600px",
-              maxHeight: "calc(100vh - 250px)",
-              position: "relative",
-              display: "flex",
-              flexDirection: "column",
-              overflow: "hidden",
-            }}
-          >
+        {isCourseLoading ? (
+          <div className="ss-content-skeleton">
+            <div className="ss-skeleton-video"></div>
+            <div className="ss-skeleton-card">
+              <div className="ss-skeleton-line ss-skeleton-line--title"></div>
+              <div className="ss-skeleton-line ss-skeleton-line--full"></div>
+              <div className="ss-skeleton-line ss-skeleton-line--full"></div>
+              <div className="ss-skeleton-line ss-skeleton-line--medium"></div>
+            </div>
+            <div className="ss-skeleton-card">
+              <div className="ss-skeleton-line ss-skeleton-line--short"></div>
+              <div className="ss-skeleton-options">
+                <div className="ss-skeleton-option"></div>
+                <div className="ss-skeleton-option"></div>
+                <div className="ss-skeleton-option"></div>
+                <div className="ss-skeleton-option"></div>
+              </div>
+            </div>
+          </div>
+        ) : showAIChat ? (
+          <div className="ai-chat-container ss-ai-chat-fullscreen">
             <AIChat
               activeText={lessonParts[0].description || ""}
               lessonPartName={lessonParts[0].name}
@@ -297,7 +306,7 @@ export default function LessonContent() {
         ) : (
           <>
             {materials.length > 0 ? (
-              <div className="materials-content p-4">
+              <div className="materials-content">
                 {selectedPart?.name !== "Practice" &&
                   materials.map((material) => (
                     <MaterialRenderer
@@ -312,7 +321,7 @@ export default function LessonContent() {
                   ))}
 
                 {selectedPart?.name === "Practice" && (
-                  <div className="mt-4">
+                  <div className="material-item ss-practice-card">
                     <AIChat
                       activeText={selectedLesson?.name || ""}
                       lessonPartName={selectedPart?.name}
@@ -323,7 +332,7 @@ export default function LessonContent() {
                 )}
 
                 {selectedPart?.name?.toLowerCase().startsWith("example") && (
-                  <div className="mt-4">
+                  <div className="material-item ss-example-card">
                     <AIChat
                       activeText={selectedPart?.description || ""}
                       lessonPartName={selectedPart?.name}

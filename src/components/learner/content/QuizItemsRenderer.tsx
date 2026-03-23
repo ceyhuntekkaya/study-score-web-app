@@ -1,34 +1,47 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
-import { useTranslation } from '@/i18n';
-import { getFilePreviewUrl } from '@/lib/fileUtils';
-import HeaderRenderer from '@/components/learner/exam/HeaderRenderer';
-import QuestionRenderer from '@/components/learner/exam/questions/QuestionRenderer';
-import type { CourseLessonPartQuizItemDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
-import { useAuth } from '@/contexts/AuthContext';
+import { useMemo } from "react";
+import { useTranslation } from "@/i18n";
+import { getFilePreviewUrl } from "@/lib/fileUtils";
+import HeaderRenderer from "@/components/learner/exam/HeaderRenderer";
+import QuestionRenderer from "@/components/learner/exam/questions/QuestionRenderer";
+import type { CourseLessonPartQuizItemDetailDTO } from "@/generated/api/openAPIDefinition.schemas";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   useQuestionResponsesForMaterial,
   useSaveQuestionResponse,
   CONTEXT_TYPE,
-} from '@/services/api/questionResponseService';
+} from "@/services/api/questionResponseService";
 
 /**
  * Normalize questionGroup.questions from material API.
  * Backend returns questions array (orderNumber sorted); support array or { content: array }.
  */
-function normalizeGroupQuestions(data: unknown): Array<Record<string, unknown>> {
+function normalizeGroupQuestions(
+  data: unknown,
+): Array<Record<string, unknown>> {
   if (Array.isArray(data)) return data as Array<Record<string, unknown>>;
-  if (data && typeof data === 'object' && 'content' in data) {
+  if (data && typeof data === "object" && "content" in data) {
     const content = (data as { content?: unknown[] }).content;
-    return Array.isArray(content) ? (content as Array<Record<string, unknown>>) : [];
+    return Array.isArray(content)
+      ? (content as Array<Record<string, unknown>>)
+      : [];
   }
   return [];
 }
 
-const FILE_MEDIA = ['IMAGE', 'VIDEO', 'AUDIO', 'DOCUMENT', 'PDF', 'OTHER'];
+const FILE_MEDIA = ["IMAGE", "VIDEO", "AUDIO", "DOCUMENT", "PDF", "OTHER"];
 
-const HEADER_MEDIA_TYPES = ['TEXT', 'IMAGE', 'VIDEO', 'AUDIO', 'DOCUMENT', 'PDF', 'LINK', 'OTHER'] as const;
+const HEADER_MEDIA_TYPES = [
+  "TEXT",
+  "IMAGE",
+  "VIDEO",
+  "AUDIO",
+  "DOCUMENT",
+  "PDF",
+  "LINK",
+  "OTHER",
+] as const;
 type HeaderMediaType = (typeof HEADER_MEDIA_TYPES)[number];
 
 export interface NormalizedHeader {
@@ -48,25 +61,33 @@ function normalizeHeaders(record: Record<string, unknown>): NormalizedHeader[] {
   if (!Array.isArray(raw) || raw.length === 0) return [];
   return raw
     .map((h: unknown) => {
-      const item = h && typeof h === 'object' ? (h as Record<string, unknown>) : {};
+      const item =
+        h && typeof h === "object" ? (h as Record<string, unknown>) : {};
       const mediaTypeRaw =
-        (item.mediaType as string) ?? (item.media_type as string) ?? 'TEXT';
-      const mediaType = HEADER_MEDIA_TYPES.includes(mediaTypeRaw as HeaderMediaType)
+        (item.mediaType as string) ?? (item.media_type as string) ?? "TEXT";
+      const mediaType = HEADER_MEDIA_TYPES.includes(
+        mediaTypeRaw as HeaderMediaType,
+      )
         ? (mediaTypeRaw as HeaderMediaType)
-        : 'TEXT';
-      const content = (item.content as string) ?? (item.text as string) ?? '';
-      const orderNumber = (item.orderNumber as number) ?? (item.order_number as number) ?? 0;
+        : "TEXT";
+      const content = (item.content as string) ?? (item.text as string) ?? "";
+      const orderNumber =
+        (item.orderNumber as number) ?? (item.order_number as number) ?? 0;
       return { mediaType, content, orderNumber };
     })
-    .filter((x) => x.content != null && x.content !== '');
+    .filter((x) => x.content != null && x.content !== "");
 }
 
 function contentToHeaderContent(
   mediaType: string | undefined,
-  content: string | undefined
+  content: string | undefined,
 ): string | undefined {
   if (!content) return content;
-  if (content.startsWith('http') || content.startsWith('//') || content.startsWith('data:'))
+  if (
+    content.startsWith("http") ||
+    content.startsWith("//") ||
+    content.startsWith("data:")
+  )
     return content;
   if (mediaType && FILE_MEDIA.includes(mediaType)) {
     return getFilePreviewUrl(content);
@@ -76,49 +97,57 @@ function contentToHeaderContent(
 
 /** Headers-section'da gösterilecek header'lar: TEXT hariç (soru metni QuestionBody'de tek yerde gösterilir, çift yazı önlenir). */
 function getNonTextHeaders(headers: NormalizedHeader[]): NormalizedHeader[] {
-  return headers.filter((h) => h.mediaType !== 'TEXT');
+  return headers.filter((h) => h.mediaType !== "TEXT");
 }
 
 /** Soru metnini sadece TEXT tipi header'lardan üretir. Diğer tipler QuestionBody'de değil, headers-section'da gösterilir. */
-function getQuestionTextFromHeaders(headers: NormalizedHeader[] | undefined): string {
-  if (!headers?.length) return '';
-  const sorted = [...headers].sort((a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0));
+function getQuestionTextFromHeaders(
+  headers: NormalizedHeader[] | undefined,
+): string {
+  if (!headers?.length) return "";
+  const sorted = [...headers].sort(
+    (a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0),
+  );
   const textParts = sorted
-    .filter((h) => h.mediaType === 'TEXT' && h.content)
+    .filter((h) => h.mediaType === "TEXT" && h.content)
     .map((h) => h.content!);
-  return textParts.join('<br/>') || '';
+  return textParts.join("<br/>") || "";
 }
 
 /** Kayıt ve yüklemede aynı soru kimliğini kullanmak için: API bazen id bazen questionId dönebilir. */
-function getEffectiveQuestionId(q: Record<string, unknown>, index: number): string {
+function getEffectiveQuestionId(
+  q: Record<string, unknown>,
+  index: number,
+): string {
   return (q.id as string) ?? (q.questionId as string) ?? `q-${index}`;
 }
 
 /** Backend answerData bazen farklı anahtar kullanır (örn. selectedChoiceId); bileşenler selectedOptionId bekler. */
 function normalizeSavedAnswerForComponent(
   questionType: string,
-  answerData: unknown
+  answerData: unknown,
 ): unknown {
-  if (answerData == null || typeof answerData !== 'object') return answerData;
+  if (answerData == null || typeof answerData !== "object") return answerData;
   const raw = answerData as Record<string, unknown>;
   switch (questionType) {
-    case 'MULTIPLE_CHOICE':
+    case "MULTIPLE_CHOICE":
       return {
         selectedOptionId:
           raw.selectedOptionId ?? raw.selectedChoiceId ?? raw.choiceId ?? null,
       };
-    case 'TRUE_FALSE':
+    case "TRUE_FALSE":
       return { answer: raw.answer ?? raw.value ?? null };
-    case 'SHORT_ANSWER': {
+    case "SHORT_ANSWER": {
       const text = raw.answer ?? raw.text;
-      const str = typeof text === 'string' ? text : '';
+      const str = typeof text === "string" ? text : "";
       return { answerText: str, characterCount: str.length };
     }
-    case 'MULTIPLE_RESPONSE':
+    case "MULTIPLE_RESPONSE":
       return {
-        selectedOptionIds: raw.selectedOptionIds ?? raw.selectedIds ?? raw.choiceIds ?? [],
+        selectedOptionIds:
+          raw.selectedOptionIds ?? raw.selectedIds ?? raw.choiceIds ?? [],
       };
-    case 'FILL_IN_THE_BLANKS':
+    case "FILL_IN_THE_BLANKS":
       return { answers: raw.blanks ?? raw.answers ?? {} };
     default:
       return answerData;
@@ -131,7 +160,7 @@ function normalizeSavedAnswerForComponent(
  */
 function toQuestionForRenderer(
   q: Record<string, unknown>,
-  userAnswer?: unknown
+  userAnswer?: unknown,
 ): {
   questionType: string;
   questionText: string;
@@ -144,7 +173,7 @@ function toQuestionForRenderer(
   const fromHeaders = getQuestionTextFromHeaders(normalizedHeaders);
   const templateDataRaw = q.templateData;
   const templateData =
-    typeof templateDataRaw === 'string'
+    typeof templateDataRaw === "string"
       ? (() => {
           try {
             return JSON.parse(templateDataRaw);
@@ -152,19 +181,21 @@ function toQuestionForRenderer(
             return {};
           }
         })()
-      : templateDataRaw ?? {};
+      : (templateDataRaw ?? {});
   const fromTemplate =
-    templateData && typeof templateData === 'object' && 'questionText' in templateData
-      ? String((templateData as Record<string, unknown>).questionText ?? '')
-      : '';
+    templateData &&
+    typeof templateData === "object" &&
+    "questionText" in templateData
+      ? String((templateData as Record<string, unknown>).questionText ?? "")
+      : "";
   const questionText =
     fromHeaders ||
     (q.questionText as string) ||
     (q.question_text as string) ||
     (q.name as string) ||
     fromTemplate ||
-    '';
-  const questionType = (q.questionType as string) || 'MULTIPLE_CHOICE';
+    "";
+  const questionType = (q.questionType as string) || "MULTIPLE_CHOICE";
   const rawAnswer = userAnswer ?? (q.userAnswer as unknown);
   const normalizedAnswer =
     rawAnswer != null
@@ -197,46 +228,45 @@ function SingleQuestionItem({
   showTotal?: boolean;
   savedUserAnswer?: unknown;
   onAnswerChange?: (questionId: string, answerData: unknown) => void;
-  onSaveAnswer?: (questionId: string, answerData: unknown) => void | Promise<void>;
+  onSaveAnswer?: (
+    questionId: string,
+    answerData: unknown,
+  ) => void | Promise<void>;
   showAIChat?: boolean;
 }) {
   const { t } = useTranslation();
   const forRenderer = useMemo(
     () => toQuestionForRenderer(question, savedUserAnswer),
-    [question, savedUserAnswer]
+    [question, savedUserAnswer],
   );
   const qId = getEffectiveQuestionId(question, index);
   const headers = useMemo(() => normalizeHeaders(question), [question]);
   const sortedHeaders = useMemo(
-    () => [...headers].sort((a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0)),
-    [headers]
+    () =>
+      [...headers].sort((a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0)),
+    [headers],
   );
   /** Soru metni (TEXT) QuestionBody'de gösterildiği için headers-section'da sadece medya (resim, video, ses vb.) gösterilir; çift yazı önlenir. */
-  const headersForSection = useMemo(() => getNonTextHeaders(sortedHeaders), [sortedHeaders]);
+  const headersForSection = useMemo(
+    () => getNonTextHeaders(sortedHeaders),
+    [sortedHeaders],
+  );
 
   return (
-    <div
-      className="question-item mb-4"
-      style={{
-        padding: '20px',
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        border: '1px solid #e0e0e0',
-      }}
-    >
-      <div className="d-flex align-items-center justify-content-between mb-3">
-        <span className="text-muted" style={{ fontSize: '13px' }}>
-          {t('admin.exam.question')} {index + 1}
-          {showTotal && total > 1 ? ` / ${total}` : ''}
+    <div className="question-item ss-question-card">
+      <div className="ss-question-header">
+        <span className="ss-question-number">
+          {t("admin.exam.question")} {index + 1}
+          {showTotal && total > 1 ? ` / ${total}` : ""}
         </span>
         {(question.maximumScore as number) != null && (
-          <span className="badge bg-secondary" style={{ fontSize: '12px' }}>
-            {String(question.maximumScore)} {t('admin.exam.points') ?? 'puan'}
+          <span className="ss-question-badge">
+            {String(question.maximumScore)} {t("admin.exam.points") ?? "puan"}
           </span>
         )}
       </div>
       {headersForSection.length > 0 && (
-        <div className="headers-section mb-4 mt-4" data-headers>
+        <div className="headers-section mb-3 mt-2" data-headers>
           {headersForSection.map((h, i) => (
             <HeaderRenderer
               key={`header-${i}-${h.mediaType}`}
@@ -253,7 +283,7 @@ function SingleQuestionItem({
         questionId={qId}
         onAnswerChange={(answerData) => onAnswerChange?.(qId, answerData)}
         onSaveAnswer={
-          forRenderer.questionType === 'ESSAY'
+          forRenderer.questionType === "ESSAY"
             ? (answerData) => onSaveAnswer?.(qId, answerData)
             : undefined
         }
@@ -279,46 +309,37 @@ function QuestionGroupItem({
   questions: Array<Record<string, unknown>>;
   responseByQuestionId: Map<string, unknown>;
   onAnswerChange?: (questionId: string, answerData: unknown) => void;
-  onSaveAnswer?: (questionId: string, answerData: unknown) => void | Promise<void>;
+  onSaveAnswer?: (
+    questionId: string,
+    answerData: unknown,
+  ) => void | Promise<void>;
   showAIChat?: boolean;
 }) {
   const { t } = useTranslation();
-  const groupName = (groupData.name as string) || (groupData.code as string) || '—';
-  const groupCode = (groupData.code as string) || '';
+  const groupName =
+    (groupData.name as string) || (groupData.code as string) || "—";
+  const groupCode = (groupData.code as string) || "";
   const headers = useMemo(() => normalizeHeaders(groupData), [groupData]);
   const sortedHeaders = useMemo(
-    () => [...headers].sort((a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0)),
-    [headers]
+    () =>
+      [...headers].sort((a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0)),
+    [headers],
   );
 
   return (
-    <div
-      className="question-group-item mb-5"
-      style={{
-        padding: '24px',
-        backgroundColor: '#f8f9fa',
-        borderRadius: '12px',
-        border: '1px solid #e0e0e0',
-      }}
-    >
-      <div className="mb-4">
-        <div className="d-flex align-items-center gap-2 flex-wrap mb-2">
-          <h6 className="rbt-title-style-2 mb-0" style={{ fontSize: '18px' }}>
-            {groupName}
-          </h6>
-          {groupCode && (
-            <span className="badge bg-secondary" style={{ fontSize: '12px' }}>
-              {groupCode}
-            </span>
-          )}
+    <div className="question-group-item ss-question-group-card">
+      <div className="ss-group-header">
+        <div className="d-flex align-items-center gap-2 flex-wrap">
+          <h6 className="mb-0 ss-group-title">{groupName}</h6>
+          {groupCode && <span className="ss-question-badge">{groupCode}</span>}
         </div>
       </div>
 
       {sortedHeaders.length > 0 && (
-        <div className="headers-section mb-4" data-headers>
-          <h6 className="rbt-title-style-2 mb-3" style={{ fontSize: '14px', color: '#666' }}>
+        <div className="headers-section mb-3" data-headers>
+          <h6 className="ss-section-label">
             <i className="feather-layers me-2"></i>
-            {t('admin.exam.materials') ?? 'Materyaller'}
+            {t("admin.exam.materials") ?? "Materyaller"}
           </h6>
           {sortedHeaders.map((h, i) => (
             <HeaderRenderer
@@ -333,12 +354,12 @@ function QuestionGroupItem({
       )}
 
       <div className="questions-preview">
-        <h6 className="rbt-title-style-2 mb-3" style={{ fontSize: '14px', color: '#666' }}>
+        <h6 className="ss-section-label">
           <i className="feather-list me-2"></i>
-          {t('admin.exam.questions')} ({questions.length})
+          {t("admin.exam.questions")} ({questions.length})
         </h6>
         {questions.length === 0 ? (
-          <p className="text-muted mb-0 py-3">{t('admin.exam.noQuestions')}</p>
+          <p className="text-muted mb-0 py-3">{t("admin.exam.noQuestions")}</p>
         ) : (
           questions.map((q, questionIndex) => (
             <SingleQuestionItem
@@ -346,7 +367,9 @@ function QuestionGroupItem({
               question={q}
               index={questionIndex}
               total={questions.length}
-              savedUserAnswer={responseByQuestionId.get(getEffectiveQuestionId(q, questionIndex))}
+              savedUserAnswer={responseByQuestionId.get(
+                getEffectiveQuestionId(q, questionIndex),
+              )}
               onAnswerChange={onAnswerChange}
               onSaveAnswer={onSaveAnswer}
               showAIChat={showAIChat}
@@ -383,16 +406,20 @@ export default function QuizItemsRenderer({
 }: QuizItemsRendererProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const userId = user?.id ?? '';
+  const userId = user?.id ?? "";
 
   const { data: responsesData } = useQuestionResponsesForMaterial(
     courseLessonPartMaterialId,
     userId,
-    { enabled: !!courseLessonPartMaterialId && !!userId }
+    { enabled: !!courseLessonPartMaterialId && !!userId },
   );
   const responsesList = useMemo(() => {
     if (Array.isArray(responsesData)) return responsesData;
-    if (responsesData && typeof responsesData === 'object' && 'content' in responsesData) {
+    if (
+      responsesData &&
+      typeof responsesData === "object" &&
+      "content" in responsesData
+    ) {
       const c = (responsesData as { content?: unknown }).content;
       return Array.isArray(c) ? c : [];
     }
@@ -408,7 +435,8 @@ export default function QuizItemsRenderer({
     const map = new Map<string, unknown>();
     for (const r of responsesList) {
       const item = r as { questionId?: string; answerData?: unknown };
-      if (item.questionId) map.set(item.questionId, getUserAnswerFromResponse(item));
+      if (item.questionId)
+        map.set(item.questionId, getUserAnswerFromResponse(item));
     }
     return map;
   }, [responsesList]);
@@ -438,21 +466,21 @@ export default function QuizItemsRenderer({
   const sortedItems = useMemo(
     () =>
       [...(quizItems || [])].sort(
-        (a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0)
+        (a, b) => (a.orderNumber ?? 0) - (b.orderNumber ?? 0),
       ),
-    [quizItems]
+    [quizItems],
   );
 
   if (!sortedItems.length) {
     return (
       <div className="quiz-items-empty text-muted py-4">
-        {t('admin.exam.noQuestions')}
+        {t("admin.exam.noQuestions")}
       </div>
     );
   }
 
   return (
-    <div className="material-item material-quiz mb--30">
+    <div className="material-item material-quiz">
       <div className="quiz-items-container">
         {sortedItems.map((item, idx) => {
           const key = item.id ?? `quiz-item-${idx}`;
@@ -480,7 +508,9 @@ export default function QuizItemsRenderer({
                 index={idx}
                 total={1}
                 showTotal={false}
-                savedUserAnswer={responseByQuestionId.get(getEffectiveQuestionId(q, idx))}
+                savedUserAnswer={responseByQuestionId.get(
+                  getEffectiveQuestionId(q, idx),
+                )}
                 onAnswerChange={handleAnswerChange}
                 onSaveAnswer={handleSaveAnswer}
                 showAIChat={showAIChat}

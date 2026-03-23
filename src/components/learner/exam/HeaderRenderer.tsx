@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import AudioPlayer from '@/components/ui/AudioPlayer';
-import { getMediaServeUrl } from '@/lib/fileUtils';
-import type { QuestionHeaderDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
+import AudioPlayer from "@/components/ui/AudioPlayer";
+import { getMediaServeUrl } from "@/lib/fileUtils";
+import type { QuestionHeaderDetailDTO } from "@/generated/api/openAPIDefinition.schemas";
 
 interface HeaderRendererProps {
   header: QuestionHeaderDetailDTO;
@@ -16,50 +16,32 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
   const { mediaType, content } = header;
 
   // IMAGE
-  if (mediaType === 'IMAGE') {
-    const imageSrc = getMediaServeUrl(content ?? '');
+  if (mediaType === "IMAGE") {
+    const imageSrc = getMediaServeUrl(content ?? "");
 
     if (!content) {
       return (
         <div className="header-item header-image mb--20">
-          <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
+          <div style={{ padding: "20px", textAlign: "center", color: "#999" }}>
             No image content provided
           </div>
         </div>
       );
     }
-    
+
     return (
-      <div className="header-item header-image mb--20">
-        <div className="image-wrapper" style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
+      <div className="header-item header-image">
+        <div className="image-wrapper">
           <img
             src={imageSrc}
             alt="Header Image"
-            style={{
-              maxWidth: '100%',
-              height: 'auto',
-              borderRadius: '8px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              display: 'block',
-              margin: '0 auto',
-              border: 'none',
-            }}
             onError={(e) => {
-              console.error('Image load error:', { content, imageSrc });
+              console.error("Image load error:", { content, imageSrc });
               const imgElement = e.target as HTMLImageElement;
-              imgElement.style.display = 'none';
-              // Show error message
-              const wrapper = imgElement.parentElement;
-              if (wrapper) {
-                wrapper.innerHTML = `
-                  <div style="padding: 20px; color: #856404;">
-                    <i class="feather-alert-circle"></i> Image could not be loaded: ${content}
-                  </div>
-                `;
-              }
+              imgElement.style.display = "none";
             }}
             onLoad={() => {
-              console.log('Image loaded successfully:', imageSrc);
+              console.log("Image loaded successfully:", imageSrc);
             }}
           />
         </div>
@@ -68,60 +50,43 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
   }
 
   // VIDEO
-  if (mediaType === 'VIDEO') {
-    const isYouTube = content && (
-      content.includes('youtube.com') ||
-      content.includes('youtu.be') ||
-      content.startsWith('https://www.youtube.com')
-    );
+  if (mediaType === "VIDEO") {
+    const isYouTube =
+      content &&
+      (content.includes("youtube.com") ||
+        content.includes("youtu.be") ||
+        content.startsWith("https://www.youtube.com"));
 
     const getYouTubeEmbedUrl = (url: string): string => {
-      if (url.includes('/embed/')) return url;
-      if (url.includes('youtu.be/')) {
-        const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+      if (url.includes("/embed/")) return url;
+      if (url.includes("youtu.be/")) {
+        const videoId = url.split("youtu.be/")[1]?.split("?")[0];
         return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
       }
-      if (url.includes('watch?v=')) {
-        const videoId = url.split('watch?v=')[1]?.split('&')[0];
+      if (url.includes("watch?v=")) {
+        const videoId = url.split("watch?v=")[1]?.split("&")[0];
         return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
       }
       return url;
     };
 
     return (
-      <div className="header-item header-video mb--20">
+      <div className="header-item header-video">
         {content && (
-          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <div className="rbt-video-player">
             {isYouTube ? (
-              <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-                <iframe
-                  src={getYouTubeEmbedUrl(content)}
-                  allowFullScreen
-                  allow="autoplay; encrypted-media"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    border: 'none',
-                  }}
-                  title="Header Video"
-                />
-              </div>
+              <iframe
+                src={getYouTubeEmbedUrl(content)}
+                allowFullScreen
+                allow="autoplay; encrypted-media"
+                title="Header Video"
+              />
             ) : (
               <video
                 controls
-                style={{
-                  width: '100%',
-                  maxHeight: '450px',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  display: 'block',
-                }}
                 src={getMediaServeUrl(content)}
                 onError={(e) => {
-                  console.error('Video load error:', content);
+                  console.error("Video load error:", content);
                 }}
               >
                 Your browser does not support the video tag.
@@ -134,11 +99,11 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
   }
 
   // AUDIO
-  if (mediaType === 'AUDIO') {
+  if (mediaType === "AUDIO") {
     return (
-      <div className="header-item header-audio mb--20">
+      <div className="header-item header-audio">
         {content && (
-          <div className="audio-wrapper" style={{ maxWidth: '600px', margin: '0 auto' }}>
+          <div className="audio-wrapper">
             <AudioPlayer src={getMediaServeUrl(content)} minHeight={72} />
           </div>
         )}
@@ -147,15 +112,12 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
   }
 
   // DOCUMENT
-  if (mediaType === 'DOCUMENT') {
+  if (mediaType === "DOCUMENT") {
     return (
-      <div className="header-item header-document mb--20">
+      <div className="header-item header-document">
         {content && (
           <div
             className="document-content"
-            style={{
-              padding: '20px',
-            }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
         )}
@@ -164,9 +126,9 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
   }
 
   // PDF – sadece indirme butonu, gösterim yok
-  if (mediaType === 'PDF') {
+  if (mediaType === "PDF") {
     return (
-      <div className="header-item header-pdf mb--20">
+      <div className="header-item header-pdf">
         {content && (
           <div className="pdf-wrapper">
             <a
@@ -177,7 +139,9 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
               className="rbt-btn btn-md bg-primary"
             >
               <span className="btn-text">Download PDF</span>
-              <span className="btn-icon"><i className="feather-download"></i></span>
+              <span className="btn-icon">
+                <i className="feather-download"></i>
+              </span>
             </a>
           </div>
         )}
@@ -186,9 +150,9 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
   }
 
   // LINK
-  if (mediaType === 'LINK') {
+  if (mediaType === "LINK") {
     return (
-      <div className="header-item header-link mb--20">
+      <div className="header-item header-link">
         {content && (
           <div className="link-wrapper">
             <a
@@ -198,7 +162,9 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
               className="rbt-btn btn-md bg-primary"
             >
               <span className="btn-text">Open Link</span>
-              <span className="btn-icon"><i className="feather-external-link"></i></span>
+              <span className="btn-icon">
+                <i className="feather-external-link"></i>
+              </span>
             </a>
           </div>
         )}
@@ -207,19 +173,12 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
   }
 
   // TEXT or OTHER – soru gövdesi gibi; siyah, kalın değil
-  if (mediaType === 'TEXT' || mediaType === 'OTHER' || !mediaType) {
+  if (mediaType === "TEXT" || mediaType === "OTHER" || !mediaType) {
     return (
-      <div className="header-item header-text mb--20">
+      <div className="header-item header-text">
         {content && (
           <div
             className="text-content"
-            style={{
-              padding: '0 20px',
-              margin: '0px',
-              lineHeight: 1.5,
-              color: '#111',
-              fontWeight: 400,
-            }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
         )}
@@ -229,13 +188,10 @@ export default function HeaderRenderer({ header }: HeaderRendererProps) {
 
   // Fallback
   return (
-    <div className="header-item header-unknown mb--20">
+    <div className="header-item header-unknown">
       {content && (
         <div
           className="unknown-content"
-          style={{
-            padding: '20px',
-          }}
           dangerouslySetInnerHTML={{ __html: content }}
         />
       )}

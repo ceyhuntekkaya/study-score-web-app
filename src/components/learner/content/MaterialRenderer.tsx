@@ -1,13 +1,16 @@
-'use client';
+"use client";
 
-import type { CourseLessonPartMaterialDetailDTO } from '@/generated/api/openAPIDefinition.schemas';
-import { getMediaServeUrl } from '@/lib/fileUtils';
-import AudioPlayer from '@/components/ui/AudioPlayer';
-import QuizItemsRenderer from './QuizItemsRenderer';
+import type { CourseLessonPartMaterialDetailDTO } from "@/generated/api/openAPIDefinition.schemas";
+import { getMediaServeUrl } from "@/lib/fileUtils";
+import AudioPlayer from "@/components/ui/AudioPlayer";
+import QuizItemsRenderer from "./QuizItemsRenderer";
 
 interface MaterialRendererProps {
   material: CourseLessonPartMaterialDetailDTO;
-  onVideoRef?: (materialId: string, element: HTMLVideoElement | HTMLAudioElement) => void;
+  onVideoRef?: (
+    materialId: string,
+    element: HTMLVideoElement | HTMLAudioElement,
+  ) => void;
   onPdfLoad?: (materialId: string) => void;
   onPdfDownload?: (materialId: string) => void;
   onLinkClick?: (materialId: string) => void;
@@ -24,7 +27,7 @@ export default function MaterialRenderer({
   showAIChat = false,
 }: MaterialRendererProps) {
   const mediaType = material.mediaType;
-  const content = material.content || '';
+  const content = material.content || "";
 
   // QUIZ: If material has quizItems, show only quiz items (ignore other media types)
   if (material.quizItems && material.quizItems.length > 0) {
@@ -38,18 +41,18 @@ export default function MaterialRenderer({
   }
 
   // IMAGE
-  if (mediaType === 'IMAGE') {
+  if (mediaType === "IMAGE") {
     return (
-      <div className="material-item material-image mb--30">
+      <div className="material-item material-image">
         {content && (
           <div className="image-wrapper">
             <img
               src={getMediaServeUrl(content)}
-              alt={material.name || 'Image'}
-              style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
+              alt={material.name || "Image"}
+              style={{ maxWidth: "100%", height: "auto" }}
               onError={(e) => {
-                console.error('Image load error:', content);
-                (e.target as HTMLImageElement).style.display = 'none';
+                console.error("Image load error:", content);
+                (e.target as HTMLImageElement).style.display = "none";
               }}
             />
           </div>
@@ -59,28 +62,28 @@ export default function MaterialRenderer({
   }
 
   // VIDEO
-  if (mediaType === 'VIDEO') {
-    const isYouTube = content && (
-      content.includes('youtube.com') ||
-      content.includes('youtu.be') ||
-      content.startsWith('https://www.youtube.com')
-    );
+  if (mediaType === "VIDEO") {
+    const isYouTube =
+      content &&
+      (content.includes("youtube.com") ||
+        content.includes("youtu.be") ||
+        content.startsWith("https://www.youtube.com"));
 
     const getYouTubeEmbedUrl = (url: string): string => {
-      if (url.includes('/embed/')) return url;
-      if (url.includes('youtu.be/')) {
-        const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+      if (url.includes("/embed/")) return url;
+      if (url.includes("youtu.be/")) {
+        const videoId = url.split("youtu.be/")[1]?.split("?")[0];
         return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
       }
-      if (url.includes('watch?v=')) {
-        const videoId = url.split('watch?v=')[1]?.split('&')[0];
+      if (url.includes("watch?v=")) {
+        const videoId = url.split("watch?v=")[1]?.split("&")[0];
         return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
       }
       return url;
     };
 
     return (
-      <div className="material-item material-video mb--30">
+      <div className="material-item material-video">
         {content && (
           <div className="rbt-video-player">
             {isYouTube ? (
@@ -88,8 +91,7 @@ export default function MaterialRenderer({
                 src={getYouTubeEmbedUrl(content)}
                 allowFullScreen
                 allow="autoplay; encrypted-media"
-                style={{ width: '100%', height: '500px', border: 'none', borderRadius: '8px' }}
-                title={material.name || 'Video'}
+                title={material.name || "Video"}
               />
             ) : (
               <video
@@ -99,10 +101,9 @@ export default function MaterialRenderer({
                   }
                 }}
                 controls
-                style={{ width: '100%', borderRadius: '8px' }}
                 src={getMediaServeUrl(content)}
                 onError={(e) => {
-                  console.error('Video load error:', content);
+                  console.error("Video load error:", content);
                 }}
               >
                 Your browser does not support the video tag.
@@ -115,11 +116,11 @@ export default function MaterialRenderer({
   }
 
   // AUDIO
-  if (mediaType === 'AUDIO') {
+  if (mediaType === "AUDIO") {
     return (
-      <div className="material-item material-audio mb--30">
+      <div className="material-item material-audio">
         {content && (
-          <div className="audio-wrapper" style={{ maxWidth: '600px' }}>
+          <div className="audio-wrapper">
             <AudioPlayer src={getMediaServeUrl(content)} minHeight={72} />
           </div>
         )}
@@ -128,9 +129,9 @@ export default function MaterialRenderer({
   }
 
   // DOCUMENT
-  if (mediaType === 'DOCUMENT') {
+  if (mediaType === "DOCUMENT") {
     return (
-      <div className="material-item material-document mb--30">
+      <div className="material-item material-document">
         {content && (
           <div
             className="document-content"
@@ -142,9 +143,9 @@ export default function MaterialRenderer({
   }
 
   // PDF – sadece indirme butonu (ön izleme yok; bazı tarayıcılar iframe ile PDF desteklemiyor)
-  if (mediaType === 'PDF') {
+  if (mediaType === "PDF") {
     return (
-      <div className="material-item material-pdf mb--30">
+      <div className="material-item material-pdf">
         {content && (
           <div className="pdf-wrapper">
             <a
@@ -160,7 +161,9 @@ export default function MaterialRenderer({
               className="rbt-btn btn-md bg-primary"
             >
               <span className="btn-text">Download PDF</span>
-              <span className="btn-icon"><i className="feather-download"></i></span>
+              <span className="btn-icon">
+                <i className="feather-download"></i>
+              </span>
             </a>
           </div>
         )}
@@ -169,9 +172,9 @@ export default function MaterialRenderer({
   }
 
   // LINK
-  if (mediaType === 'LINK') {
+  if (mediaType === "LINK") {
     return (
-      <div className="material-item material-link mb--30">
+      <div className="material-item material-link">
         {content && (
           <div className="link-wrapper">
             <a
@@ -188,7 +191,9 @@ export default function MaterialRenderer({
               }}
             >
               <span className="btn-text">Open Link</span>
-              <span className="btn-icon"><i className="feather-external-link"></i></span>
+              <span className="btn-icon">
+                <i className="feather-external-link"></i>
+              </span>
             </a>
           </div>
         )}
@@ -197,17 +202,13 @@ export default function MaterialRenderer({
   }
 
   // TEXT - Must be checked before OTHER to ensure proper rendering
-  if (mediaType === 'TEXT') {
+  if (mediaType === "TEXT") {
     return (
-      <div className="material-item material-text mb--30">
+      <div className="material-item material-text">
         {content ? (
           <div
             className="text-content"
             dangerouslySetInnerHTML={{ __html: content }}
-            style={{
-              lineHeight: '1.6',
-              wordWrap: 'break-word',
-            }}
           />
         ) : (
           <div className="text-muted">No content</div>
@@ -217,17 +218,13 @@ export default function MaterialRenderer({
   }
 
   // OTHER
-  if (mediaType === 'OTHER' || !mediaType) {
+  if (mediaType === "OTHER" || !mediaType) {
     return (
-      <div className="material-item material-text mb--30">
+      <div className="material-item material-text">
         {content ? (
           <div
             className="text-content"
             dangerouslySetInnerHTML={{ __html: content }}
-            style={{
-              lineHeight: '1.6',
-              wordWrap: 'break-word',
-            }}
           />
         ) : (
           <div className="text-muted">No content</div>
@@ -238,7 +235,7 @@ export default function MaterialRenderer({
 
   // Fallback
   return (
-    <div className="material-item material-unknown mb--30">
+    <div className="material-item material-unknown">
       {content && (
         <div
           className="unknown-content"

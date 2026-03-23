@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from "react";
 import {
   streamChatWithLlama,
   checkLlamaHealth,
@@ -9,14 +9,14 @@ import {
   setStudentName,
   setAIMode, // YENİ: Mod set etmek için
   setCourseCategory, // YENİ: Course category set etmek için
-} from '@/services/ai/llama';
-import { convertToHtml } from '@/services/ai/format-helpers';
-import { useAuth } from '@/contexts/AuthContext';
-import LoadingSpinner from '@/components/ui/loading/LoadingSpinner';
-import LoadingDots from '@/components/ui/loading/LoadingDots';
+} from "@/services/ai/llama";
+import { convertToHtml } from "@/services/ai/format-helpers";
+import { useAuth } from "@/contexts/AuthContext";
+import LoadingSpinner from "@/components/ui/loading/LoadingSpinner";
+import LoadingDots from "@/components/ui/loading/LoadingDots";
 
 type Message = {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   isComplete?: boolean;
   id: string;
@@ -25,21 +25,23 @@ type Message = {
 interface AIChatProps {
   activeText?: string;
   lessonPartName?: string;
-  mode?: 'learning' | 'analysis' | 'practice' | 'solve';
+  mode?: "learning" | "analysis" | "practice" | "solve";
   courseCategory?: string; // YENİ: Course category (IELTS, TOEFL, SAT_ENGLISH, SAT_MATH, GENERAL_ENGLISH)
 }
 
-export default function AIChat({ 
-  activeText, 
+export default function AIChat({
+  activeText,
   lessonPartName,
-  mode = 'learning', // Varsayılan: learning
-  courseCategory // YENİ: Course category
+  mode = "learning", // Varsayılan: learning
+  courseCategory, // YENİ: Course category
 }: AIChatProps) {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [serviceStatus, setServiceStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  const [serviceStatus, setServiceStatus] = useState<
+    "checking" | "online" | "offline"
+  >("checking");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const activeMessageId = useRef<string | null>(null);
@@ -72,13 +74,13 @@ export default function AIChat({
   }, [mode]);
 
   useEffect(() => {
-    if (activeText && activeText.trim() !== '') {
+    if (activeText && activeText.trim() !== "") {
       // Lesson context'i set et
       setLessonContext(activeText);
       clearChatHistory();
       setMessages([]);
     } else {
-      setLessonContext('');
+      setLessonContext("");
     }
   }, [activeText]);
 
@@ -87,10 +89,10 @@ export default function AIChat({
     async function checkServiceHealth() {
       try {
         const health = await checkLlamaHealth();
-        setServiceStatus(health.status as 'online' | 'offline');
+        setServiceStatus(health.status as "online" | "offline");
       } catch (error) {
-        console.error('Servis sağlık kontrolü başarısız:', error);
-        setServiceStatus('offline');
+        console.error("Servis sağlık kontrolü başarısız:", error);
+        setServiceStatus("offline");
       }
     }
 
@@ -109,7 +111,7 @@ export default function AIChat({
       const container = messagesContainerRef.current;
       container.scrollTo({
         top: container.scrollHeight,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   };
@@ -124,16 +126,17 @@ export default function AIChat({
   }, [messages]);
 
   // Benzersiz ID oluşturucu
-  const generateId = () => `msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  const generateId = () =>
+    `msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (input.trim() === '' || isLoading || serviceStatus !== 'online') return;
+    if (input.trim() === "" || isLoading || serviceStatus !== "online") return;
 
     // Kullanıcı mesajını ekle
     const userMessage: Message = {
-      role: 'user',
+      role: "user",
       content: input.trim(),
       isComplete: true,
       id: generateId(),
@@ -142,7 +145,7 @@ export default function AIChat({
 
     setIsLoading(true);
     const currentInput = input;
-    setInput('');
+    setInput("");
 
     // Asistan için mesaj ID'si oluştur ve saklayalım
     const assistantMessageId = generateId();
@@ -150,8 +153,8 @@ export default function AIChat({
 
     // Asistan için başlangıç mesajı ekliyoruz
     const assistantPlaceholder: Message = {
-      role: 'assistant',
-      content: '',
+      role: "assistant",
+      content: "",
       isComplete: false,
       id: assistantMessageId,
     };
@@ -175,7 +178,7 @@ export default function AIChat({
             return prev.map((msg) =>
               msg.id === assistantMessageId
                 ? { ...msg, content: msg.content + chunk }
-                : msg
+                : msg,
             );
           });
           // Her chunk geldiğinde scroll yap
@@ -187,7 +190,9 @@ export default function AIChat({
           // Stream tamamlandığında
           setMessages((prev) => {
             return prev.map((msg) =>
-              msg.id === assistantMessageId ? { ...msg, isComplete: true } : msg
+              msg.id === assistantMessageId
+                ? { ...msg, isComplete: true }
+                : msg,
             );
           });
           setIsLoading(false);
@@ -198,15 +203,15 @@ export default function AIChat({
             if (inputRef.current) {
               inputRef.current.focus();
               // Reset textarea height
-              inputRef.current.style.height = 'auto';
+              inputRef.current.style.height = "auto";
               inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 120)}px`;
             }
             smoothScrollToBottom();
           }, 200);
-        }
+        },
       );
     } catch (error) {
-      console.error('Hata:', error);
+      console.error("Hata:", error);
 
       // Hata durumunda son mesajı güncelle
       setMessages((prev) => {
@@ -214,10 +219,10 @@ export default function AIChat({
           msg.id === assistantMessageId
             ? {
                 ...msg,
-                content: 'Sorry, an error occurred. Please try again.',
+                content: "Sorry, an error occurred. Please try again.",
                 isComplete: true,
               }
-            : msg
+            : msg,
         );
       });
 
@@ -229,7 +234,7 @@ export default function AIChat({
         if (inputRef.current) {
           inputRef.current.focus();
           // Reset textarea height
-          inputRef.current.style.height = 'auto';
+          inputRef.current.style.height = "auto";
           inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 120)}px`;
         }
         smoothScrollToBottom();
@@ -240,36 +245,34 @@ export default function AIChat({
   // Mod'a göre placeholder metni
   const getPlaceholder = () => {
     switch (mode) {
-      case 'learning':
-        return 'Ask about the concept or IELTS topic...';
-      case 'analysis':
-        return 'Ask about this question or answer...';
-      case 'practice':
+      case "learning":
+        return "Ask about the concept or IELTS topic...";
+      case "analysis":
+        return "Ask about this question or answer...";
+      case "practice":
         return 'Say "give me a question" to start...';
       default:
-        return 'Ask me anything...';
+        return "Ask me anything...";
     }
   };
 
   // Mod'a göre başlık metni
   const getModeTitle = () => {
-
-
     //return activeText ? activeText : 'AI Assistant';
     switch (mode) {
-      case 'learning':
-        return '📚 Learn with AI (Socratic Method)';
-      case 'analysis':
-        return '🔍 Analyze Question & Answer';
-      case 'practice':
-        return '✏️ Practice with Questions';
+      case "learning":
+        return "📚 Learn with AI (Socratic Method)";
+      case "analysis":
+        return "🔍 Analyze Question & Answer";
+      case "practice":
+        return "✏️ Practice with Questions";
       default:
-        return 'AI Assistant';
+        return "AI Assistant";
     }
   };
 
   // Servis durumuna göre UI göster
-  if (serviceStatus === 'checking') {
+  if (serviceStatus === "checking") {
     return (
       <div className="flex flex-col items-center justify-center h-full p-4">
         <LoadingSpinner size="lg" color="primary" className="mb-4" />
@@ -278,7 +281,7 @@ export default function AIChat({
     );
   }
 
-  if (serviceStatus === 'offline') {
+  if (serviceStatus === "offline") {
     return (
       <div className="flex flex-col items-center justify-center h-full p-4">
         <i className="feather-alert-triangle w-12 h-12 text-red-500 mb-4"></i>
@@ -298,45 +301,19 @@ export default function AIChat({
 
   // Service online ise
   return (
-    <div 
-      className="flex flex-col"
-      style={{
-        height: '100%',
-        minHeight: '100%',
-        maxHeight: '100%',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column'
-      }}
-    >
+    <div className="ss-ai-chat-wrapper">
       {/* Mesajlar alanı - scrollable */}
-      <div
-        ref={messagesContainerRef}
-        style={{ 
-          flex: '1 1 auto',
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          padding: '16px',
-          backgroundColor: '#f9fafb',
-          scrollBehavior: 'smooth',
-          minHeight: 0, // Flexbox scroll için kritik
-          maxHeight: '100%',
-        }}
-      >
+      <div ref={messagesContainerRef} className="ss-ai-chat-messages">
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="mb-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                <i className="feather-send text-2xl text-blue-600"></i>
-              </div>
+          <div className="ss-ai-chat-empty">
+            <div className="ss-ai-chat-empty-icon">
+              <i className="feather-send"></i>
             </div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              {getModeTitle()}
-            </h3>
-            <p className="text-gray-600 max-w-md">
+            <h3 className="ss-ai-chat-empty-title">{getModeTitle()}</h3>
+            <p className="ss-ai-chat-empty-desc">
               {activeText
-                ? 'Ready to help you with the content above.'
-                : 'Ask me anything about IELTS.'}
+                ? "Ready to help you with the content above."
+                : "Ask me anything about IELTS."}
             </p>
           </div>
         ) : (
@@ -346,7 +323,7 @@ export default function AIChat({
                 key={message.id}
                 className={`ai-chat-message ${message.role}`}
               >
-                {message.role === 'assistant' ? (
+                {message.role === "assistant" ? (
                   <>
                     <div
                       className="whitespace-pre-wrap markdown-content"
@@ -356,12 +333,10 @@ export default function AIChat({
                     />
                     {/* Yükleniyor animasyonu - isComplete false ise göster */}
                     {message.isComplete === false && (
-                      <div className="flex mt-3">
-                        <LoadingDots
-                          size="md"
-                          color="primary"
-                          enhanced={true}
-                        />
+                      <div className="ss-typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
                       </div>
                     )}
                   </>
@@ -378,12 +353,7 @@ export default function AIChat({
       </div>
 
       {/* Input alanı - sabit */}
-      <div 
-        className="ai-chat-form-container"
-        style={{
-          flexShrink: 0
-        }}
-      >
+      <div className="ai-chat-form-container">
         <form onSubmit={handleSubmit} className="ai-chat-form" ref={formRef}>
           <textarea
             ref={inputRef}
@@ -392,14 +362,14 @@ export default function AIChat({
               setInput(e.target.value);
               // Auto-resize textarea
               if (e.target instanceof HTMLTextAreaElement) {
-                e.target.style.height = 'auto';
+                e.target.style.height = "auto";
                 e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
               }
             }}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                if (input.trim() && !isLoading && serviceStatus === 'online') {
+                if (input.trim() && !isLoading && serviceStatus === "online") {
                   handleSubmit(e);
                 }
               }
@@ -407,20 +377,20 @@ export default function AIChat({
             placeholder={getPlaceholder()}
             className="ai-chat-input"
             style={{
-              minHeight: '48px',
-              maxHeight: '120px',
+              minHeight: "48px",
+              maxHeight: "120px",
             }}
             disabled={isLoading}
           />
           <button
             type="submit"
             disabled={
-              isLoading || input.trim() === '' || serviceStatus !== 'online'
+              isLoading || input.trim() === "" || serviceStatus !== "online"
             }
             className={`send-btn ${
-              isLoading || input.trim() === '' || serviceStatus !== 'online'
-                ? 'disabled'
-                : ''
+              isLoading || input.trim() === "" || serviceStatus !== "online"
+                ? "disabled"
+                : ""
             }`}
           >
             {isLoading ? (

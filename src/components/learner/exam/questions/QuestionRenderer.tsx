@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { useState, type ReactNode } from 'react';
-import type { Question as ApiQuestion } from '@/generated/api/openAPIDefinition.schemas';
-import type { QuestionDisplayMode } from './types';
-import MultipleChoiceQuestion from './MultipleChoiceQuestion';
-import MultipleResponseQuestion from './MultipleResponseQuestion';
-import FillInTheBlanksQuestion from './FillInTheBlanksQuestion';
-import TrueFalseQuestion from './TrueFalseQuestion';
-import ShortAnswerQuestion from './ShortAnswerQuestion';
-import MatchingQuestion from './MatchingQuestion';
-import OrderingQuestion from './OrderingQuestion';
-import DragAndDropQuestion from './DragAndDropQuestion';
-import HotSpotQuestion from './HotSpotQuestion';
-import ImageResponseQuestion from './ImageResponseQuestion';
-import AudioResponseQuestion from './AudioResponseQuestion';
-import VideoResponseQuestion from './VideoResponseQuestion';
-import EssayQuestion from './EssayQuestion';
-import AIChat from '@/components/learner/content/AIChat';
+import { useState, type ReactNode } from "react";
+import type { Question as ApiQuestion } from "@/generated/api/openAPIDefinition.schemas";
+import type { QuestionDisplayMode } from "./types";
+import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
+import MultipleResponseQuestion from "./MultipleResponseQuestion";
+import FillInTheBlanksQuestion from "./FillInTheBlanksQuestion";
+import TrueFalseQuestion from "./TrueFalseQuestion";
+import ShortAnswerQuestion from "./ShortAnswerQuestion";
+import MatchingQuestion from "./MatchingQuestion";
+import OrderingQuestion from "./OrderingQuestion";
+import DragAndDropQuestion from "./DragAndDropQuestion";
+import HotSpotQuestion from "./HotSpotQuestion";
+import ImageResponseQuestion from "./ImageResponseQuestion";
+import AudioResponseQuestion from "./AudioResponseQuestion";
+import VideoResponseQuestion from "./VideoResponseQuestion";
+import EssayQuestion from "./EssayQuestion";
+import AIChat from "@/components/learner/content/AIChat";
 
 /** Soru renderer için: ORVAL Question tabanlı + ekran alanları (questionText, fullText, userAnswer, mode, aiReady). */
-type Question = Pick<ApiQuestion, 'id'> & {
+type Question = Pick<ApiQuestion, "id"> & {
   /** Soru tipi; API'de QuestionQuestionType, farklı kaynaklarda string gelebilir. */
   questionType: string;
   questionId?: string;
@@ -46,7 +46,7 @@ interface QuestionRendererProps {
   /** true ise sorunun altında AIChat gösterilir (öğrenme amaçlı). Varsayılan: false. */
   showAIChat?: boolean;
   /** AIChat için opsiyonel props (showAIChat true iken kullanılır). */
-  aiChatMode?: 'learning' | 'analysis' | 'practice' | 'solve';
+  aiChatMode?: "learning" | "analysis" | "practice" | "solve";
   aiChatCourseCategory?: string;
   aiChatLessonPartName?: string;
 }
@@ -61,12 +61,21 @@ export default function QuestionRenderer({
   onSaveAnswer,
   questionId,
   showAIChat = false,
-  aiChatMode = 'solve',
+  aiChatMode = "solve",
   aiChatCourseCategory,
   aiChatLessonPartName,
 }: QuestionRendererProps) {
-  const { questionType, questionText, fullText, templateData, userAnswer, mode = 'APPLICATION', aiReady = false } = question;
-  const uniqueQuestionId = questionId || question.questionId || (question as any).id || 'question';
+  const {
+    questionType,
+    questionText,
+    fullText,
+    templateData,
+    userAnswer,
+    mode = "APPLICATION",
+    aiReady = false,
+  } = question;
+  const uniqueQuestionId =
+    questionId || question.questionId || (question as any).id || "question";
   const [aiChatOpen, setAiChatOpen] = useState(false);
 
   const wrapWithAIChat = (content: ReactNode) => {
@@ -88,11 +97,17 @@ export default function QuestionRenderer({
           <div className="d-flex justify-content-end">
             <button
               type="button"
-              className="rbt-btn btn-sm bg-primary-opacity"
+              className="ss-talk-ai-btn"
               onClick={() => setAiChatOpen((prev) => !prev)}
               aria-expanded={aiChatOpen}
             >
-              <span className="btn-text">{aiChatOpen ? 'Hide AI Chat' : 'Talk TO AI'}</span>
+              {aiChatOpen ? (
+                "Hide AI Chat"
+              ) : (
+                <span>
+                  Talk To <span className="ss-talk-ai-highlight">AI</span>
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -101,20 +116,18 @@ export default function QuestionRenderer({
   };
 
   // Parse templateData if it's a string
-  const parsedTemplateData = typeof templateData === 'string'
-    ? JSON.parse(templateData)
-    : templateData;
+  const parsedTemplateData =
+    typeof templateData === "string" ? JSON.parse(templateData) : templateData;
 
   // Parse userAnswer if it's a string
-  const parsedUserAnswer = typeof userAnswer === 'string'
-    ? JSON.parse(userAnswer)
-    : userAnswer;
+  const parsedUserAnswer =
+    typeof userAnswer === "string" ? JSON.parse(userAnswer) : userAnswer;
 
   // Backend often returns userAnswer as { answerData: { essayText, ... }, ... }; components expect the payload (answerData) as initialAnswer
   const normalizedInitialAnswer =
     parsedUserAnswer != null &&
-    typeof parsedUserAnswer === 'object' &&
-    'answerData' in parsedUserAnswer &&
+    typeof parsedUserAnswer === "object" &&
+    "answerData" in parsedUserAnswer &&
     (parsedUserAnswer as { answerData?: unknown }).answerData != null
       ? (parsedUserAnswer as { answerData: unknown }).answerData
       : parsedUserAnswer;
@@ -124,16 +137,16 @@ export default function QuestionRenderer({
     let text = fullText ?? questionText;
     if (normalizedInitialAnswer != null) {
       const hasContent =
-        typeof normalizedInitialAnswer === 'string'
-          ? normalizedInitialAnswer.trim() !== ''
-          : typeof normalizedInitialAnswer === 'object' &&
+        typeof normalizedInitialAnswer === "string"
+          ? normalizedInitialAnswer.trim() !== ""
+          : typeof normalizedInitialAnswer === "object" &&
             Object.keys(normalizedInitialAnswer as object).length > 0;
       if (hasContent) {
         const answerStr =
-          typeof normalizedInitialAnswer === 'string'
+          typeof normalizedInitialAnswer === "string"
             ? normalizedInitialAnswer
             : JSON.stringify(normalizedInitialAnswer, null, 2);
-        text += '\n\nSTUDENT ANSWER:\n' + answerStr;
+        text += "\n\nSTUDENT ANSWER:\n" + answerStr;
       }
     }
     return text;
@@ -148,70 +161,70 @@ export default function QuestionRenderer({
   };
 
   switch (questionType) {
-    case 'MULTIPLE_CHOICE':
+    case "MULTIPLE_CHOICE":
       return wrapWithAIChat(
         <MultipleChoiceQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
-    case 'TRUE_FALSE':
+    case "TRUE_FALSE":
       return wrapWithAIChat(
         <TrueFalseQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
-    case 'MULTIPLE_RESPONSE':
+    case "MULTIPLE_RESPONSE":
       return wrapWithAIChat(
         <MultipleResponseQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
-    case 'SHORT_ANSWER':
+    case "SHORT_ANSWER":
       return wrapWithAIChat(
         <ShortAnswerQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
-    case 'FILL_IN_THE_BLANKS':
+    case "FILL_IN_THE_BLANKS":
       return wrapWithAIChat(
         <FillInTheBlanksQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
-    case 'MATCHING':
+    case "MATCHING":
       return wrapWithAIChat(
         <MatchingQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
-    case 'ORDERING':
+    case "ORDERING":
       return wrapWithAIChat(
         <OrderingQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
-    case 'ESSAY':
+    case "ESSAY":
       return wrapWithAIChat(
         <EssayQuestion
           questionText={questionText}
@@ -219,61 +232,61 @@ export default function QuestionRenderer({
           {...commonProps}
           onAnswerChange={undefined}
           onSave={onSaveAnswer}
-        />
+        />,
       );
 
-    case 'DRAG_AND_DROP':
+    case "DRAG_AND_DROP":
       return wrapWithAIChat(
         <DragAndDropQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
-    case 'HOT_SPOT':
+    case "HOT_SPOT":
       return wrapWithAIChat(
         <HotSpotQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
-    case 'AUDIO_RESPONSE':
+    case "AUDIO_RESPONSE":
       return wrapWithAIChat(
         <AudioResponseQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
-    case 'VIDEO_RESPONSE':
+    case "VIDEO_RESPONSE":
       return wrapWithAIChat(
         <VideoResponseQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
-    case 'IMAGE_RESPONSE':
+    case "IMAGE_RESPONSE":
       return wrapWithAIChat(
         <ImageResponseQuestion
           questionText={questionText}
           templateData={parsedTemplateData}
           {...commonProps}
-        />
+        />,
       );
 
     default:
       return wrapWithAIChat(
         <div className="question-error">
-          <p style={{ color: '#ff4444' }}>
+          <p style={{ color: "#ff4444" }}>
             Unknown question type: {questionType}
           </p>
-        </div>
+        </div>,
       );
   }
 }
