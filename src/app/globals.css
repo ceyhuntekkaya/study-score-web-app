@@ -573,9 +573,9 @@ a {
 /* Active lesson: green floating pill */
 .ss-lesson-content--active,
 .ss-lesson-content--active:hover {
-  background: #5cb85c !important;
+  background: #3f7544 !important;
   color: #ffffff !important;
-  box-shadow: 0 1px 4px rgba(92, 184, 92, 0.3);
+  box-shadow: 0 1px 4px rgba(63, 117, 68, 0.3);
 }
 
 /* Lesson track cell base */
@@ -666,8 +666,8 @@ a {
 
 /* Completed / active: dark navy blue filled */
 .ss-status-circle--done {
-  background: #1e3a5f;
-  border-color: #1e3a5f;
+  background: #0a2e60;
+  border-color: #0a2e60;
 }
 
 /* State messages */
@@ -701,6 +701,110 @@ a {
   min-width: 3px;
 }
 
+
+/* ============================================================
+   Compact Header for Lesson Content (ss-compact-header)
+   Single row: title + tabs + close button
+   ============================================================ */
+.ss-compact-header {
+  background: #0a2e60 !important;
+  padding: 6px 0 0 12px !important;
+  gap: 12px;
+  min-height: 48px;
+  border-bottom: 3px solid #8bc257;
+  align-items: flex-end;
+}
+
+.ss-compact-header .lesson-top-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.ss-compact-header .lesson-top-left h5 {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Tab buttons group */
+.ss-header-tabs {
+  display: flex;
+  align-items: flex-end;
+  flex: none;
+  gap: 6px;
+  margin-bottom: -7px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Individual tab button */
+.ss-header-tab {
+  flex: none;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px 6px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  background: #3f7544;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ss-header-tab:hover {
+  background: #4a8a50;
+  color: #ffffff;
+}
+
+/* Active tab */
+.ss-header-tab--active {
+  background: #8bc257;
+  color: #ffffff;
+}
+
+.ss-compact-header .lesson-top-right {
+  flex-shrink: 0;
+  margin-right: 0;
+  position: relative;
+  z-index: 1;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.ss-compact-header .lesson-top-right .rbt-btn-close {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.ss-compact-header .lesson-top-right .rbt-round-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 100% !important;
+  min-height: 28px !important;
+  background: #8bc257 !important;
+  color: #fff !important;
+  border-radius: 6px 0 0 6px !important;
+  padding: 4px !important;
+  transition: background 0.2s !important;
+  line-height: normal !important;
+  margin: 0 !important;
+}
+
+.ss-compact-header .lesson-top-right .rbt-round-btn::after {
+  display: none !important;
+}
+
+.ss-compact-header .lesson-top-right .rbt-round-btn:hover {
+  background: #3f7544 !important;
+  color: #fff !important;
+}
 
 /* Content area: scroll independently */
 .rbt-lesson-content-wrapper .rbt-lesson-rightsidebar {
