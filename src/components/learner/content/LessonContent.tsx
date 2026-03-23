@@ -273,7 +273,7 @@ export default function LessonContent() {
       </div>
 
       {/* Content */}
-      <div className="inner">
+      <div className="inner ss-content-inner">
         {showAIChat ? (
           <div
             className="ai-chat-container"
@@ -348,52 +348,26 @@ export default function LessonContent() {
         )}
       </div>
 
-      {/* Fixed Navigation Buttons */}
-      <div
-        className="bg-color-extra2 ptb--15 overflow-hidden"
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: sidebarOpen ? "400px" : 0,
-          right: 0,
-          zIndex: 1000,
-          boxShadow: "0 -2px 10px rgba(0, 0, 0, 0.1)",
-          transition: "left 0.3s ease",
-        }}
-      >
-        <div className="container-fluid">
-          <div className="rbt-button-group d-flex justify-content-center gap-3">
-            <button
-              className="rbt-btn icon-hover icon-hover-left btn-md bg-primary-opacity"
-              disabled={!previousPart}
-              onClick={handlePreviousPart}
-            >
-              <span className="btn-icon">
-                <i className="feather-arrow-left"></i>
-              </span>
-              <span className="btn-text">Previous</span>
-            </button>
+      {/* Side Navigation Arrows */}
+      {previousPart && (
+        <button
+          className="ss-side-nav ss-side-nav--left"
+          onClick={handlePreviousPart}
+          title="Previous"
+        >
+          <i className="feather-chevron-left"></i>
+        </button>
+      )}
 
-            {
-              //    <TtsService text="Matching Headings questions require you to match each paragraph in a passage to the most suitable heading from a given list. Each heading represents the main idea of the paragraph, not the details." />
-            }
-
-            <button
-              className="rbt-btn icon-hover btn-md bg-primary-opacity"
-              disabled={!nextPart}
-              onClick={handleNextPart}
-            >
-              <span className="btn-text">Next</span>
-              <span className="btn-icon">
-                <i className="feather-arrow-right"></i>
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Spacer */}
-      <div style={{ height: "80px" }}></div>
+      {nextPart && (
+        <button
+          className="ss-side-nav ss-side-nav--right"
+          onClick={handleNextPart}
+          title="Next"
+        >
+          <i className="feather-chevron-right"></i>
+        </button>
+      )}
     </div>
   );
 }

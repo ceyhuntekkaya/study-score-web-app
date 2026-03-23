@@ -806,6 +806,49 @@ a {
   color: #fff !important;
 }
 
+/* ============================================================
+   Side Navigation Arrows (Previous / Next)
+   ============================================================ */
+.ss-side-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 999;
+  width: 32px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 46, 96, 0.5);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  transition: background 0.2s, opacity 0.2s;
+  opacity: 0.6;
+}
+
+.ss-side-nav:hover {
+  background: rgba(10, 46, 96, 0.9);
+  opacity: 1;
+}
+
+.ss-side-nav--left {
+  left: 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.ss-side-nav--right {
+  right: 0;
+  border-radius: 6px 0 0 6px;
+}
+
+/* Content inner padding to avoid overlap with side nav arrows */
+.rbt-lesson-rightsidebar.lesson-video .inner.ss-content-inner {
+  padding: 20px 36px !important;
+  margin: 0;
+}
+
 /* Content area: scroll independently */
 .rbt-lesson-content-wrapper .rbt-lesson-rightsidebar {
   overflow-y: auto !important;
