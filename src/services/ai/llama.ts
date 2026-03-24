@@ -3,6 +3,9 @@
 import { getApiAiUrl } from '@/config';
 import { getIELTSSystemContext } from './prompts';
 import { getSATSystemContext } from './sat-prompts';
+import { getGeneralEnglishSystemContext } from './general-english-prompts';
+import { getTOEFLSystemContext } from './toefl-prompts';
+import { getSATMathSystemContext } from './sat-math-prompts';
 
 const OLLAMA_API_URL = process.env.NEXT_PUBLIC_OLLAMA_API_URL || getApiAiUrl();
 const DEFAULT_MODEL = 'qwen2.5:7b';
@@ -20,61 +23,127 @@ export class LlamaService {
   private lessonContext: string = '';
   private studentName: string = '';
   private currentMode: 'learning' | 'analysis' | 'practice' | 'solve' = 'learning';
-  private courseCategory: string = 'IELTS'; // Default: IELTS
+  private courseCategory: string = 'IELTS';
+
+  // Anti-repetition: Her assistant yanıtından 120 kar. "parmak izi" saklanır.
+  // Sonraki turda system[2]'ye eklenerek modele "bunları tekrarlama" direktifi verilir.
+  private usedContentSummaries: string[] = [];
+  private readonly MAX_TRACKED_SUMMARIES = 10;
+
+  // History trim: uzun oturumlarda context window taşmasını önler.
+  // system[0-2] her zaman korunur; user+assistant mesajları kırpılır.
+  private readonly MAX_HISTORY_MESSAGES = 20;
+
+  // Ders takibi: courseCategory değişince lessonId değişir → clearAllContext tetiklenir.
+  // Sadece mode değişince lessonId aynı kalır → clearHistory (liste korunur).
+  private currentLessonId: string = '';
 
   constructor(modelName: string = DEFAULT_MODEL, courseCategory: string = 'IELTS') {
     this.modelName = modelName;
     this.apiUrl = OLLAMA_API_URL;
     this.courseCategory = courseCategory;
+    this.currentLessonId = courseCategory;
     this.conversationHistory = [
-      {
-        role: 'system',
-        content: this.getSystemContext(this.studentName, this.currentMode),
-      },
-      {
-        role: 'system',
-        content: '',
-      },
+      { role: 'system', content: this.getSystemContext(this.studentName, this.currentMode) },
+      { role: 'system', content: '' },
+      { role: 'system', content: '' },
     ];
   }
 
-  /**
-   * Course category'ye göre doğru system context'i döndürür
-   * @private
-   */
+  // ── Sistem context seçici ─────────────────────────────────────────────────
+
   private getSystemContext(
     studentName?: string,
     mode?: 'learning' | 'analysis' | 'practice' | 'solve'
   ): string {
-    if (this.courseCategory === 'SAT_ENGLISH') {
-      return getSATSystemContext(studentName, mode);
-    }
-    // Default: IELTS
+    if (this.courseCategory === 'SAT_ENGLISH')    return getSATSystemContext(studentName, mode);
+    if (this.courseCategory === 'SAT_MATH')       return getSATMathSystemContext(studentName, mode);
+    if (this.courseCategory === 'TOEFL')          return getTOEFLSystemContext(studentName, mode);
+    if (this.courseCategory === 'GENERAL_ENGLISH') return getGeneralEnglishSystemContext(studentName, mode);
     return getIELTSSystemContext(studentName, mode);
   }
 
+  // ── Anti-repetition ───────────────────────────────────────────────────────
+
+  private extractContentSummary(assistantResponse: string): string {
+    return assistantResponse
+      .replace(/\n+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .substring(0, 120);
+  }
+
+  private buildAntiRepetitionBlock(): string {
+    if (this.usedContentSummaries.length === 0) return '';
+
+    const list = this.usedContentSummaries
+      .map((s, i) => `  ${i + 1}. "${s}..."`)
+      .join('\n');
+
+    return `## ANTI-REPETITION DIRECTIVE (MANDATORY)
+
+You have already produced the following content in this session.
+DO NOT repeat, reuse, or closely paraphrase any of it.
+Each new response MUST differ in: topic angle, vocabulary, sentence structure, and examples.
+
+Previously used content (DO NOT reuse):
+${list}
+
+If you are about to generate something similar to the above, STOP and choose a completely different angle, example, or question.`;
+  }
+
+  private trackAssistantResponse(content: string): void {
+    const summary = this.extractContentSummary(content);
+    this.usedContentSummaries.push(summary);
+    if (this.usedContentSummaries.length > this.MAX_TRACKED_SUMMARIES) {
+      this.usedContentSummaries.shift();
+    }
+    this.updateAntiRepetitionSlot();
+  }
+
+  private updateAntiRepetitionSlot(): void {
+    const block = this.buildAntiRepetitionBlock();
+    if (this.conversationHistory.length > 2) {
+      this.conversationHistory[2] = { role: 'system', content: block };
+    } else {
+      this.conversationHistory.push({ role: 'system', content: block });
+    }
+  }
+
+  // ── History trim ──────────────────────────────────────────────────────────
+
+  private trimHistoryIfNeeded(): void {
+    const systemMessages = this.conversationHistory.slice(0, 3);
+    const chatMessages   = this.conversationHistory.slice(3);
+
+    if (chatMessages.length > this.MAX_HISTORY_MESSAGES) {
+      const trimmed = chatMessages.slice(-this.MAX_HISTORY_MESSAGES);
+      this.conversationHistory = [...systemMessages, ...trimmed];
+    }
+  }
+
+  // ── Chat (non-stream) ─────────────────────────────────────────────────────
+
   async chat(prompt: string): Promise<ChatResponse | { message: { content: string } }> {
     try {
-      // Kullanıcı mesajını geçmişe ekle
-      this.conversationHistory.push({
-        role: 'user',
-        content: prompt,
-      });
+      this.conversationHistory.push({ role: 'user', content: prompt });
+      this.trimHistoryIfNeeded();
 
       const response = await fetch(`${this.apiUrl}/api/chat`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: this.modelName,
           messages: this.conversationHistory,
           stream: false,
           options: {
-            temperature: 0.7,
-            top_p: 0.9,
-            top_k: 40,
-            repeat_penalty: 1.1, // ÇOOK ÖNEMLİ - Tekrarları önler
+            temperature: 0.85,
+            top_p: 0.92,
+            top_k: 60,
+            repeat_penalty: 1.3,
+            repeat_last_n: 256,
+            frequency_penalty: 0.2,
+            presence_penalty: 0.2,
             num_predict: 2048,
           },
         }),
@@ -87,27 +156,16 @@ export class LlamaService {
 
       const data = await response.json();
 
-      // Asistan yanıtını geçmişe ekle
-      if (data.message && data.message.content) {
-        this.conversationHistory.push({
-          role: 'assistant',
-          content: data.message.content,
-        });
+      if (data.message?.content) {
+        this.conversationHistory.push({ role: 'assistant', content: data.message.content });
+        this.trackAssistantResponse(data.message.content);
       } else if (data.response) {
-        this.conversationHistory.push({
-          role: 'assistant',
-          content: data.response,
-        });
+        this.conversationHistory.push({ role: 'assistant', content: data.response });
+        this.trackAssistantResponse(data.response);
       }
 
-      // Ollama'nın döndürdüğü yanıt formatını kontrol et ve uyarla
       if (data && !data.message && data.response) {
-        // Eski Ollama API formatı olabilir
-        return {
-          message: {
-            content: data.response,
-          },
-        };
+        return { message: { content: data.response } };
       }
 
       return data;
@@ -117,37 +175,32 @@ export class LlamaService {
     }
   }
 
-  /**
-   * Stream API ile gerçek zamanlı yanıt almak için
-   * @param prompt Kullanıcı tarafından gönderilen soru
-   * @param onChunk Her parça geldiğinde çalışacak callback
-   */
+  // ── Chat (stream) ─────────────────────────────────────────────────────────
+
   async chatStream(
     prompt: string,
     onChunk: (text: string) => void,
     onEnd: () => void
   ): Promise<void> {
     try {
-      // Kullanıcı mesajını geçmişe ekle
-      this.conversationHistory.push({
-        role: 'user',
-        content: prompt,
-      });
+      this.conversationHistory.push({ role: 'user', content: prompt });
+      this.trimHistoryIfNeeded();
 
       const response = await fetch(`${this.apiUrl}/api/chat`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: this.modelName,
           messages: this.conversationHistory,
           stream: true,
           options: {
-            temperature: 0.7,
-            top_p: 0.9,
-            top_k: 40,
-            repeat_penalty: 1.1, // ÇOOK ÖNEMLİ - Tekrarları önler
+            temperature: 0.85,
+            top_p: 0.92,
+            top_k: 60,
+            repeat_penalty: 1.3,
+            repeat_last_n: 256,
+            frequency_penalty: 0.2,
+            presence_penalty: 0.2,
             num_predict: 2048,
           },
         }),
@@ -159,39 +212,28 @@ export class LlamaService {
       }
 
       if (!response.body) {
-        throw new Error(
-          'ReadableStream not supported. Your browser may not support streaming responses.'
-        );
+        throw new Error('ReadableStream not supported.');
       }
 
-      const reader = response.body.getReader();
+      const reader  = response.body.getReader();
       const decoder = new TextDecoder();
       let accumulatedContent = '';
 
       while (true) {
         const { done, value } = await reader.read();
+        if (done) break;
 
-        if (done) {
-          break;
-        }
-
-        // Chunk'ı decode et
         const chunk = decoder.decode(value, { stream: true });
 
         try {
-          // Stream parçalarını işle
           const lines = chunk.split('\n').filter((line) => line.trim() !== '');
-
           for (const line of lines) {
             try {
               const json = JSON.parse(line);
-
               if (json.message?.content) {
-                // Her yeni parçayı callback ile gönder
                 onChunk(json.message.content);
                 accumulatedContent += json.message.content;
               } else if (json.response) {
-                // Eski API formatı
                 onChunk(json.response);
                 accumulatedContent += json.response;
               }
@@ -204,15 +246,11 @@ export class LlamaService {
         }
       }
 
-      // Tamamlandığında asistan mesajını geçmişe ekle
       if (accumulatedContent) {
-        this.conversationHistory.push({
-          role: 'assistant',
-          content: accumulatedContent,
-        });
+        this.conversationHistory.push({ role: 'assistant', content: accumulatedContent });
+        this.trackAssistantResponse(accumulatedContent);
       }
 
-      // Stream bitti
       onEnd();
     } catch (error) {
       console.error('Stream error:', error);
@@ -221,132 +259,96 @@ export class LlamaService {
     }
   }
 
-  /**
-   * Kullanıcı adını set eder ve system context'i günceller
-   * @param name Kullanıcının adı ve soyadı
-   */
+  // ── Setter'lar ────────────────────────────────────────────────────────────
+
   setStudentName(name: string): void {
     this.studentName = name || '';
-    
-    // İlk system mesajını güncelle (index 0)
-    if (this.conversationHistory.length > 0) {
-      this.conversationHistory[0] = {
-        role: 'system',
-        content: this.getSystemContext(this.studentName, this.currentMode),
-      };
-    } else {
-      // Eğer history boşsa, system mesajlarını yeniden ekle
-      this.conversationHistory = [
-        {
-          role: 'system',
-          content: this.getSystemContext(this.studentName, this.currentMode),
-        },
-        {
-          role: 'system',
-          content: this.lessonContext,
-        },
-      ];
-    }
+    this.conversationHistory[0] = {
+      role: 'system',
+      content: this.getSystemContext(this.studentName, this.currentMode),
+    };
   }
 
-  /**
-   * Aktif lesson part context'ini set eder
-   * @param description Lesson part description
-   */
   setLessonContext(description: string): void {
     this.lessonContext = description || '';
-    
-    // İkinci system mesajını güncelle (index 1)
     if (this.conversationHistory.length > 1) {
-      this.conversationHistory[1] = {
-        role: 'system',
-        content: this.lessonContext,
-      };
-    } else {
-      // Eğer history temizlenmişse, system mesajlarını yeniden ekle
-      this.conversationHistory = [
-        {
-          role: 'system',
-          content: this.getSystemContext(this.studentName, this.currentMode),
-        },
-        {
-          role: 'system',
-          content: this.lessonContext,
-        },
-      ];
+      this.conversationHistory[1] = { role: 'system', content: this.lessonContext };
     }
   }
 
   /**
-   * YENİ: AI modunu set eder (learning, analysis, practice, solve)
-   * @param mode AI çalışma modu
+   * Mod değişimi: system prompt güncellenir, history ve anti-repetition listesi KORUNUR.
+   * Aynı ders içinde Learning → Practice gibi geçişlerde kullanılır.
    */
   setMode(mode: 'learning' | 'analysis' | 'practice' | 'solve'): void {
     this.currentMode = mode;
-    
-    // System context'i yeni mod ile güncelle
-    if (this.conversationHistory.length > 0) {
-      this.conversationHistory[0] = {
-        role: 'system',
-        content: this.getSystemContext(this.studentName, this.currentMode),
-      };
-    }
+    this.conversationHistory[0] = {
+      role: 'system',
+      content: this.getSystemContext(this.studentName, this.currentMode),
+    };
   }
 
   /**
-   * Course category'yi set eder ve system context'i günceller
-   * @param category Course category ('IELTS' veya 'SAT_ENGLISH')
+   * Kurs kategorisi değişimi.
+   * Yeni kategori ise lessonId güncellenir ve clearAllContext otomatik tetiklenir.
+   * Aynı kategori ise sadece system prompt güncellenir.
    */
   setCourseCategory(category: string): void {
-    this.courseCategory = category || 'IELTS';
-    
-    // System context'i yeni category ile güncelle
-    if (this.conversationHistory.length > 0) {
+    const newCategory = category || 'IELTS';
+    const newLessonId = newCategory;
+
+    if (newLessonId !== this.currentLessonId) {
+      this.courseCategory  = newCategory;
+      this.currentLessonId = newLessonId;
+      this.clearAllContext(); // Yeni ders → her şeyi sıfırla
+    } else {
+      this.courseCategory = newCategory;
       this.conversationHistory[0] = {
         role: 'system',
         content: this.getSystemContext(this.studentName, this.currentMode),
       };
-    } else {
-      // Eğer history boşsa, system mesajlarını yeniden ekle
-      this.conversationHistory = [
-        {
-          role: 'system',
-          content: this.getSystemContext(this.studentName, this.currentMode),
-        },
-        {
-          role: 'system',
-          content: this.lessonContext,
-        },
-      ];
     }
   }
 
+  // ── History yönetimi ──────────────────────────────────────────────────────
+
   /**
-   * Konuşma geçmişini temizler
+   * Sadece konuşma geçmişini temizler.
+   * usedContentSummaries KORUNUR.
+   * Kullanım: mode veya activeText değişimlerinde (aynı ders içi geçiş).
    */
   clearHistory(): void {
+    this.resetHistory();
+  }
+
+  /**
+   * Hem konuşma geçmişini hem anti-repetition listesini tamamen sıfırlar.
+   * Kullanım: courseCategory değişiminde (yeni ders başlangıcı).
+   *
+   * AIChat.tsx'te önerilen kullanım:
+   *   courseCategory değiştiğinde → clearAllContext()   ← YENİ DERS
+   *   mode değiştiğinde           → clearChatHistory()  ← AYNI DERS, MOD GEÇİŞİ
+   *   activeText değiştiğinde     → clearChatHistory()  ← AYNI DERS, BÖLÜM GEÇİŞİ
+   */
+  clearAllContext(): void {
+    this.usedContentSummaries = [];
+    this.resetHistory();
+  }
+
+  private resetHistory(): void {
     this.conversationHistory = [
-      {
-        role: 'system',
-        content: this.getSystemContext(this.studentName, this.currentMode),
-      },
-      {
-        role: 'system',
-        content: this.lessonContext,
-      },
+      { role: 'system', content: this.getSystemContext(this.studentName, this.currentMode) },
+      { role: 'system', content: this.lessonContext },
+      { role: 'system', content: this.buildAntiRepetitionBlock() },
     ];
   }
 
-  /**
-   * Llama modelinin sağlık durumunu kontrol eder
-   *
-   * @returns Sağlık durumu nesnesi
-   */
+  // ── Health check ──────────────────────────────────────────────────────────
+
   async healthCheck(): Promise<{ status: string; model: string }> {
     try {
-      // 3 saniye timeout ekle
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const timeoutId  = setTimeout(() => controller.abort(), 3000);
 
       const response = await fetch(`${this.apiUrl}/api/tags`, {
         method: 'GET',
@@ -354,33 +356,25 @@ export class LlamaService {
       });
 
       clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error('Ollama servisi yanıt vermiyor');
-      }
-
-      return {
-        status: 'online',
-        model: this.modelName,
-      };
+      if (!response.ok) throw new Error('Ollama servisi yanıt vermiyor');
+      return { status: 'online', model: this.modelName };
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         console.error('Health check timeout:', error);
       } else {
         console.error('Sağlık kontrolü hatası:', error);
       }
-      return {
-        status: 'offline',
-        model: this.modelName,
-      };
+      return { status: 'offline', model: this.modelName };
     }
   }
 }
 
-// Servisin singleton instance'ını dışa aktarıyoruz
+// ── Singleton ─────────────────────────────────────────────────────────────
+
 export const llamaService = new LlamaService();
 
-// Kolay erişim için yardımcı fonksiyonlar
+// ── Yardımcı fonksiyonlar ─────────────────────────────────────────────────
+
 export async function chatWithLlama(prompt: string): Promise<ChatResponse> {
   return llamaService.chat(prompt) as Promise<ChatResponse>;
 }
@@ -393,15 +387,24 @@ export async function streamChatWithLlama(
   return llamaService.chatStream(prompt, onChunk, onEnd);
 }
 
-export async function checkLlamaHealth(): Promise<{
-  status: string;
-  model: string;
-}> {
+export async function checkLlamaHealth(): Promise<{ status: string; model: string }> {
   return llamaService.healthCheck();
 }
 
+/**
+ * Mevcut wrapper — AIChat'te mode/activeText değişimlerinde kullanılmaya devam edebilir.
+ * Anti-repetition listesi KORUNUR.
+ */
 export function clearChatHistory(): void {
   return llamaService.clearHistory();
+}
+
+/**
+ * Yeni ders başlangıcında çağrılmalı (courseCategory değişimi).
+ * Anti-repetition listesi DAHİL her şeyi sıfırlar.
+ */
+export function clearAllContext(): void {
+  return llamaService.clearAllContext();
 }
 
 export function setLessonContext(description: string): void {
@@ -412,15 +415,13 @@ export function setStudentName(name: string): void {
   return llamaService.setStudentName(name);
 }
 
-/**
- * YENİ: AI modunu set et
- */
 export function setAIMode(mode: 'learning' | 'analysis' | 'practice' | 'solve'): void {
   return llamaService.setMode(mode);
 }
 
 /**
- * YENİ: Course category'yi set et
+ * setCourseCategory artık lessonId değişimini otomatik algılar.
+ * Yeni kategori ise clearAllContext, aynı kategori ise sadece günceller.
  */
 export function setCourseCategory(category: string): void {
   return llamaService.setCourseCategory(category);

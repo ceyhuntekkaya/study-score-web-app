@@ -59,7 +59,7 @@ export default function AIChat({
   useEffect(() => {
     if (courseCategory) {
       // Category'yi LlamaService'e gönder
-      // SAT_ENGLISH için SAT prompt, diğerleri için IELTS prompt kullanılacak
+      // SAT_ENGLISH -> SAT prompt, GENERAL_ENGLISH -> General English prompt, diğerleri -> IELTS
       setCourseCategory(courseCategory);
       clearChatHistory();
       setMessages([]);
@@ -243,10 +243,20 @@ export default function AIChat({
   };
 
   // Mod'a göre placeholder metni
+  const topicLabelByCategory: Record<string, string> = {
+    IELTS: "IELTS topic",
+    TOEFL: "TOEFL topic",
+    SAT_ENGLISH: "SAT English topic",
+    SAT_MATH: "SAT Math topic",
+    GENERAL_ENGLISH: "English topic",
+  };
+  const topicLabel =
+    (courseCategory && topicLabelByCategory[courseCategory]) || "IELTS topic";
+
   const getPlaceholder = () => {
     switch (mode) {
       case "learning":
-        return "Ask about the concept or IELTS topic...";
+        return `Ask about the concept or ${topicLabel}...`;
       case "analysis":
         return "Ask about this question or answer...";
       case "practice":
@@ -313,7 +323,7 @@ export default function AIChat({
             <p className="ss-ai-chat-empty-desc">
               {activeText
                 ? "Ready to help you with the content above."
-                : "Ask me anything about IELTS."}
+                : `Ask me anything about ${topicLabel}.`}
             </p>
           </div>
         ) : (

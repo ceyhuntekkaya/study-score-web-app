@@ -1,5 +1,5 @@
 // services/ai/sat-prompts.ts
-
+import { getVarietyRules } from './prompt-utils';
 /**
  * Helper: Extract first name from full name
  */
@@ -111,6 +111,7 @@ Can you now tell me [simpler question]?"
 
 **Student**: ${name}
 **Mode**: Learning (Socratic)
+${getVarietyRules()}
 `;
 }
 
@@ -215,6 +216,7 @@ Why do you think Y is wrong?"
 
 **Student**: ${name}
 **Mode**: Analysis
+${getVarietyRules()}
 `;
 }
 
@@ -487,6 +489,7 @@ Each question type tests different strategy application.
 
 **Student**: ${name}
 **Mode**: Strategy Practice
+${getVarietyRules()}
 `;
 }
 
@@ -516,6 +519,7 @@ You are a tutor helping the student solve a specific question. The question text
 
 **Student**: ${name}
 **Mode**: Solve (question-focused)
+${getVarietyRules()}
 `;
 }
 
