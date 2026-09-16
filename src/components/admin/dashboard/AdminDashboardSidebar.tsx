@@ -1,26 +1,26 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { Home, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 import { getSidebarMenu } from '@/lib/menus';
 import { useTranslation } from '@/i18n';
+import { cn } from '@/lib/utils';
+import { BRAND_LOGOS } from '@/lib/brand-logos';
+import { getAdminMenuIcon } from '@/lib/admin/menu-icons';
 
-/**
- * Admin Dashboard Sidebar Component
- */
-export default function AdminDashboardSidebar() {
+type AdminDashboardSidebarProps = {
+  open: boolean;
+  onClose: () => void;
+};
+
+export default function AdminDashboardSidebar({ open, onClose }: AdminDashboardSidebarProps) {
   const pathname = usePathname();
-  const { user, clearAuth } = useAuth();
-  const router = useRouter();
+  const { clearAuth } = useAuth();
   const { t } = useTranslation();
   const menu = getSidebarMenu('admin');
-
-  const handleLogout = () => {
-    clearAuth();
-    router.push('/login');
-  };
 
   const isActive = (href: string) => {
     if (href === '/admin/dashboard') {
@@ -29,69 +29,105 @@ export default function AdminDashboardSidebar() {
     return pathname?.startsWith(href);
   };
 
+  const handleLogout = (event: React.MouseEvent) => {
+    event.preventDefault();
+    clearAuth();
+  };
+
   return (
-    <div className="col-lg-3">
-      <div className="rbt-default-sidebar sticky-top rbt-shadow-box rbt-gradient-border">
-        <div className="inner">
-          <div className="content-item-content">
-            <div className="rbt-default-sidebar-wrapper">
-              {menu.sections.map((section, sectionIndex) => {
-                const sectionTitle = section.titleKey ? t(section.titleKey) : (section.title || '');
-                return (
-                  <div key={sectionTitle}>
-                    {sectionIndex === 0 ? (
-                      <div className="section-title mb--20">
-                        <h6 className="rbt-title-style-2">{t('common.welcome')}, {user?.name || 'Admin'}</h6>
-                      </div>
-                    ) : (
-                      <div className="section-title mt--40 mb--20">
-                        <h6 className="rbt-title-style-2">{sectionTitle}</h6>
-                      </div>
-                    )}
-                    <nav className="mainmenu-nav">
-                      <ul className="dashboard-mainmenu rbt-default-sidebar-list">
-                        {section.items.map((item) => {
-                          const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
-                          return (
-                            <li key={item.href || item.labelKey || item.label}>
-                              {item.action === 'logout' ? (
-                                <a
-                                  href="#"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleLogout();
-                                  }}
-                                  className=""
-                                >
-                                  {item.icon && <i className={item.icon}></i>}
-                                  <span>{itemLabel}</span>
-                                </a>
-                              ) : item.href ? (
-                                <Link
-                                  href={item.href}
-                                  className={isActive(item.href) ? 'active' : ''}
-                                >
-                                  {item.icon && <i className={item.icon}></i>}
-                                  <span>{itemLabel}</span>
-                                </Link>
-                              ) : (
-                                <span>
-                                  {item.icon && <i className={item.icon}></i>}
-                                  <span>{itemLabel}</span>
-                                </span>
-                              )}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </nav>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+    <>
+      <div
+        className={cn('ssa-admin-sidebar-backdrop', open && 'ssa-admin-sidebar-backdrop--visible')}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      <aside
+        id="admin-sidebar"
+        className={cn('ssa-admin-sidebar', open && 'ssa-admin-sidebar--open')}
+        aria-label={t('menu.admin')}
+      >
+        <div className="ssa-admin-sidebar-brand">
+          <Link href="/admin/dashboard" className="ssa-admin-sidebar-brand-link" onClick={onClose}>
+            <Image
+              src={BRAND_LOGOS.onDark}
+              alt="Study Score"
+              width={140}
+              height={36}
+              className="ssa-admin-sidebar-logo"
+              priority
+            />
+            <span className="ssa-admin-sidebar-brand-sub">{t('menu.admin')}</span>
+          </Link>
+          <button
+            type="button"
+            className="ssa-admin-sidebar-close"
+            onClick={onClose}
+            aria-label="Menüyü kapat"
+          >
+            <X size={20} strokeWidth={2} aria-hidden />
+          </button>
         </div>
-      </div>
-    </div>
+
+        <nav className="ssa-admin-sidebar-nav">
+          {menu.sections.map((section, sectionIndex) => {
+            const sectionTitle = section.titleKey ? t(section.titleKey) : (section.title || '');
+            return (
+              <div
+                key={sectionTitle + sectionIndex}
+                className={cn('ssa-admin-sidebar-group', sectionIndex > 0 && 'ssa-admin-sidebar-group--divider')}
+              >
+                {sectionIndex > 0 ? (
+                  <p className="ssa-admin-sidebar-group-title">{sectionTitle}</p>
+                ) : null}
+                <ul className="ssa-admin-sidebar-list">
+                  {section.items.map((item) => {
+                    const itemLabel = item.labelKey ? t(item.labelKey) : (item.label || '');
+                    const Icon = getAdminMenuIcon(item.icon);
+
+                    if (item.action === 'logout') {
+                      return (
+                        <li key={item.labelKey || item.label || 'logout'}>
+                          <button type="button" className="ssa-admin-sidebar-link" onClick={handleLogout}>
+                            <Icon className="ssa-admin-sidebar-link-icon" aria-hidden />
+                            <span className="ssa-admin-sidebar-link-label">{itemLabel}</span>
+                          </button>
+                        </li>
+                      );
+                    }
+
+                    if (!item.href) {
+                      return null;
+                    }
+
+                    const active = isActive(item.href);
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          onClick={onClose}
+                          className={cn('ssa-admin-sidebar-link', active && 'ssa-admin-sidebar-link--active')}
+                        >
+                          <Icon className="ssa-admin-sidebar-link-icon" aria-hidden />
+                          <span className="ssa-admin-sidebar-link-label">{itemLabel}</span>
+                          {active ? <span className="ssa-admin-sidebar-link-dot" aria-hidden /> : null}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          })}
+        </nav>
+
+        <div className="ssa-admin-sidebar-footer">
+          <Link href="/" className="ssa-admin-sidebar-link" onClick={onClose}>
+            <Home className="ssa-admin-sidebar-link-icon" aria-hidden />
+            <span className="ssa-admin-sidebar-link-label">{t('nav.home')}</span>
+          </Link>
+        </div>
+      </aside>
+    </>
   );
 }

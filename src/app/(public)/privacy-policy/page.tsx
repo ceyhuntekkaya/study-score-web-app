@@ -161,7 +161,7 @@ export default function PrivacyPolicyPage() {
             <p>
               If you have any questions about this Privacy Policy, please contact us at:
               <br />
-              Email: privacy@studyscoreapp.com
+              Email: hello@genixo.ai
               <br />
               Address: [Your Company Address]
             </p>

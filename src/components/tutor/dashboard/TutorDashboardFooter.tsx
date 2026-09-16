@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, FormEvent } from 'react';
 import CopyrightArea from '@/components/common/CopyrightArea';
+import { BRAND_LOGOS } from '@/lib/brand-logos';
 
 /**
  * Tutor Dashboard Footer Component
@@ -29,7 +30,7 @@ export default function TutorDashboardFooter() {
                 <div className="logo logo-dark">
                   <Link href="/">
                     <Image
-                      src="/assets/images/logo/logo.png"
+                      src={BRAND_LOGOS.color}
                       alt="Study Score"
                       width={200}
                       height={50}
@@ -39,7 +40,7 @@ export default function TutorDashboardFooter() {
                 <div className="logo d-none logo-light">
                   <Link href="/">
                     <Image
-                      src="/assets/images/dark/logo/logo-light.png"
+                      src={BRAND_LOGOS.onDark}
                       alt="Study Score"
                       width={200}
                       height={50}

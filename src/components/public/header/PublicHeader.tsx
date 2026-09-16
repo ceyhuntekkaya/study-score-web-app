@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import LanguageSwitcher from '@/components/common/LanguageSwitcher';
+import { BRAND_LOGOS } from '@/lib/brand-logos';
 import { getHeaderMenu } from '@/lib/menus';
 import { useTranslation } from '@/i18n';
 import { getPrimaryPhone } from '@/lib/contact';
@@ -160,7 +161,7 @@ export default function PublicHeader() {
               <div className="logo logo-dark">
                 <Link href="/">
                   <Image 
-                    src="/assets/images/logo/logo-black.png" 
+                    src={BRAND_LOGOS.onLight} 
                     alt="Study Score Logo" 
                     width={200} 
                     height={50}
@@ -171,7 +172,7 @@ export default function PublicHeader() {
               <div className="logo d-none logo-light">
                 <Link href="/">
                   <Image 
-                    src="/assets/images/dark/logo/logo-light.png" 
+                    src={BRAND_LOGOS.onDark} 
                     alt="Study Score Logo" 
                     width={200} 
                     height={50}

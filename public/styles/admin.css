@@ -35,31 +35,539 @@
   font-display: swap;
 }
 
-/* Apply Quicksand everywhere inside admin dashboard
-   Override CSS variables so var(--font-primary) etc. resolve to Quicksand */
+/* ------------------------------------------------------------------ */
+/* E-YDS–style admin shell (sidebar + header + content)               */
+/* ------------------------------------------------------------------ */
+
+.ssa-admin-body {
+  overflow-x: hidden;
+}
+
+.ssa-admin-shell {
+  --ssa-sidebar-width: 16rem;
+  --ssa-indigo: #4f46e5;
+  --ssa-slate-900: #0f172a;
+  --ssa-slate-800: #1e293b;
+  --ssa-slate-500: #64748b;
+  --ssa-slate-200: #e2e8f0;
+  --font-primary: 'Quicksand', sans-serif;
+  --font-secondary: 'Quicksand', sans-serif;
+  min-height: 100dvh;
+  font-family: 'Quicksand', sans-serif;
+  background: linear-gradient(135deg, #f1f5f9 0%, #f8fafc 45%, rgba(238, 242, 255, 0.55) 100%);
+  overflow-x: hidden;
+}
+
+.ssa-admin-shell *,
+.ssa-admin-shell .ssa-admin-content {
+  font-family: 'Quicksand', sans-serif !important;
+}
+
+.ssa-admin-shell [class^='feather-'],
+.ssa-admin-shell [class*=' feather-'],
+.ssa-admin-shell .feather {
+  font-family: 'feather' !important;
+}
+
+/* Sidebar backdrop (mobile) */
+.ssa-admin-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.ssa-admin-sidebar-backdrop--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (min-width: 1024px) {
+  .ssa-admin-sidebar-backdrop {
+    display: none;
+  }
+}
+
+/* Sidebar */
+.ssa-admin-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  width: min(18rem, 85vw);
+  max-width: 18rem;
+  height: 100dvh;
+  background: var(--ssa-slate-900);
+  font-size: 1rem;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.ssa-admin-sidebar--open {
+  transform: translateX(0);
+}
+
+@media (min-width: 1024px) {
+  .ssa-admin-sidebar {
+    width: var(--ssa-sidebar-width);
+    max-width: var(--ssa-sidebar-width);
+    transform: translateX(0);
+  }
+}
+
+.ssa-admin-sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.ssa-admin-sidebar-brand-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  color: #fff;
+}
+
+.ssa-admin-sidebar-logo {
+  width: auto;
+  height: auto;
+  max-width: 140px;
+  max-height: 36px;
+  object-fit: contain;
+}
+
+.ssa-admin-sidebar-brand-sub {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.ssa-admin-sidebar-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ssa-admin-sidebar-close:hover {
+  background: #1e293b;
+  color: #fff;
+}
+
+@media (min-width: 1024px) {
+  .ssa-admin-sidebar-close {
+    display: none;
+  }
+}
+
+.ssa-admin-sidebar-nav {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ssa-admin-sidebar-group--divider {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #1e293b;
+}
+
+.ssa-admin-sidebar-group-title {
+  margin: 0 0 0.75rem;
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.ssa-admin-sidebar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ssa-admin-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: transparent;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #cbd5e1;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+a.ssa-admin-sidebar-link:hover,
+button.ssa-admin-sidebar-link:hover {
+  background: #1e293b;
+  color: #fff;
+}
+
+.ssa-admin-sidebar-link--active {
+  background: var(--ssa-indigo) !important;
+  color: #fff !important;
+}
+
+.ssa-admin-sidebar-link-icon {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+}
+
+.ssa-admin-sidebar-link-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ssa-admin-sidebar-link-dot {
+  margin-left: auto;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  flex-shrink: 0;
+}
+
+.ssa-admin-sidebar-footer {
+  padding: 1rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  border-top: 1px solid #1e293b;
+}
+
+/* Main column */
+.ssa-admin-main {
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .ssa-admin-main {
+    margin-left: var(--ssa-sidebar-width);
+  }
+}
+
+/* Header */
+.ssa-admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--ssa-slate-200);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  font-size: 1rem;
+}
+
+@media (min-width: 640px) {
+  .ssa-admin-header {
+    padding: 1rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ssa-admin-header {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.ssa-admin-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.ssa-admin-header-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+}
+
+.ssa-admin-header-menu-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+@media (min-width: 1024px) {
+  .ssa-admin-header-menu-btn {
+    display: none;
+  }
+}
+
+.ssa-admin-header-logo-mobile {
+  display: flex;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .ssa-admin-header-logo-mobile {
+    display: none;
+  }
+}
+
+.ssa-admin-header-badge {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 999px;
+  background: var(--ssa-slate-900);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+  .ssa-admin-header-badge {
+    display: inline-flex;
+  }
+}
+
+.ssa-admin-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .ssa-admin-header-right {
+    gap: 0.75rem;
+  }
+}
+
+.ssa-admin-header-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ssa-admin-header-icon-btn--ghost {
+  background: transparent;
+  color: #475569;
+}
+
+.ssa-admin-header-icon-btn--ghost:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.ssa-admin-header-icon-btn--danger {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.ssa-admin-header-icon-btn--danger:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.ssa-admin-header-home,
+.ssa-admin-header-settings {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .ssa-admin-header-home,
+  .ssa-admin-header-settings {
+    display: inline-flex;
+  }
+}
+
+.ssa-admin-header-divider {
+  display: none;
+  width: 1px;
+  height: 2rem;
+  margin: 0 0.25rem;
+  background: var(--ssa-slate-200);
+}
+
+@media (min-width: 640px) {
+  .ssa-admin-header-divider {
+    display: block;
+  }
+}
+
+.ssa-admin-header-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ssa-admin-header-user-text {
+  display: none;
+  text-align: right;
+}
+
+@media (min-width: 768px) {
+  .ssa-admin-header-user-text {
+    display: block;
+  }
+}
+
+.ssa-admin-header-user-name {
+  margin: 0;
+  max-width: 11rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ssa-slate-800);
+}
+
+.ssa-admin-header-user-role {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--ssa-slate-500);
+}
+
+.ssa-admin-header-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #334155, var(--ssa-slate-900));
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(148, 163, 184, 0.45);
+}
+
+.ssa-admin-header-lang .rbt-dropdown-menu.switcher-language {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ssa-admin-header-lang .rbt-dropdown-menu.switcher-language > li > a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  color: #475569;
+}
+
+.ssa-admin-header-lang .rbt-dropdown-menu.switcher-language .menu-item {
+  font-size: 1rem !important;
+  font-weight: 500;
+}
+
+.ssa-admin-header-lang .rbt-dropdown-menu.switcher-language .sub-menu .menu-item {
+  font-size: 0.9375rem !important;
+}
+
+.ssa-admin-header-lang .rbt-dropdown-menu.switcher-language > li > a:hover {
+  background: #f1f5f9;
+}
+
+.ssa-admin-header-lang .sub-menu {
+  z-index: 50;
+}
+
+/* Content */
+.ssa-admin-content-wrap {
+  padding: 1rem;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .ssa-admin-content-wrap {
+    padding: 1rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ssa-admin-content-wrap {
+    padding: 1.5rem 2rem;
+  }
+}
+
+.ssa-admin-content {
+  min-width: 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.ssa-admin-content .rbt-page-title {
+  margin-bottom: 1.25rem;
+}
+
+.ssa-admin-content .rbt-page-title h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ssa-slate-800);
+  margin: 0;
+}
+
+.ssa-admin-content button:not(:disabled),
+.ssa-admin-content [role='button']:not([aria-disabled='true']) {
+  cursor: pointer;
+}
+
+/* Legacy wrapper alias */
 .rbt-admin-wrapper {
   --font-primary: 'Quicksand', sans-serif;
   --font-secondary: 'Quicksand', sans-serif;
   font-family: 'Quicksand', sans-serif !important;
-}
-.rbt-admin-wrapper *,
-.rbt-admin-wrapper.rbt-main-wrapper *,
-.rbt-admin-wrapper .rbt-dashboard-area,
-.rbt-admin-wrapper .rbt-dashboard-content,
-.rbt-admin-wrapper .content {
-  font-family: 'Quicksand', sans-serif !important;
-}
-/* Override .rbt-font-primary when inside admin */
-.rbt-admin-wrapper .rbt-font-primary {
-  font-family: 'Quicksand', sans-serif !important;
-}
-
-/* Feather (and other icon fonts) must keep their font-family so icons render.
-   Quicksand is applied to .rbt-admin-wrapper * so we restore icon font for icon elements. */
-.rbt-admin-wrapper [class^="feather-"],
-.rbt-admin-wrapper [class*=" feather-"],
-.rbt-admin-wrapper .feather {
-  font-family: 'feather' !important;
 }
 
 /* CourseCurriculum.css */

@@ -40,7 +40,7 @@ export default function VideoSection() {
                 alt="Video Images" 
                 width={600} 
                 height={400}
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: 'cover', height: 'auto' }}
               />
               <a 
                 className="popup-video position-to-top" 
@@ -54,6 +54,7 @@ export default function VideoSection() {
                     alt="YouTube" 
                     width={80} 
                     height={80}
+                    style={{ height: 'auto' }}
                   />
                 </span>
               </a>

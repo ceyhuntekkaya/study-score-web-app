@@ -1,14 +1,15 @@
 // services/ai/llama.ts
 
-import { getApiAiUrl } from '@/config';
+import { getOllamaModel } from '@/config';
 import { getIELTSSystemContext } from './prompts';
 import { getSATSystemContext } from './sat-prompts';
 import { getGeneralEnglishSystemContext } from './general-english-prompts';
 import { getTOEFLSystemContext } from './toefl-prompts';
 import { getSATMathSystemContext } from './sat-math-prompts';
 
-const OLLAMA_API_URL = process.env.NEXT_PUBLIC_OLLAMA_API_URL || getApiAiUrl();
-const DEFAULT_MODEL = 'qwen2.5:7b';
+// Browser → same-origin Next proxy → Ollama (HTTP Basic Auth server-side)
+const OLLAMA_API_URL = process.env.NEXT_PUBLIC_OLLAMA_API_URL || '/api/ollama';
+const DEFAULT_MODEL = getOllamaModel() || 'qwen2.5:14b';
 
 export interface ChatResponse {
   message: {
@@ -348,11 +349,12 @@ If you are about to generate something similar to the above, STOP and choose a c
   async healthCheck(): Promise<{ status: string; model: string }> {
     try {
       const controller = new AbortController();
-      const timeoutId  = setTimeout(() => controller.abort(), 3000);
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
       const response = await fetch(`${this.apiUrl}/api/tags`, {
         method: 'GET',
         signal: controller.signal,
+        cache: 'no-store',
       });
 
       clearTimeout(timeoutId);

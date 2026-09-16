@@ -72,6 +72,7 @@ export default function AboutSection() {
                         alt="Signature" 
                         width={150} 
                         height={60}
+                        style={{ height: 'auto' }}
                       />
                     </div>
                   </div>
@@ -86,6 +87,7 @@ export default function AboutSection() {
                     alt="Shape" 
                     width={200} 
                     height={200}
+                    style={{ height: 'auto' }}
                   />
                 </div>
                 <div className="shape-2">
@@ -103,6 +105,7 @@ export default function AboutSection() {
                       alt="Award Icon" 
                       width={50} 
                       height={50}
+                      style={{ height: 'auto' }}
                     />
                   </span>
                   <div className="title-wrap">
@@ -118,6 +121,7 @@ export default function AboutSection() {
                     alt="Thumb" 
                     width={500} 
                     height={600}
+                    style={{ height: 'auto' }}
                   />
                 </div>
                 <h6 className="title">Academic Coordinator</h6>

@@ -28,7 +28,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="/styles/ui-components.css" />
         <link rel="stylesheet" href="/styles/admin.css" />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <QueryProvider>
           <AuthProvider>
             {children}

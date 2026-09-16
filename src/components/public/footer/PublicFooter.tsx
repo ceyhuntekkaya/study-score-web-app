@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getPrimaryPhone, getPrimaryEmail, getPrimaryAddress, getSocialLinks } from '@/lib/contact';
 import CopyrightArea from '@/components/common/CopyrightArea';
+import { BRAND_LOGOS } from '@/lib/brand-logos';
 
 /**
  * Public Footer Component
@@ -35,7 +36,7 @@ export default function PublicFooter() {
                 <div className="logo logo-dark">
                   <Link href="/">
                     <Image 
-                      src="/assets/images/logo/logo.png" 
+                      src={BRAND_LOGOS.color} 
                       alt="Study Score App" 
                       width={200} 
                       height={40}
@@ -45,7 +46,7 @@ export default function PublicFooter() {
                 <div className="logo d-none logo-light">
                   <Link href="/">
                     <Image 
-                      src="/assets/images/dark/logo/logo-light.png" 
+                      src={BRAND_LOGOS.onDark} 
                       alt="Study Score App" 
                       width={200} 
                       height={40}

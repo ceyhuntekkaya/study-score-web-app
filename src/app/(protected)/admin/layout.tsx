@@ -1,29 +1,53 @@
 'use client';
 
+import { useCallback, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { AdminProvider } from '@/contexts/AdminContext';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import AdminDashboardHeader from '@/components/admin/dashboard/AdminDashboardHeader';
+import AdminDashboardSidebar from '@/components/admin/dashboard/AdminDashboardSidebar';
 
-/**
- * Admin Dashboard Layout
- * Header with menu in center, full width content area
- */
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="rbt-main-wrapper rbt-admin-wrapper">
-      {/* Header with menu in center */}
-      <AdminDashboardHeader />
+  const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
 
-      {/* Dashboard Area - Full width content */}
-      <div className="rbt-dashboard-area rbt-section-gapBottom" style={{ padding: '20px' }}>
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-12">
-              <div className="rbt-dashboard-content bg-color-white rbt-shadow-box mb--60">
-                <div className="content">{children}</div>
-              </div>
-            </div>
-          </div>
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    document.body.classList.add('ssa-admin-body');
+    return () => {
+      document.body.classList.remove('ssa-admin-body');
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeSidebar();
+    };
+    document.addEventListener('keydown', onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [sidebarOpen, closeSidebar]);
+
+  return (
+    <div className="ssa-admin-shell">
+      <AdminDashboardSidebar open={sidebarOpen} onClose={closeSidebar} />
+
+      <div className="ssa-admin-main">
+        <AdminDashboardHeader
+          onMenuClick={() => setSidebarOpen(true)}
+          menuOpen={sidebarOpen}
+        />
+        <div className="ssa-admin-content-wrap">
+          <main className="ssa-admin-content">{children}</main>
         </div>
       </div>
     </div>

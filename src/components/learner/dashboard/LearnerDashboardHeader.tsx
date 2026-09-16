@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getHeaderMenu } from '@/lib/menus';
 import { useTranslation } from '@/i18n';
 import { getPrimaryPhone } from '@/lib/contact';
+import { BRAND_LOGOS } from '@/lib/brand-logos';
 
 /**
  * Learner Dashboard Header Component
@@ -138,7 +139,7 @@ export default function LearnerDashboardHeader() {
                 <div className="logo logo-dark">
                   <Link href="/">
                     <Image
-                      src="/assets/images/logo/logo.png"
+                      src={BRAND_LOGOS.onLight}
                       alt="Study Score Logo"
                       width={200}
                       height={50}
@@ -148,7 +149,7 @@ export default function LearnerDashboardHeader() {
                 <div className="logo d-none logo-light">
                   <Link href="/">
                     <Image
-                      src="/assets/images/dark/logo/logo-light.png"
+                      src={BRAND_LOGOS.onDark}
                       alt="Study Score Logo"
                       width={200}
                       height={50}

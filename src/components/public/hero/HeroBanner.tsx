@@ -90,6 +90,7 @@ export default function HeroBanner() {
                     alt="Shape" 
                     width={200} 
                     height={200}
+                    style={{ height: 'auto' }}
                   />
                 </div>
                 <div className="container">
@@ -103,6 +104,7 @@ export default function HeroBanner() {
                               alt="trustpilot" 
                               width={100} 
                               height={30}
+                              style={{ height: 'auto' }}
                             />
                           </span>
                           {slide.subtitle}

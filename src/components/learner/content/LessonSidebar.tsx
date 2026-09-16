@@ -9,6 +9,7 @@ import { useGetCourseWithAllDetails } from "@/generated/api/course-rest-controll
 import { useGetCourseProgress } from "@/generated/api/learner-activity-rest-controller/learner-activity-rest-controller";
 import type { CourseLessonDetailDTO } from "@/generated/api/openAPIDefinition.schemas";
 import { LessonSection, LessonItem } from "@/lib/menus";
+import { BRAND_LOGOS } from "@/lib/brand-logos";
 
 // Extended type to include childLessons (may come from API but not in type definition)
 interface CourseLessonDetailDTOWithChildren extends CourseLessonDetailDTO {
@@ -762,11 +763,11 @@ export default function LessonSidebar() {
         <div className="ss-logo-header">
           <Link href="/learner">
             <Image
-              src="/assets/images/logo/logo.png"
-              alt="StudyScore"
+              src={BRAND_LOGOS.color}
+              alt="Genixo Score"
               width={130}
               height={40}
-              style={{ objectFit: "contain" }}
+              style={{ objectFit: "contain", height: "auto" }}
               priority
             />
           </Link>

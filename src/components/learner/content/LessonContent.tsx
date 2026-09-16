@@ -32,6 +32,24 @@ export default function LessonContent() {
   const [pendingPartId, setPendingPartId] = useState<string | null>(null);
   const [showAIChat, setShowAIChat] = useState(false);
 
+  const stripHtmlToText = (html: string): string => {
+    if (!html) return "";
+    try {
+      if (typeof window !== "undefined" && "DOMParser" in window) {
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        return (doc.body?.textContent || "").replace(/\s+/g, " ").trim();
+      }
+    } catch {
+      // Fall through to regex-based cleanup
+    }
+    return html
+      .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, " ")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+
   // API calls
   const { data: courseDetails, isLoading: isCourseLoading } =
     useGetCourseWithAllDetails(courseId || "", {
@@ -90,6 +108,37 @@ export default function LessonContent() {
     selectedPart?.materials?.length || 0,
     selectedPart?.materials?.map((m) => `${m.id}-${m.orderNumber}`).join(",") ||
       "",
+  ]);
+
+  const ttsText = useMemo(() => {
+    const chunks: string[] = [];
+
+    const lessonName = selectedLesson?.name?.trim();
+    const partName = selectedPart?.name?.trim();
+    if (lessonName) chunks.push(lessonName);
+    if (partName && partName !== lessonName) chunks.push(partName);
+
+    const partDesc = stripHtmlToText(selectedPart?.description || "");
+    if (partDesc) chunks.push(partDesc);
+
+    const materialText = materials
+      .filter((m) =>
+        ["TEXT", "DOCUMENT", "OTHER"].includes((m.mediaType || "").toString()),
+      )
+      .map((m) => stripHtmlToText(m.content || ""))
+      .filter(Boolean)
+      .join("\n\n");
+
+    if (materialText) chunks.push(materialText);
+
+    const combined = chunks.filter(Boolean).join("\n\n").trim();
+    // Limit payload size to avoid huge requests
+    return combined.length > 4000 ? combined.slice(0, 4000) : combined;
+  }, [
+    selectedLesson?.name,
+    selectedPart?.name,
+    selectedPart?.description,
+    materials,
   ]);
 
   // Progress tracking hook
@@ -280,7 +329,12 @@ export default function LessonContent() {
       </div>
 
       {/* Content */}
-      <div className="inner ss-content-inner">
+      <div
+        className="inner ss-content-inner"
+        style={{
+          paddingBottom: ttsText ? 120 : undefined,
+        }}
+      >
         {isCourseLoading ? (
           <div className="ss-content-skeleton">
             <div className="ss-skeleton-video"></div>
@@ -366,6 +420,35 @@ export default function LessonContent() {
           </>
         )}
       </div>
+
+      {/* Bottom TTS Panel */}
+      {ttsText && (
+        <div
+          className="ss-tts-panel"
+          style={{
+            position: "sticky",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 30,
+            padding: "10px 12px",
+            background: "rgba(255, 255, 255, 0.92)",
+            backdropFilter: "blur(8px)",
+            borderTop: "1px solid rgba(0,0,0,0.08)",
+          }}
+        >
+          <TtsService
+            text={ttsText}
+            language="tr"
+            showControls={true}
+            showButton={true}
+            buttonText="Seslendir"
+            showSpeakerSelect={false}
+            showSpeedSelect={true}
+            showEmotionSelect={false}
+          />
+        </div>
+      )}
 
       {/* Side Navigation Arrows */}
       {previousPart && (

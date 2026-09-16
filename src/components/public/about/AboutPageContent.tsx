@@ -41,7 +41,7 @@ export default function AboutPageContent() {
                   alt="Study Score" 
                   width={500} 
                   height={600}
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'cover', height: 'auto' }}
                 />
               </div>
               <div className="thumbnail image-2 d-none d-xl-block">
@@ -50,7 +50,7 @@ export default function AboutPageContent() {
                   alt="Study Score" 
                   width={300} 
                   height={400}
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'cover', height: 'auto' }}
                 />
               </div>
               <div className="thumbnail image-3 d-none d-md-block">
@@ -59,7 +59,7 @@ export default function AboutPageContent() {
                   alt="Study Score" 
                   width={250} 
                   height={300}
-                  style={{ objectFit: 'cover' }}
+                  style={{ objectFit: 'cover', height: 'auto' }}
                 />
               </div>
             </div>

@@ -151,7 +151,7 @@ export default function TermsOfServicePage() {
             <p>
               If you have any questions about these Terms of Service, please contact us at:
               <br />
-              Email: legal@studyscoreapp.com
+              Email: hello@genixo.ai
               <br />
               Address: [Your Company Address]
             </p>
